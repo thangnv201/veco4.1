@@ -1,0 +1,72 @@
+<% html_title("Project tracking with EVM") %>
+<% if @no_data %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% else %>
+  <!--Sidebar-->
+  <% if @cfg_param[:display_explanation] %>
+    <% content_for :sidebar do %>
+      <%= render partial: "/evms/explanation" %>
+    <% end %>
+  <% end %>
+  <% content_for :additional_option do %>
+    <!-- calculate use baseline -->
+    <div class="option-col">
+      <p><%= l(:label_baseline_use) %></p>
+      <%= check_box_tag :no_use_baseline, 'true',
+                        @cfg_param[:no_use_baseline],
+                        onclick: "disableobject('evmbaseline_id', this.checked);"%>
+      <%= label_tag l(:label_no_use_baseline) %>
+      <%= select_tag :evmbaseline_id,
+                      options_from_collection_for_select(@evmbaseline, :id, :subject,
+                                                         @cfg_param[:baseline_id]),
+                                                         disabled: @cfg_param[:no_use_baseline] %>
+    </div>
+    <!-- explanation evm -->
+    <div class="option-col">
+      <p><%= l(:label_explanation) %></p>
+      <%= check_box_tag :display_explanation, 'true', @cfg_param[:display_explanation] %>
+      <%= label_tag l(:label_display_explanation) %>
+    </div>
+  <% end %>
+  <%= render partial: "/common/option_field"%>
+  <h3><%= l(:subtitle_evm_summary)%></h3>
+  <!--metrics-->
+  <%= render partial: "/evms/metrics",
+      locals: { version_list: @count_version_list,
+                assignee_list: @count_assignee_list,
+                tracker_list: @count_tracker_list,
+                project_metrics: @project_metrics } %>
+  <!--Indicator value-->
+  <%= render partial: "/evms/measure",
+      locals: { project_evm: @project_evm,
+                working_hours: @cfg_param[:working_hours],
+                project_metrics: @project_metrics } %>
+  <!-- Exports -->
+  <% other_formats_links do |f| %>
+    <%= f.link_to 'CSV', :url => {:action => 'index'} %>
+  <% end %>
+  <!-- Main Chart -->
+  <h3><%= l(:subtitle_evm_chart_main) %></h3>
+  <%= render partial: "/evms/project_chart_js",
+      locals: { basis_date: @cfg_param[:basis_date],
+                chart_data: @evm_chart_data,
+                project_name: project_chart_name } %>
+  <br>
+  <!-- Performance Chart -->
+  <% if @cfg_param[:display_performance] %>
+    <h3><%= l(:subtitle_evm_chart_performance) %></h3>
+    <%= render partial: "/evms/performance_chart_js",
+        locals: { basis_date: @cfg_param[:basis_date],
+                  performance_chart_data: @performance_chart_data,
+                  project_name: project_chart_name } %>
+  <% end %>
+  <!-- Incomplete issue list -->
+  <% if @cfg_param[:display_incomplete] %>
+    <% if @no_data_incomplete_issues %>
+      <p class="nodata"><%= l(:label_no_data) %></p>
+    <% else %>
+      <%= render partial: "/evms/incomplete_issue_list",
+          locals: { incomplete_issues: @incomplete_issues } %>
+    <% end %>
+  <% end %>
+<% end %>

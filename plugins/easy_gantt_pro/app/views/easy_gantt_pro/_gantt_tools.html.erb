@@ -1,0 +1,13 @@
+<% if EasyGantt.easy_extensions? %>
+  <label for="select_scheme_select"><%= l(:label_easy_color_schemes) %></label>
+  <select id="select_scheme_select" style="width: auto" title="<%= l('easy_gantt.scheme_by.label_color_by') %>:">
+    <% if @project %>
+      <option value="issue_priority"><%= l('easy_gantt.scheme_by.label_by_priority') %></option>
+      <option value="issue_status"><%= l('easy_gantt.scheme_by.label_by_status') %></option>
+      <option value="tracker"><%= l('easy_gantt.scheme_by.label_by_tracker') %></option>
+    <% else %>
+      <option value="project_priority"><%= l('easy_gantt.scheme_by.label_by_priority') %></option>
+      <option value="project_status"><%= l('easy_gantt.scheme_by.label_by_status') %></option>
+    <% end %>
+  </select>
+<% end %>

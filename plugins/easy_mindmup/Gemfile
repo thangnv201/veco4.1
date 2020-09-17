@@ -1,0 +1,3 @@
+unless %w(easyproject easy_gantt).any? { |plugin| Dir.exist?(File.expand_path("../../#{plugin}", __FILE__)) }
+  gem 'redmine_extensions', '~> 0.2.4'
+end

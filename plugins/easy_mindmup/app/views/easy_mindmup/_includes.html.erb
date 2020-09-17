@@ -1,0 +1,71 @@
+<% include_calendar_headers_tags %>
+<% heads_for_wiki_formatter %>
+<% if EasyMindmup.easy_extensions? %>
+  <%= stylesheet_link_tag('easy_mindmup', :media => 'all') %>
+<% else %>
+  <%= stylesheet_link_tag('context_menu', :media => 'all') %>
+<% end %>
+<% if EasyMindmup.combine_by_pipeline?(params) %>
+  <%= javascript_include_tag('easy_mindmup') %>
+<% else %>
+  <%= javascript_include_tag(
+          'external',
+
+          'mindmup/mapjs',
+          'mindmup/clipboard',
+          'mindmup/content',
+          'mindmup/dom-map-view',
+          'mindmup/dom-map-widget',
+          'mindmup/hammer-draggable',
+          # 'mindmup/image-drop-widget',
+          'mindmup/layout',
+          #'mindmup/link-edit-widget',
+          'mindmup/map-model',
+          'mindmup/map-toolbar-widget',
+          'mindmup/observable',
+          # 'mindmup/url-helper',
+
+          'polyfill',
+          'utils',
+          'main',
+          'mapjs_init',
+          'event_bus',
+          'redrawer',
+          'toolbar',
+          'history',
+          'data',
+          'links',
+          'loader',
+          # 'last_state',
+          'saver',
+          'autosave',
+          'save_progress',
+          'save_info',
+          'filter',
+          'node_patch',
+          'dom_patch',
+          'map_model_patch',
+          'model_classes',
+          'after_change',
+          'styles',
+          'logger',
+          # 'gateway',
+          # 'modals',
+          'validator',
+          'storage',
+          'legend',
+          'legend_events',
+          'expand_all',
+          'print',
+          'mm_context_menu',
+          'layout_patch',
+          'content_patch',
+          'links',
+          'link_edit_widget', :plugin => 'easy_mindmup')
+  %>
+<% end %>
+
+
+<% if EasyMindmup.easy_extensions?
+     include_front_end_commons if respond_to? :include_front_end_commons
+   end %>

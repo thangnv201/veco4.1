@@ -1,0 +1,43 @@
+<%= form_tag({:controller => 'project_reports', :action => 'show'}, :method => :get,  :id => "query_form") do %>
+  <table>
+
+    <tr>
+      <td>Kết quả thực hiện</td>
+      <td>Từ ngày:</td>
+      <td><%= date_field_tag 'kq_from_date', '', :value => $kq_from_date, :size => 10,:required => true %></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Đến ngày:</td>
+      <td><%= date_field_tag 'kq_to_date', '', :value => $kq_to_date, :size => 10,:required => true %></td>
+    </tr>
+    <tr>
+      <td>Kế hoạch tiếp theo</td>
+      <td>Từ ngày:</td>
+      <td><%= date_field_tag 'kh_from_date', '', :value => $kh_from_date, :size => 10,:required => true %></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Đến ngày:</td>
+      <td><%= date_field_tag 'kh_to_date', '', :value => $kh_to_date, :size => 10,:required => true %></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Tên khối:</td>
+      <td><%= text_field_tag 'ten_khoi', '', :value => $ten_khoi, :size => 16,:required => true %></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Người báo cáo:</td>
+      <td><%= text_field_tag 'nguoi_bao_cao', '', :value => $nguoi_bao_cao, :size => 16,:required => true %></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Số bản</td>
+      <td><%= number_field_tag 'so_ban', '', :value => $so_ban, :size => 10,:required => true %></td>
+    </tr>
+    <%= hidden_field_tag 'project_id', params[:project_id]  %>
+  </table>
+  <%= submit_tag "Search", :name => nil %>
+  </p>
+<% end %>

@@ -1,0 +1,42 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'table.css', :plugin => 'redmine_issue_evm' %>
+  <%= javascript_include_tag 'mypage', :plugin => 'redmine_issue_evm' %>
+<% end %>
+
+<%
+  def count_overdue_by_tracker_id (id)
+    tracker = Tracker.find(id)
+    cond = @project.project_condition(Setting.display_subprojects_issues?)
+    count= Issue.visible.open.where(cond).where("due_date < ?", User.current.today).group(:tracker).count
+    return (!count[tracker].nil? && count[tracker] > 0) ? count[tracker] : 0
+  end
+  def count_upcoming_by_tracker_id (id)
+    tracker = Tracker.find(id)
+    cond = @project.project_condition(Setting.display_subprojects_issues?)
+    count= Issue.visible.open.where(cond).where("due_date >= ? AND due_date <= ?", User.current.today,User.current.today + 3).group(:tracker).count
+    return (!count[tracker].nil? && count[tracker] > 0) ? count[tracker] : 0
+  end
+
+  task_overdue_param = "?utf8=✓&set_filter=1&sort=id:desc&f[]=status_id&op[status_id]=o&f[]=tracker_id&op[tracker_id]==&v[tracker_id][]=4&f[]=due_date&op[due_date]=<=&v[due_date][]=#{User.current.today.to_s}&f[]=&c[]=project&c[]=tracker&c[]=subject&c[]=status&c[]=done_ratio&c[]=author&c[]=assigned_to&c[]=start_date&c[]=due_date&c[]=cf_1&c[]=cf_2&group_by=&t[]=estimated_hours&t[]=spent_hours&t[]="
+  minestone_overdue_param = "?utf8=✓&set_filter=1&sort=id:desc&f[]=status_id&op[status_id]=o&f[]=tracker_id&op[tracker_id]==&v[tracker_id][]=6&f[]=due_date&op[due_date]=<=&v[due_date][]=#{User.current.today.to_s}&f[]=&c[]=project&c[]=tracker&c[]=subject&c[]=status&c[]=done_ratio&c[]=author&c[]=assigned_to&c[]=start_date&c[]=due_date&c[]=cf_1&c[]=cf_2&group_by=&t[]=estimated_hours&t[]=spent_hours&t[]="
+  btgd_overdue_param = "?utf8=✓&set_filter=1&sort=id:desc&f[]=status_id&op[status_id]=o&f[]=tracker_id&op[tracker_id]==&v[tracker_id][]=10&f[]=due_date&op[due_date]=<=&v[due_date][]=#{User.current.today.to_s}&f[]=&c[]=project&c[]=tracker&c[]=subject&c[]=status&c[]=done_ratio&c[]=author&c[]=assigned_to&c[]=start_date&c[]=due_date&c[]=cf_1&c[]=cf_2&group_by=&t[]=estimated_hours&t[]=spent_hours&t[]="
+  upcoming_param = "?utf8=✓&set_filter=1&sort=id:desc&f[]=status_id&op[status_id]=o&f[]=tracker_id&op[tracker_id]==&v[tracker_id][]=4&f[]=due_date&op[due_date]=><&v[due_date][]=#{User.current.today.to_s}&v[due_date][]=#{(User.current.today + 3).to_s}&f[]=&c[]=project&c[]=tracker&c[]=subject&c[]=status&c[]=done_ratio&c[]=author&c[]=assigned_to&c[]=start_date&c[]=due_date&c[]=cf_1&c[]=cf_2&group_by=&t[]=estimated_hours&t[]=spent_hours&t[]="
+
+%>
+
+<table class="table" id="my-page-statistic">
+  <thead>
+  <tr>
+    <th scope="col">STT</th>
+    <th scope="col">Tên dự án</th>
+    <th scope="col">Deadline dự án</th>
+    <th scope="col">Task (Hoàn thành/Tổng số)</th>
+    <th scope="col">Milestone (Hoàn thành/Tổng số)</th>
+    <th scope="col">Tiến độ % so kế hoạch (SPI)</th>
+    <th scope="col">% Công việc hoàn thành (EV)</th>
+    <th scope="col">Số ngày bị chậm của dự án</th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>

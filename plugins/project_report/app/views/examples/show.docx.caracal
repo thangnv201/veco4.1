@@ -1,0 +1,7 @@
+docx.iframe data: File.read('public/sample.docx')
+docx.p 'Từ ngày X đến hết ngày Y', italic: true, size: 26, font: 'Times New Roman (Headings)', align: :center
+docx.p 'I. KẾT QUẢ THỰC HIỆN', bold: true, size: 28, font: 'Times New Roman (Headings)'
+docx.p '1. Kết quả', bold: true, size: 28, font: 'Times New Roman (Headings)'
+@project.issues.each do |issue|
+docx.p issue.name
+end

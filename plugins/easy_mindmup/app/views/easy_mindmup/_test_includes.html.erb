@@ -1,0 +1,28 @@
+<%=
+  javascript_include_tag(
+      # test framework
+      'jasmine/helpers/test',
+      'jasmine/jasmine_lib/jasmine',
+      'jasmine/jasmine_lib/jasmine-html',
+      'jasmine/jasmine_lib/boot',
+
+      # common tests
+      'jasmine/main',
+      'jasmine/parse_form',
+      'jasmine/saver_linearize',
+      plugin: :easy_mindmup)
+%>
+<% extra_test_names = params[:run_jasmine_tests]
+   if extra_test_names != 'true'
+     if extra_test_names.is_a?(String)
+       extra_tests = prepare_test_includes([extra_test_names])
+     elsif extra_test_names.is_a?(Array)
+       extra_tests = prepare_test_includes(extra_test_names)
+     else
+       extra_tests = []
+     end
+     extra_tests.each do |test, plugin| %>
+    <%= javascript_include_tag("jasmine/#{test}", plugin: plugin) %>
+  <% end %>
+<% end %>
+<%= stylesheet_link_tag('jasmine', media: 'all', plugin: :easy_mindmup) %>

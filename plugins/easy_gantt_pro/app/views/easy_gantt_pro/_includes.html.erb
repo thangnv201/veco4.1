@@ -1,0 +1,26 @@
+<% include_calendar_headers_tags %>
+<%= easy_gantt_include_css('easy_gantt_pro', media: 'all', from_plugin: 'easy_gantt_pro') %>
+<% if EasyGantt.combine_by_pipeline?(params) %>
+  <% if @project %>
+    <%= javascript_include_tag('easy_gantt_pro/easy_gantt_pro') %>
+  <% else %>
+    <%= javascript_include_tag('easy_gantt_pro/easy_gantt_pro_global') %>
+  <% end %>
+<% else %>
+  <% # DONT FORGET TO ADD FILE INTO {plugin}.js !!!!! %>
+  <%= easy_gantt_include_js(
+          'common', 'sorting', 'email_silencer',
+          (['baseline', 'add_task'] if @project),
+          ('critical'         if @project && EasySetting.value(:easy_gantt_critical_path) != 'disabled'),
+          ('grid_context'     if @project && EasyGantt.easy_extensions?),
+          ('project_move'     if @project.nil?),
+          ('lowest_progress'  if @project.nil? && EasySetting.value(:easy_gantt_show_lowest_progress_tasks)),
+          ('delayed_projects' if @project.nil? && EasySetting.value(:easy_gantt_show_project_progress)),
+          ('gg_resource'      if @project.nil? && EasyGantt.easy_gantt_resources?),
+          ('schemes'          if EasyGantt.easy_extensions?),
+          ('cashflow'         if EasyGantt.easy_money?),
+          ('fixed_delay'      if EasyGantt.load_fixed_delay?),
+          ('delayed_issues'   if params[:controller] == 'easy_gantt'),
+          from_plugin: 'easy_gantt_pro')
+  %>
+<% end %>

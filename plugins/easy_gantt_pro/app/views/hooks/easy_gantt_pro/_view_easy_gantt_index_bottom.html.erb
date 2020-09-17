@@ -1,0 +1,6 @@
+<%= render 'easy_gantt_pro/test_includes' if params[:run_jasmine_tests] || params[:spec] %>
+
+<%= content_for :header_tags do %>
+  <%= render 'easy_gantt_pro/includes', project: @project, query: query %>
+  <%= render 'easy_gantt_pro/js_prepare', project: @project, query: query %>
+<% end %>

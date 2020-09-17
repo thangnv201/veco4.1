@@ -1,0 +1,86 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'semantic', 'font-awesome.min', plugin: 'kpi_report' %>
+  <%= javascript_include_tag 'semantic.min.js', 'semantic.js', plugin: 'kpi_report' %>
+<% end %>
+<div>
+  <%= form_tag({:controller => 'reportpeople', :action => 'index'}, :method => :get, :id => "query_form") do %>
+    <table>
+      <tr>
+        <td>Kì KI</td>
+        <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia) %></td>
+      </tr>
+    </table>
+    <%= submit_tag "Search", :style => "margin: 10px", :name => nil %>
+    </p>
+  <% end %>
+</div>
+<div style="margin-left: 10%" class="ui styled accordion">
+  <div class="title">
+    <i class="dropdown icon"></i>
+    Tổng công ty công nghiệp công nghệ cao Viettel
+    (<%= Group.find(1839).users.select { |a| check_have_kpi(a.id) }.count %>/<%= Group.find(1839).users.count %> CBNV đã có KPI)
+  </div>
+  <div class="content">
+    <div class="accordion">
+      <% @data.each do |k, v| %>
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <% total_number_have_kpi = 0
+             total_number = 0
+             v.each do |k1, v1|
+               total_number_have_kpi += v1.select { |a| a[:have_kpi] == 1 }.count
+               total_number += v1.count
+             end
+          %>
+          <%= k %> (<%= total_number_have_kpi %>/<%= total_number %> CBNV đã có KPI)
+        </div>
+        <div class="content">
+          <div class="accordion">
+            <% v.each do |k1, v1| %>
+              <div class="title">
+                <i class="dropdown icon"></i>
+                <% number_have_kpi = v1.select { |a| a[:have_kpi] == 1 }.count %>
+                <%= k1 %> ( <%= number_have_kpi %> / <%= v1.count %> CBNV đã có KPI)
+              </div>
+              <div class="content">
+                <% v1.each do |item| %>
+                  <div class="ui middle aligned selection list">
+                    <% if item[:have_kpi] == 0 %>
+                      <div class="item negative">
+                        <div style="padding: 0" class="content">
+                          <div style="background: #FFF6F6 !important;color: #9F3A38 !important;" class="header">
+                            <%= item[:login] %> ( <%= User.find(item[:id]).firstname %> )
+                            : <%= item[:data][$kidanhgia][:count] %> KPI(s) / <%= item[:data][$kidanhgia][:sum] %>%
+                          </div>
+                        </div>
+                      </div>
+                    <% else %>
+                      <div class="item positive">
+                        <div style="padding: 0" class="content">
+                          <div style="background: #FCFFF5 !important;color: #2C662D !important;" class="header">
+                            <%= item[:login] %> ( <%= User.find(item[:id]).firstname %> )
+                            : <%= item[:data][$kidanhgia][:count] %> KPI(s) / <%= item[:data][$kidanhgia][:sum] %>%
+                          </div>
+                        </div>
+                      </div>
+                    <% end %>
+
+                  </div>
+
+                <% end %>
+              </div>
+            <% end %>
+
+
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+    $('.ui.accordion')
+        .accordion()
+    ;
+</script>

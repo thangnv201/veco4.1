@@ -1,0 +1,8 @@
+en:
+  label_serial_number: Automatic serial number
+
+  activerecord:
+    errors:
+      messages:
+        end_must_numeric_format_in_serial_number: "is end must be a serial number format"
+        invalid_format_in_serial_number: "is contains an invalid format"

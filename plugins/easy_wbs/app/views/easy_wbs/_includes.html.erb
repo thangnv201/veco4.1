@@ -1,0 +1,22 @@
+<% if EasyMindmup.easy_extensions? %>
+  <%= stylesheet_link_tag('easy_wbs', media: 'all') %>
+<% else %>
+  <%= stylesheet_link_tag('generated/easy_wbs', plugin: 'easy_wbs', media: 'all') %>
+<% end %>
+
+<% if EasyMindmup.combine_by_pipeline?(params) %>
+  <%= javascript_include_tag('easy_wbs') %>
+<% else %>
+  <%= javascript_include_tag(
+          :wbs_main,
+          :wbs_context_menu,
+          :wbs_loader,
+          :wbs_node_patch,
+          :wbs_saver,
+          :wbs_modals,
+          :wbs_styles,
+          :wbs_validator,
+          plugin: 'easy_wbs'
+      ) %>
+<% end %>
+<% include_galereya_headers_tags if defined?(include_galereya_headers_tags) %>

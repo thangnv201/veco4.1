@@ -1,0 +1,6 @@
+# Plugin's routes
+# See: http://guides.rubyonrails.org/routing.html
+get 'my_kpi',to:'my_kpi#index'
+get 'cbnv_kpi',to:'my_kpi#cbnvkpi'
+get 'my_kpi/status/:id/:user_id', to:'my_kpi#status'
+get 'my_kpi/anotherfield/:id/:user_id', to:'my_kpi#get_another_field'

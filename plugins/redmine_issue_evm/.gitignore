@@ -1,0 +1,4 @@
+.rubocop.yml
+.yardoc
+doc
+Gemfile.lock
