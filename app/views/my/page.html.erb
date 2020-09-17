@@ -1,0 +1,253 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'segment.min', 'font-awesome.min', plugin: 'kpi_report' %>
+  <%= javascript_include_tag 'semantic.min.js', plugin: 'kpi_report' %>
+<% end %>
+<div class="contextual">
+  <%= form_tag({:action => "add_block"}, :remote => true, :id => "block-form", authenticity_token: true) do %>
+    <%= label_tag('block-select', l(:button_add)) %>:
+    <%= block_select_tag(@user) %>
+  <% end %>
+</div>
+
+<h2><%= l(:label_my_page) %></h2>
+<hr>
+<% if @check_permission %>
+  <div style="display: flex;margin-top: 50px">
+    <div class="report-my-page">
+      <div style="font-size: 25px ">
+        <a style="text-decoration: none;color: inherit" target="_blank" href="/issues?utf8=%E2%9C%93&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=o&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=spent_hours&t%5B%5D=">
+          <span style="font-size: 40px;color: #1a237e;font-weight: bold"><%= @total_issue_assigned %></span> công việc
+          đang mở</a>
+      </div>
+      <% if @total_issue_assigned != 0 %>
+        <div id="progressbar">
+          <% if @issue_open_new != 0 %>
+            <div style="width: <%=(@issue_open_new*100.0)/ @total_issue_assigned%>%" class="div1"></div>
+          <% end %>
+          <% if @issue_open_doing != 0 %>
+            <div style="width:  <%=(@issue_open_doing*100.0)/ @total_issue_assigned%>%" class="div2"></div>
+          <% end %>
+          <% if @issue_open_review != 0 %>
+            <div style="width:  <%=(@issue_open_review*100.0)/ @total_issue_assigned%>%" class="div3"></div>
+          <% end %>
+        </div>
+      <% end %>
+      <div style="width: 100%;display: flex;font-size: 17px">
+        <div style="margin-right: 15px">
+          <a style="text-decoration: none;color: inherit" target="_blank" href="/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=14&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=spent_hours&t%5B%5D=">
+            <span style="color: #80e27e;font-weight: bold"> <%= @issue_open_new %> </span>
+            mới được giao. </a>
+        </div>
+        <div style="margin-right: 15px">
+          <a style="text-decoration: none;color: inherit" target="_blank" href="/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=8&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=spent_hours&t%5B%5D=">
+            <span style="color: #1e88e5;font-weight: bold"><%= @issue_open_doing %> </span>
+            đang thực hiện.
+          </a>
+        </div>
+        <div style="margin-right: 15px">
+          <a style="text-decoration: none;color: inherit" target="_blank" href="/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=15&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=spent_hours&t%5B%5D=">
+            <span style="color: #f4511e;font-weight: bold"> <%= @issue_open_review %> </span>
+            đang chờ duyệt
+          </a>
+        </div>
+      </div>
+      <hr>
+      <div style="display: flex;font-size: 20px;margin-bottom: 20px;text-align: left;">
+        <div style="width: 50%;text-align: center">
+          <a style="text-decoration: none;color: inherit" target="_blank" href="/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%21&v%5Bstatus_id%5D%5B%5D=15&v%5Bstatus_id%5D%5B%5D=11&v%5Bstatus_id%5D%5B%5D=23&v%5Bstatus_id%5D%5B%5D=17&v%5Bstatus_id%5D%5B%5D=13&v%5Bstatus_id%5D%5B%5D=18&v%5Bstatus_id%5D%5B%5D=3&v%5Bstatus_id%5D%5B%5D=5&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=due_date&op%5Bdue_date%5D=<t%2B&v%5Bdue_date%5D%5B%5D=0&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=">
+            <span style="color: #c4001d;font-weight: bold"><%= @task_overdate %></span> quá hạn
+          </a>
+        </div>
+        <div style="width: 50%;text-align: center">
+          <a style="text-decoration: none;color: inherit" target="_blank" href="/issues?utf8=%E2%9C%93&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=o&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=priority_id&op%5Bpriority_id%5D=%3D&v%5Bpriority_id%5D%5B%5D=3&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=spent_hours&t%5B%5D=">
+            <span style="color: #c4001d;font-weight: bold"><%= @task_high_priority %></span> khẩn cấp
+          </a>
+        </div>
+      </div>
+    </div>
+    <div id="chart" class="report-my-page"></div>
+  </div>
+<% end %>
+<div style="display: flex;margin-top: 50px">
+  <div style="border: none" class="report-my-page">
+    <div style="max-width: 100% !important;" class="ui raised very padded text container segment">
+      <h3 class="ui header"><i class="briefcase icon"></i>KPIs của tôi</h3>
+      <% if @kpi_open == 0 %>
+        <div class="ui teal segment">
+          Bạn chưa có KPI
+        </div>
+      <% end %>
+      <% Project.find(1072).versions.each do |version| %>
+        <% if count_kpi_open(version.id)[0] > 0 %>
+          <div class="ui teal segment">
+            <%= version.name %> :<%= count_kpi_open(version.id)[0] %> KPIs (<%= count_kpi_open(version.id)[3] %>%)
+            <br>
+            <div style="margin-top: 10px">
+              <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=29&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=">
+                Đã thống nhất với
+                QLTT: <%= count_kpi_open(version.id)[1] %>
+                /<%= count_kpi_open(version.id)[0] %> (KPIs) </a>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <div style="border: none" class="report-my-page">
+    <div style="max-width: 100% !important;" class="eight wide column ui raised very padded text container segment">
+      <h3 class="ui header"><i class="briefcase icon"></i>KPIs giao cho CBNV</h3>
+      <% if @kpi_cbnv_open == 0 %>
+        <div class="ui teal segment">
+          Bạn không có KPI nào giao cho CBNV
+        </div>
+      <% end %>
+      <% Project.find(1072).versions.each do |version| %>
+        <% if count_kpi_open_cnbv(version.id)[0] > 0 %>
+          <div class="ui teal segment">
+            <%= version.name %> :<%= count_kpi_open_cnbv(version.id)[0] %> KPIs (<%= count_kpi_open_cnbv(version.id)[3] %>%)
+            <br>
+            <div style="margin-top: 10px">
+              <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=%E2%9C%93&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=29&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=estimated_hours&t%5B%5D=">
+                Đã thống nhất với
+                CNBV: <%= count_kpi_open_cnbv(version.id)[1] %>
+                /<%= count_kpi_open_cnbv(version.id)[0] %> (KPIs) </a>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+<hr>
+<div id="my-page" class="splitcontent">
+  <% @groups.each do |group| %>
+    <div id="list-<%= group %>" class="block-receiver splitcontent<%= group %>">
+      <%= render_blocks(@blocks[group], @user) %>
+    </div>
+  <% end %>
+</div>
+
+<%= context_menu %>
+
+<%= javascript_tag do %>
+  $(document).ready(function(){
+  $('#block-select').val('');
+  $('.block-receiver').sortable({
+  connectWith: '.block-receiver',
+  tolerance: 'pointer',
+  handle: '.sort-handle',
+  start: function(event, ui){$(this).parent().addClass('dragging');},
+  stop: function(event, ui){$(this).parent().removeClass('dragging');},
+  update: function(event, ui){
+  // trigger the call on the list that receives the block only
+  if ($(this).find(ui.item).length > 0) {
+  $.ajax({
+  url: "<%= escape_javascript url_for(:action => "order_blocks") %>",
+  type: 'post',
+  data: {
+  'group': $(this).attr('id').replace(/^list-/, ''),
+  'blocks': $.map($(this).children(), function(el){return $(el).attr('id').replace(/^block-/, '');})
+  }
+  });
+  }
+  }
+  });
+  });
+<% end %>
+
+<%= javascript_tag do %>
+  $(document).ready(function(){
+  Highcharts.chart('chart', {
+  chart: {
+  type: 'column'
+  },
+  title: {
+  text: 'Công việc hoàn thành 5 tháng gần nhất'
+  },
+  xAxis: {
+  type: 'category',
+  labels: {
+  rotation: 0,
+  style: {
+  fontSize: '13px',
+  }
+  }
+  },
+  plotOptions: {
+  series: {
+  cursor: 'pointer',
+  point: {
+  events: {
+  click: function () {
+  let begin;
+  let end;
+  if(this.category==0){
+  begin= "<%= (User.current.today - 4.month).at_beginning_of_month.strftime('%Y-%m-%d') %>"
+  end= "<%= (User.current.today - 4.month).at_end_of_month.strftime('%Y-%m-%d') %>"
+  }else if(this.category==1){
+  begin= "<%= (User.current.today - 3.month).at_beginning_of_month.strftime('%Y-%m-%d') %>"
+  end= "<%= (User.current.today - 3.month).at_end_of_month.strftime('%Y-%m-%d') %>"
+  }else if(this.category==2){
+  begin= "<%= (User.current.today - 2.month).at_beginning_of_month.strftime('%Y-%m-%d') %>"
+  end= "<%= (User.current.today - 2.month).at_end_of_month.strftime('%Y-%m-%d') %>"
+  }else if(this.category==3){
+  begin= "<%= (User.current.today - 1.month).at_beginning_of_month.strftime('%Y-%m-%d') %>"
+  end= "<%= (User.current.today - 1.month).at_end_of_month.strftime('%Y-%m-%d') %>"
+  }else if(this.category==4){
+  begin= "<%= (User.current.today).at_beginning_of_month.strftime('%Y-%m-%d') %>"
+  end= "<%= (User.current.today).at_end_of_month.strftime('%Y-%m-%d') %>"
+  }
+
+  window.open('/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=11&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=closed_on&op%5Bclosed_on%5D=><&v%5Bclosed_on%5D%5B%5D='+begin+'&v%5Bclosed_on%5D%5B%5D='+end+'&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=spent_hours&t%5B%5D=','_blank');
+
+  }
+  }
+  }
+  }
+  },
+  yAxis: {
+  min: 0,
+  title: {
+  text: 'Số lượng'
+  }
+  },
+  legend: {
+  enabled: false
+  },
+  series: [{
+  name: 'Task(s) hoàn thành',
+  data: [
+  ['Tháng <%= (User.current.today - 4.month).month %>', <%= @task_complete_in_month_before_four %>],
+  ['Tháng <%= (User.current.today - 3.month).month %>', <%= @task_complete_in_month_before_three %>],
+  ['Tháng <%= (User.current.today - 2.month).month %>', <%= @task_complete_in_month_before_two %>],
+  ['Tháng <%= (User.current.today - 1.month).month %>', <%= @task_complete_in_month_before_one %>],
+  ['Tháng <%= User.current.today.month %>', <%= @task_complete_in_month %>]
+  ]
+  }]
+  });
+
+  $('#block-select').val('');
+  $('.block-receiver').sortable({
+  connectWith: '.block-receiver',
+  tolerance: 'pointer',
+  handle: '.sort-handle',
+  start: function(event, ui){$(this).parent().addClass('dragging');},
+  stop: function(event, ui){$(this).parent().removeClass('dragging');},
+  update: function(event, ui){
+  // trigger the call on the list that receives the block only
+  if ($(this).find(ui.item).length > 0) {
+  $.ajax({
+  url: "<%= escape_javascript url_for(:action => "order_blocks") %>",
+  type: 'post',
+  data: {
+  'group': $(this).attr('id').replace(/^list-/, ''),
+  'blocks': $.map($(this).children(), function(el){return $(el).attr('id').replace(/^block-/, '');})
+  }
+  });
+  }
+  }
+  });
+  });
+<% end %>
+
+<% html_title(l(:label_my_page)) -%>

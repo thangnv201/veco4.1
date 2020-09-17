@@ -1,0 +1,50 @@
+/* Custom Theme */
+
+/* Button */
+.btn-back {
+  background: #4aa3b3 !important;
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+  border: 1px solid #4aa3b3;
+  border-radius: 4px;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0 20px !important;
+  text-align: center;
+  line-height: 2.25 !important;
+}
+.report-my-page {
+  border: #666666 solid 1px;
+  width: 38%;
+  padding: 20px;
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+#progressbar {
+  background-color: black;
+  /* (height of inner div) / 2 + padding */
+  display: flex;
+  color: white;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#progressbar > .div1 {
+  background-color: #80e27e;
+  /* Adjust with JavaScript */
+  height: 20px;
+}
+
+#progressbar > .div2 {
+  background-color: #1e88e5;
+  /* Adjust with JavaScript */
+  height: 20px;
+}
+
+#progressbar > .div3 {
+  background-color: #f4511e;
+  /* Adjust with JavaScript */
+  height: 20px;
+}
