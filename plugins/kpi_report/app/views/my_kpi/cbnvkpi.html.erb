@@ -7,169 +7,254 @@
     $('#header').css("display", "none");
 </script>
 <style>
-    a {
-        color: inherit !important;
-    }
+  a {
+    color: inherit !important;
+  }
+
+  #content {
+    z-index: unset;
+  }
+
 </style>
-<div style="width: 100%;display: flex">
-  <div class="kpi-content ">
-    <div>
-      <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
-        <table>
-          <tr>
-            <td>Kì KI</td>
-            <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia) %></td>
-          </tr>
-        </table>
-        <%= submit_tag "Search", :name => nil %>
-        </p>
-      <% end %>
-    </div>
-    <table id="table"
-           data-filter-control="true"
-           data-sortable="true"
-           data-show-export="true">
-      <thead>
-      <tr>
-        <th data-field="status" data-sortable="true">Status</th>
-        <th data-field="muctieu">Mục tiêu</th>
-        <th data-field="type" data-sortable="true">Loại kpi
-        </th>
-        <th data-field="chiso">Chỉ số KPI</th>
-        <th data-field="assignee" data-sortable="true">CBNV</th>
-        <th data-field="donvido">Đơn vị
-          đo
-        </th>
-        <th data-field="tytrong" data-sortable="true">Tỷ
-          trọng
-        </th>
-        <th data-field="s">S</th>
-        <th data-field="b">B</th>
-        <th data-field="t">T</th>
-        <th data-field="kq">KQ</th>
-        <th data-field="tu_danh_gia">Tự
-          đánh giá
-        </th>
-        <th data-field="qltt_danh_gia">QLTT
-          đánh giá
-        </th>
-        <th data-field="action">Action</th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @kpi_open_dinh_luong.each do |kpi| %>
-        <tr id=<%= kpi.id %> status="saved">
+<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
+  lại giao diện cũ
+</button>
+<div>
+  <div>
+    <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+      <table style="margin: 0 auto;">
+        <tr>
           <td>
-            <a href="#"> <%= kpi.status.name %></a>
+            <h4 style="margin: 0">PHIẾU GIAO</h4>
           </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
-          </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a>
-          </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
-          </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.assigned_to %></a>
-          </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
-          </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
-          </td>
-          <% if kpi.tracker_id == 39 %>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
-            </td>
-          <% end %>
-          <% if kpi.tracker_id == 40 %>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
-            </td>
-          <% end %>
-          <% if kpi.tracker_id == 41 %>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
-            </td>
-          <% end %>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
-          </td>
-          <td>
-            <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
-          </td>
-          <% if kpi.status.id == 29 %>
-            <td>
-              <button style="margin-bottom: 10px;width: 100%" type="button" onclick="thongnhat(<%=kpi.id %>)" class="btn btn-light">Thống
-                nhất
-              </button>
-              <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
-                      data-whatever="<%= kpi.id %>">Hủy KPI
-              </button>
-            </td>
-          <% elsif kpi.status.id == 32 %>
-            <td>
-              <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
-                      data-whatever="<%= kpi.id %>">Hủy KPI
-              </button>
-            </td>
-          <% elsif kpi.status.id == 35 %>
-            <td>
-              <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo</button>
-            </td>
-          <% elsif kpi.status.id == 33 %>
-            <td>
-              <button style="width: 100%" type="button" class="btn btn-info" data-toggle="modal" data-target="#qlttdanhgiaModal"
-                      <%= kpi.id %>>Đánh giá
-              </button>
-            </td>
-          <% else %>
-            <td></td>
-
-          <% end %>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+          <td><%= select_tag "cbnv", options_for_select(@cbnv.map { |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id] }, $cbnv), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
         </tr>
-      <% end %>
-      </tbody>
-    </table>
-    <script>
-        $(function () {
-            $('#table').bootstrapTable()
-        })
-
-    </script>
+      </table>
+    <% end %>
   </div>
+</div>
+<div style="font-weight: bold;width: 100%;margin-bottom: 10px">2. Nội dung giao nhiệm vụ, công việc và đánh giá kết quả
+  thực hiện
+</div>
+<div style="position: relative" class="outer">
+
+  <div class="inner">
+    <div style="width: 80%">
+      <table id="table"
+             data-show-export="true">
+        <thead>
+        <tr>
+          <th data-field="status">Status</th>
+          <th data-field="muctieu">Mục tiêu</th>
+          <th data-field="chiso">Chỉ số KPI</th>
+          <th data-field="donvido">Đơn vị
+            đo
+          </th>
+          <th data-field="tytrong">Tỷ
+            trọng
+          </th>
+          <th data-field="s">S</th>
+          <th data-field="b">B</th>
+          <th data-field="t">T</th>
+          <th data-field="kq">KQ</th>
+          <th data-field="tu_danh_gia">Tự
+            đánh giá
+          </th>
+          <th data-field="qltt_danh_gia">QLTT
+            đánh giá
+          </th>
+          <th data-field="action">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @kpi.each do |kpi| %>
+          <tr id=<%= kpi.id %> status="saved" onclick="clickIssue(<%= kpi.id %>)">
+            <td>
+              <div style="margin-bottom: 10px;">
+                <% if kpi.status_id == 35 %>
+                  <a target="_blank" style="background-color: #B22222;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 29 %>
+                  <a target="_blank" style="background-color: #7f8c8d;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 32 %>
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 33 %>
+                  <a target="_blank" style="background-color: #e67e22;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 34 %>
+                  <a target="_blank" style="background-color: #8e44ad;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 36 %>
+                  <a target="_blank" style="background-color: #27ae60;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% end %>
+              </div>
+
+              <div style="margin-bottom: 10px">
+                <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
+              </div>
+              <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
+              </div>
+              <div style="margin-bottom: 10px"><strong>Người giao: </strong>
+                <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.assigned_to.login %></a><br>
+              </div>
+
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
+            </td>
+            <% if kpi.tracker_id == 39 %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
+              </td>
+            <% end %>
+            <% if kpi.tracker_id == 40 %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
+              </td>
+            <% end %>
+            <% if kpi.tracker_id == 41 %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
+              </td>
+            <% end %>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
+            </td>
+            <% if kpi.status.id == 29 %>
+              <td>
+                <!--              <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"-->
+                <!--                      data-whatever="<%#= kpi.id %>">Hủy KPI-->
+                <!--              </button>-->
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% elsif kpi.status.id == 32 %>
+              <td>
+                <!--                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%#= kpi.tracker_id %>">-->
+                <!--                  Tự đánh giá-->
+                <!--                </button>-->
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% elsif kpi.status.id == 35 %>
+              <td>
+                <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
+                </button>
+              </td>
+            <% elsif kpi.status.id == 33 %>
+              <td>
+                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
+                  Đánh giá
+                </button>
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% else %>
+              <td>
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><%= @total_ti_trong %> %</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><%= @total_cbnv_point %></td>
+          <td><%= @total_qltt_point %></td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="width: 20%;position: fixed;top:20%;right: 25px">
+    <div class="tag">
+      <div style="height: 60vh;">
+        <form>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Description</label>
+            <textarea disabled class="form-control" id="description-issue" rows="10"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Notes</label>
+            <textarea disabled class="form-control" id="notes-issue" rows="10"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="width: 100%;display: flex">
+
   <!--  model huy kpi-->
-  <div style="background: none;z-index: 1050" class="modal fade" id="huyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div style="background: none;z-index: 1050;position: fixed !important;" class="modal fade" id="huyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -231,248 +316,33 @@
     </div>
   </div>
   <!--  end-->
-  <!--  model qltt danh gia-->
-  <div style="background: none;z-index: 1050" class="modal fade" id="qlttdanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Đánh giá KPI CBNV</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="qltt-danhgia-form">
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Điểm cho KPI</label>
-              <select style="border:#2f3032 solid 1px" id="qltt-danhgia-diem" class="custom-select" required>
-                <option value="">-- Chọn điểm --</option>
-                <option value="75">1: KQ < T</option>
-                <option value="76">2: T ≤ KQ < B</option>
-                <option value="77">3: KQ = B</option>
-                <option value="78">4: B < KQ < S</option>
-                <option value="79">5: KQ ≥ S</option>
-              </select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="close-qltt-danhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="btn-qltt-danhgia" type="button" class="btn btn-danger">Đánh giá</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--  end-->
-  <div class="formedit">
-    <div class="form-content">
-      <div class="ui medium header">KPI Details</div>
-      <form class="ui form">
-        <input type="hidden" name="issue-id" id="issue-id">
-        <div class="six wide field">
-          <label>Tracker</label>
-          <div id="tracker" class="ui disabled selection dropdown">
-            <input type="hidden" name="tracker">
-            <i class="dropdown icon"></i>
-            <div class="default text">Tracker</div>
-            <div class="menu">
-              <div class="header">Tracker</div>
-              <div class="item" data-value="39">KPIs - Định lượng</div>
-              <div class="item" data-value="40">KPIs - Thời hạn</div>
-              <div class="item" data-value="41">KPIs - Định mức</div>
-            </div>
-          </div>
-        </div>
-        <div class="two fields">
-          <div class="nine wide field">
-            <label>Subject</label>
-            <textarea id='subject' disabled rows="2"></textarea>
-          </div>
-          <div class="five wide field">
-            <label>Tỉ trọng(%)</label>
-            <input id='titrong' max="100" disabled type="number" placeholder="Tỉ trọng(%)">
-          </div>
-        </div>
-        <div class="field">
-          <label>Description</label>
-          <textarea id='description' disabled style="width: 87%" rows="3"></textarea>
-        </div>
-        <!--        status assignee-->
-        <div class="two fields">
-          <div class="six wide field">
-            <label>Status</label>
-            <div style="margin-bottom: 10px" id="status" class="ui disabled selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Status</div>
-            </div>
-          </div>
-          <div class="six wide field">
-            <label>Assignee</label>
-            <div style="margin-bottom: 10px" id="assign" class="ui disabled search selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Assignee</div>
-            </div>
-          </div>
-        </div>
-        <div class="two fields">
-          <div class="six wide field">
-            <label>Category</label>
-            <div style="margin-bottom: 10px" id="category" class="ui disabled selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Category</div>
-            </div>
-          </div>
-          <div class="six wide field">
-            <label>Target Version</label>
-            <div style="margin-bottom: 10px" id="target_version" class="ui disabled selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Target Version</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="two fields">
-          <div style="width: 42%;" class="field">
-            <label>Start date</label>
-            <div class="ui calendar" id="rangestart">
-              <div style="margin: 0;padding: 0" class="ui input left icon">
-                <i class="calendar icon"></i>
-                <input id='start_date' type="text" placeholder="Start">
-              </div>
-            </div>
-          </div>
-          <div style="width: 42%;" class="field">
-            <label>End date</label>
-            <div class="ui calendar" id="rangeend">
-              <div style="margin: 0;padding: 0" class="ui input left icon">
-                <i class="calendar icon"></i>
-                <input id='due_date' type="text" placeholder="End">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="two fields">
-          <div class="seven wide field">
-            <label>Mục tiêu/ Kết quả mong đợi</label>
-            <textarea id='muctieu' disabled rows="2"></textarea>
-          </div>
-          <div class="seven wide field">
-            <label>Lý do Dừng/ Hủy</label>
-            <textarea id='lydodung' disabled rows="2"></textarea>
-          </div>
-        </div>
-        <div id="div-don-vi-do" class="two fields">
-          <div class="seven wide field">
-            <label>Đơn vị đo</label>
-            <div style="margin-bottom: 10px" id="donvido" class="ui disabled selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Đơn vị đo</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="none-thoihan" class="four fields">
-          <div style="margin-right: 10px" class="three wide required field">
-            <label>Tối thiểu</label>
-            <input type="number" step="0.01" id="toithieu" disabled type="text">
-          </div>
-          <div style="margin-right: 10px" class="three wide required field">
-            <label>Mong đợi</label>
-            <input type="number" step="0.01" id="mongdoi" disabled type="text">
-          </div>
-          <div style="margin-right: 10px" class="three wide required field">
-            <label>Thách thức</label>
-            <input type="number" step="0.01" id="thachthuc" disabled type="text">
-          </div>
-          <div style="margin-right: 10px" class="three wide field">
-            <label>Kết quả</label>
-            <input type="number" step="0.01" id="ketqua" disabled type="text">
-          </div>
-
-        </div>
-        <div style="display: none" id="thoihan">
-          <div class="two fields">
-            <div style="width: 42%;" class="field">
-              <label>Tối thiểu</label>
-              <div class="ui calendar" id="date-toithieu">
-                <div style="margin: 0;padding: 0" class="ui input left icon">
-                  <i class="calendar icon"></i>
-                  <input id='date-toithieu-value' type="text" placeholder="Tối thiểu">
-                </div>
-              </div>
-            </div>
-            <div style="width: 42%;" class="field">
-              <label>Mong đợi</label>
-              <div class="ui calendar" id="date-mongdoi">
-                <div style="margin: 0;padding: 0" class="ui input left icon">
-                  <i class="calendar icon"></i>
-                  <input id='date-mongdoi-value' type="text" placeholder="Mong đợi">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="two fields">
-            <div style="width: 42%;" class="field">
-              <label>Thách thức</label>
-              <div class="ui calendar" id="date-thachthuc">
-                <div style="margin: 0;padding: 0" class="ui input left icon">
-                  <i class="calendar icon"></i>
-                  <input id='date-thachthuc-value' type="text" placeholder="Thách thức">
-                </div>
-              </div>
-            </div>
-            <div style="width: 42%;" class="field">
-              <label>Kết quả</label>
-              <div class="ui calendar" id="date-ketqua">
-                <div style="margin: 0;padding: 0" class="ui input left icon">
-                  <i class="calendar icon"></i>
-                  <input id='date-ketqua-value' type="text" placeholder="Kết quả">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="two fields">
-          <div class="six wide field">
-            <label>Điểm CBNV tự đánh giá</label>
-            <div style="margin-bottom: 10px" id="cbnv_point" class="ui disabled selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Điểm CBNV tự đánh giá</div>
-              <div class="menu">
-                <div class="item" data-value="39">KPIs - Định lượng</div>
-                <div class="item" data-value="40">KPIs - Thời hạn</div>
-                <div class="item" data-value="41">KPIs - Định mức</div>
-              </div>
-            </div>
-          </div>
-          <div class="six wide field">
-            <label>Điểm QLTT đánh giá</label>
-            <div style="margin-bottom: 10px" id="qltt_point" class="ui disabled selection dropdown">
-              <input type="hidden" name="tracker">
-              <i class="dropdown icon"></i>
-              <div class="default text">Điểm QLTT đánh giá</div>
-              <div class="menu">
-                <div class="item" data-value="39">KPIs - Định lượng</div>
-                <div class="item" data-value="40">KPIs - Thời hạn</div>
-                <div class="item" data-value="41">KPIs - Định mức</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button onclick="actionSave()" class="ui button" type="button">Submit</button>
-      </form>
-    </div>
-  </div>
 </div>
 
 <script>
+    function clickIssue(id) {
+        console.log(id)
+    }
+
+    $('#diadiemlamviec').change(function () {
+        let url = 'http://' + $(location).attr('host') + '/users/' + <%=User.current.id %> +'.json?key=<%=User.current.api_key%>';
+        let data = {
+            "user": {
+                "custom_field_values": {
+                    "165": $(this).find(":selected").text()
+                }
+            }
+        }
+        $.ajax({
+            type: 'PUT',
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+        }).done(function () {
+        }).fail(function (msg) {
+        }).always(function (msg) {
+            console.log('ALWAYS');
+        });
+    })
     $('#tracker').dropdown({
         onChange: function (value, text, $selectedItem) {
             if (value == 39) {
@@ -512,6 +382,28 @@
     });
 </script>
 <script>
+    $(function () {
+        $('#table').bootstrapTable({
+            onClickRow: function (row, $element) {
+                console.log(row)
+                console.log($element[0].id)
+                $.ajax({
+                    url: '/my_kpi/anotherfield/' + $element[0].id + '/<%=User.current.id%>.json',
+                    type: 'GET',
+                    success: function (response) {
+                        $('#description-issue').prop('disabled', false)
+                        $('#description-issue').val(response.description)
+                        $('#notes-issue').prop('disabled', false)
+                        $('#notes-issue').val(response.note)
+                    },
+                    error: function (error) {
+                        alert('Error: ' + error)
+                    }
+                });
+            }
+        })
+    })
+
     function fillData(issue) {
         let id = $(issue).attr("id");
         $('#issue-id').val(id);
@@ -826,180 +718,521 @@
     $("#tb-dinhluong tr").click(function () {
         $(this).addClass("selected").siblings().removeClass("selected");
     });
-    savetable
+    $('#table').load(function () {
+        console.log(this)
+    })
 
-    function edittable(btn) {
+    $(document).ready(function () {
+        $('#table >tbody >tr').each(function (index, tr) {
+            edittable(tr)
+        })
+    });
+
+    function resetField(cells) {
+        $(cells[col_donvido]).find('a').editable('destroy')
+        $($(cells[col_donvido]).find('a')).text('')
+        $(cells[col_s]).find('a').editable('destroy')
+        $($(cells[col_s]).find('a')).text('')
+        $(cells[col_b]).find('a').editable('destroy')
+        $($(cells[col_b]).find('a')).text('')
+        $(cells[col_t]).find('a').editable('destroy')
+        $($(cells[col_t]).find('a')).text('')
+    }
+
+    function buildData(id) {
+        if (data_kpis[id] === undefined) {
+            data_kpis[id] = {}
+        }
+        if (data_kpis[id]["custom_field_values"] === undefined) {
+            data_kpis[id]["custom_field_values"] = {}
+        }
+    }
+
+    function tudanhgiaClick(btn) {
         let id = $(btn).parent().parent().attr("id");
         let cells = $(btn).parent().parent()[0].cells
+        let fail = []
+        if ($(cells[col_qltt_point]).find('a').text() === "Empty") {
+            fail.push("Đánh giá")
+        }
+        if (fail.length != 0) {
+            alert(fail.join(",") + " không được để trống")
+            return
+        } else {
+            let id = $(btn).parent().parent().attr("id");
+            let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
+            buildData(id)
+            data_kpis[id]["status_id"] = "34"
+            let data = {
+                "issue": data_kpis[id]
+            }
+            $.ajax({
+                type: 'PUT',
+                url: url,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+            }).done(function () {
+                $(btn).hide()
+                $($(cells[0]).find('a').eq(2)).text('3. QLTT đánh giá (Approved!)')
+                $($(btn).parent().find('.thaydoi')).prop("disabled", true)
+            }).fail(function (msg) {
+            }).always(function (msg) {
+                console.log('ALWAYS');
+            });
+        }
+    }
+
+    function saveChangeKPI(btn) {
+        let id = $(btn).parent().parent().attr("id");
+        let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
+        let data = {
+            "issue": data_kpis[id]
+        }
+        $.ajax({
+            type: 'PUT',
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+        }).done(function () {
+            $(btn).prop("disabled", true)
+        }).fail(function (msg) {
+        }).always(function (msg) {
+            console.log('ALWAYS');
+        });
+    }
+
+    let data_kpis = {}
+    const col_status = 0;
+    const col_muctieu = 1;
+    const col_subject = 2;
+    const col_donvido = 3;
+    const col_tytrong = 4;
+    const col_s = 5;
+    const col_b = 6;
+    const col_t = 7;
+    const col_kq = 8;
+    const col_cbnv_point = 9;
+    const col_qltt_point = 10;
+    const col_qltt_action = 11;
+
+    function edittable(tr) {
+        let id = $(tr).attr("id");
+        if (id === undefined) return;
+        let cells = $(tr)[0].cells
         $.ajax({
             url: '/my_kpi/status/' + id + '/<%=User.current.id%>.json',
             type: 'GET',
             success: function (response) {
-                console.log(response);
+                let btn_save = $(cells[col_qltt_action]).find('.thaydoi');
                 //status
                 status_selected = response.status.find(e => e.selected).value
                 status_source = response.status.map(x => ({value: x.value, text: x.name}))
-                $(cells[0]).find('a').editable({
-                    type: 'select',
-                    title: 'Select status',
-                    placement: 'right',
-                    value: status_selected,
-                    source: status_source
-                }).on('save', function (e, params) {
-                    console.log(params)
-                });
-
-                // if (status_selected === 29) {
-                //muc tieu ket qua
-                $(cells[1]).find('a').editable({
-                    type: 'textarea',
-                    title: 'Mục tiêu kết quả đầu ra',
-                    placement: 'right',
-                    unsavedclass: null
-                })
-                //tracker
                 tracker_selected = response.tracker.find(e => e.selected).value
                 tracker_source = response.tracker.map(x => ({value: x.value, text: x.name}))
-                $(cells[2]).find('a').editable({
-                    type: 'select',
-                    title: 'Select status',
-                    placement: 'right',
-                    value: tracker_selected,
-                    source: tracker_source
-                })
-                //subject
-                $(cells[3]).find('a').editable({
-                    type: 'textarea',
-                    title: 'Chỉ số KPI',
-                    placement: 'right',
-                    unsavedclass: null
-                })
-                //,author
+                donvido_selected = response.don_vi_do.find(e => e.selected) === undefined ? null : response.don_vi_do.find(e => e.selected).value
+                donvido_source = response.don_vi_do.map(x => ({value: x.value, text: x.name}))
                 author_selected = response.author
                 author_source = response.assignee.map(x => ({value: x.value, text: x.name}))
-                $(cells[4]).find('a').editable({
-                    type: 'select',
-                    title: 'Select status',
-                    placement: 'right',
-                    value: author_selected,
-                    source: author_source
-                })
-                if (tracker_selected === 39) {
-                    //donvido
-                    donvido_selected = response.don_vi_do.find(e => e.selected).value
-                    donvido_source = response.don_vi_do.map(x => ({value: x.value, text: x.name}))
-                    $(cells[5]).find('a').editable({
+                if (status_selected == 35) {
+                } else if (status_selected === 29) {
+                    $(cells[col_status]).find('a').each(function (index) {
+                        //,author
+                        if (index == 3) {
+                            $(this).editable({
+                                type: 'select',
+                                title: 'Select status',
+                                placement: 'right',
+                                value: author_selected,
+                                source: author_source,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["author_id"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(this).editable('setValue', author_selected);
+                        } else if (index == 1) {
+                            $(this).editable({
+                                type: 'select',
+                                title: 'Tracker',
+                                placement: 'right',
+                                value: tracker_selected,
+                                source: tracker_source,
+                                success: function (response, newValue) {
+                                    $(btn_save).prop("disabled", false)
+                                    buildData(id)
+                                    data_kpis[id]["tracker_id"] = newValue
+                                    cells = $(this).parent().parent()[0].cells
+                                    switch (String(newValue)) {
+                                        case '39':
+                                            resetField(cells)
+                                            $(cells[col_donvido]).find('a').editable({
+                                                type: 'select',
+                                                title: 'Đơn vị đo',
+                                                placement: 'right',
+                                                value: donvido_selected,
+                                                source: donvido_source,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["138"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_s]).find('a').editable({
+                                                type: 'number',
+                                                step: 'any',
+                                                title: 'Tối thiểu',
+                                                placement: 'right',
+                                                unsavedclass: null,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["142"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_b]).find('a').editable({
+                                                type: 'number',
+                                                step: 'any',
+                                                title: 'Mong đợi',
+                                                placement: 'right',
+                                                setValue: null,
+                                                unsavedclass: null,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["143"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_t]).find('a').editable({
+                                                type: 'number',
+                                                step: 'any',
+                                                title: 'Thách thức',
+                                                placement: 'right',
+                                                setValue: null,
+                                                unsavedclass: null,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["144"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            break;
+                                        case '40':
+                                            resetField(cells)
+                                            $(cells[col_s]).find('a').editable({
+                                                type: 'date',
+                                                title: 'Tối thiểu',
+                                                placement: 'right',
+                                                unsavedclass: null,
+                                                format: 'yyyy-mm-dd',
+                                                viewformat: 'dd/mm/yyyy',
+                                                datepicker: {
+                                                    weekStart: 1
+                                                },
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_b]).find('a').editable({
+                                                type: 'date',
+                                                title: 'Mong đợi',
+                                                placement: 'right',
+                                                unsavedclass: null,
+                                                format: 'yyyy-mm-dd',
+                                                viewformat: 'dd/mm/yyyy',
+                                                datepicker: {
+                                                    weekStart: 1
+                                                },
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_t]).find('a').editable({
+                                                type: 'date',
+                                                title: 'Thách thức',
+                                                placement: 'top',
+                                                unsavedclass: null,
+                                                format: 'yyyy-mm-dd',
+                                                viewformat: 'dd/mm/yyyy',
+                                                datepicker: {
+                                                    weekStart: 1
+                                                },
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            break;
+                                        case '41':
+                                            resetField(cells)
+                                            $(cells[col_s]).find('a').editable({
+                                                type: 'text',
+                                                title: 'Tối thiểu',
+                                                placement: 'top',
+                                                unsavedclass: null,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["158"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_b]).find('a').editable({
+                                                type: 'text',
+                                                title: 'Mong đợi',
+                                                placement: 'top',
+                                                unsavedclass: null,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["159"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            $(cells[col_t]).find('a').editable({
+                                                type: 'text',
+                                                title: 'Thách thức',
+                                                placement: 'top',
+                                                unsavedclass: null,
+                                                success: function (response, newValue) {
+                                                    buildData(id)
+                                                    data_kpis[id]["custom_field_values"]["160"] = newValue
+                                                    $(btn_save).prop("disabled", false)
+                                                }
+                                            })
+                                            break;
+                                    }
+                                }
+                            })
+                            $(this).editable('setValue', tracker_selected);
+                        }
+                    })
+                    //muc tieu ket qua
+                    $(cells[col_muctieu]).find('a').editable({
+                        type: 'textarea',
+                        title: 'Mục tiêu kết quả đầu ra',
+                        placement: 'right',
+                        unsavedclass: null,
+                        success: function (response, newValue) {
+                            buildData(id)
+                            data_kpis[id]["custom_field_values"]["1"] = newValue
+                            $(btn_save).prop("disabled", false)
+                        }
+                    })
+                    $(cells[col_muctieu]).find('a').editable('setValue', response.muc_tieu);
+                    //subject
+                    $(cells[col_subject]).find('a').editable({
+                        type: 'textarea',
+                        title: 'Chỉ số KPI',
+                        placement: 'right',
+                        unsavedclass: null,
+                        success: function (response, newValue) {
+                            buildData(id)
+                            data_kpis[id]["subject"] = newValue
+                            $(btn_save).prop("disabled", false)
+                        }
+                    })
+                    $(cells[col_subject]).find('a').editable('setValue', response.subject);
+                    switch (tracker_selected) {
+                        case 39:
+                            $(cells[col_donvido]).find('a').editable({
+                                type: 'select',
+                                title: 'Đơn vị đo',
+                                placement: 'right',
+                                value: donvido_selected,
+                                source: donvido_source,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["138"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_donvido]).find('a').editable('setValue', donvido_selected);
+                            $(cells[col_s]).find('a').editable({
+                                type: 'number',
+                                step: 'any',
+                                title: 'Tối thiểu',
+                                placement: 'right',
+                                unsavedclass: null,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["142"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            $(cells[col_b]).find('a').editable({
+                                type: 'number',
+                                step: 'any',
+                                title: 'Mong đợi',
+                                placement: 'right',
+                                setValue: null,
+                                unsavedclass: null,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["143"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            $(cells[col_t]).find('a').editable({
+                                type: 'number',
+                                step: 'any',
+                                title: 'Thách thức',
+                                placement: 'right',
+                                setValue: null,
+                                unsavedclass: null,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["144"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            break;
+                        case 40:
+                            $(cells[col_s]).find('a').editable({
+                                type: 'date',
+                                title: 'Tối thiểu',
+                                placement: 'top',
+                                unsavedclass: null,
+                                format: 'yyyy-mm-dd',
+                                viewformat: 'dd/mm/yyyy',
+                                datepicker: {
+                                    weekStart: 1
+                                },
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            $(cells[col_b]).find('a').editable({
+                                type: 'date',
+                                title: 'Mong đợi',
+                                placement: 'top',
+                                unsavedclass: null,
+                                format: 'yyyy-mm-dd',
+                                viewformat: 'dd/mm/yyyy',
+                                datepicker: {
+                                    weekStart: 1
+                                },
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            $(cells[col_t]).find('a').editable({
+                                type: 'date',
+                                title: 'Thách thức',
+                                placement: 'top',
+                                unsavedclass: null,
+                                format: 'yyyy-mm-dd',
+                                viewformat: 'dd/mm/yyyy',
+                                datepicker: {
+                                    weekStart: 1
+                                },
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            break;
+                        case 41 :
+                            $(cells[col_s]).find('a').editable({
+                                type: 'text',
+                                title: 'Tối thiểu',
+                                placement: 'top',
+                                unsavedclass: null,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["158"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            $(cells[col_b]).find('a').editable({
+                                type: 'text',
+                                title: 'Mong đợi',
+                                placement: 'top',
+                                unsavedclass: null,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["159"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            $(cells[col_t]).find('a').editable({
+                                type: 'text',
+                                title: 'Thách thức',
+                                placement: 'top',
+                                unsavedclass: null,
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["160"] = newValue
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            break;
+                    }
+                    //ty trong
+                    $(cells[col_tytrong]).find('a').editable({
+                        type: 'number',
+                        max: '100',
+                        title: 'Chỉ số KPI',
+                        placement: 'right',
+                        unsavedclass: null,
+                        success: function (response, newValue) {
+                            buildData(id)
+                            data_kpis[id]["custom_field_values"]["139"] = newValue
+                            $(btn_save).prop("disabled", false)
+                        }
+                    })
+                    $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
+
+                } else if (status_selected === 33) {
+
+
+
+                    qltt_point_selected = typeof response.qltt_point.find(e => e.selected) !== 'undefined' ? response.qltt_point.find(e => e.selected).value : null
+                    qltt_point_source = response.qltt_point.map(x => ({value: x.value, text: x.name}))
+                    $(cells[col_qltt_point]).find('a').editable({
                         type: 'select',
-                        title: 'Đơn vị đo',
-                        placement: 'right',
-                        value: donvido_selected,
-                        source: donvido_source
-                    })
-                    $(cells[7]).find('a').editable({
-                        type: 'number',
-                        step: 'any',
-                        title: 'Tối thiểu',
-                        placement: 'right',
-                        unsavedclass: null
-                    })
-                    $(cells[8]).find('a').editable({
-                        type: 'number',
-                        step: 'any',
-                        title: 'Mong đợi',
-                        placement: 'right',
-                        unsavedclass: null
-                    })
-                    $(cells[9]).find('a').editable({
-                        type: 'number',
-                        step: 'any',
-                        title: 'Thách thức',
-                        placement: 'right',
-                        unsavedclass: null
-                    })
-                } else if (tracker_selected === 40) {
-                    $(cells[7]).find('a').editable({
-                        type: 'date',
-                        title: 'Tối thiểu',
-                        placement: 'top',
+                        title: 'QLTT đánh giá điểm',
+                        placement: 'left',
+                        value: qltt_point_selected,
+                        source: qltt_point_source,
                         unsavedclass: null,
-                        format: 'yyyy-mm-dd',
-                        viewformat: 'dd/mm/yyyy',
-                        datepicker: {
-                            weekStart: 1
+                        success: function (response, newValue) {
+                            buildData(id)
+                            data_kpis[id]["custom_field_values"]["141"] = newValue
+                            $(btn_save).prop("disabled", false)
                         }
                     })
-                    $(cells[8]).find('a').editable({
-                        type: 'date',
-                        title: 'Tối thiểu',
-                        placement: 'top',
-                        unsavedclass: null,
-                        format: 'yyyy-mm-dd',
-                        viewformat: 'dd/mm/yyyy',
-                        datepicker: {
-                            weekStart: 1
-                        }
-                    })
-                    $(cells[9]).find('a').editable({
-                        type: 'date',
-                        title: 'Tối thiểu',
-                        placement: 'top',
-                        unsavedclass: null,
-                        format: 'yyyy-mm-dd',
-                        viewformat: 'dd/mm/yyyy',
-                        datepicker: {
-                            weekStart: 1
-                        }
-                    })
+                    $(cells[col_cbnv_point]).find('a').editable('setValue', cbnv_point_selected);
                 }
-                //ty trong
-                $(cells[6]).find('a').editable({
-                    type: 'number',
-                    max: '100',
-                    title: 'Chỉ số KPI',
-                    placement: 'right',
-                    unsavedclass: null
-                })
 
-                // }
-                $(cells[10]).find('a').editable({
-                    type: 'number',
-                    step: 'any',
-                    'emptytext': 0,
-                    title: 'Kết quả thực hiện',
-                    placement: 'right',
-                    unsavedclass: null
-                })
-
-                cbnv_point_selected = typeof response.cbnv_point.find(e => e.selected) !== 'undefined' ? response.cbnv_point.find(e => e.selected).value : null
-                cbnv_point_source = response.cbnv_point.map(x => ({value: x.value, text: x.name}))
-                $(cells[11]).find('a').editable({
-                    type: 'select',
-                    title: 'Tự đánh giá điểm',
-                    placement: 'left',
-                    value: cbnv_point_selected,
-                    source: cbnv_point_source,
-                    unsavedclass: null
-
-                })
-                qltt_point_selected = typeof response.qltt_point.find(e => e.selected) !== 'undefined' ? response.qltt_point.find(e => e.selected).value : null
-                qltt_point_source = response.qltt_point.map(x => ({value: x.value, text: x.name}))
-                $(cells[12]).find('a').editable({
-                    type: 'select',
-                    title: 'Tự đánh giá điểm',
-                    placement: 'left',
-                    value: qltt_point_selected,
-                    source: qltt_point_source,
-                    unsavedclass: null
-
-                }).on('save', function (e, params) {
-                    console.log(params)
-                });
             },
             error: function (error) {
                 alert('Error: ' + error)
             }
         });
 
+    }
+
+    function reset_row(btn) {
+        edittable($(btn).parent().parent())
+        $($(btn).parent().find('.thaydoi')).prop("disabled", true)
     }
 
     function savetable(btn) {
@@ -1036,7 +1269,7 @@
                     $('#close-huy').click();
                     $($('#' + id + ' td').first()).find('a').text('4. Hủy (Cancel!!)')
                     $($('#' + id + ' td').last()).empty();
-                    $($('#' + id + ' td').last()).append('<button type="button" style="width: 100%" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
+                    $($('#' + id + ' td').last()).append('<button type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
                 }).fail(function (msg) {
                 }).always(function (msg) {
                     console.log('ALWAYS');
@@ -1116,6 +1349,10 @@
 
     })
 
+    function your_onchange_handler() {
+        this.form.submit()
+    }
+
     function duthao(id) {
         let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
         let data = {
@@ -1131,30 +1368,7 @@
         }).done(function () {
             $($('#' + id + ' td').first()).find('a').text('0. Dự thảo (Draft)')
             $($('#' + id + ' td').last()).empty();
-            $($('#' + id + ' td').last()).append('<button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
-        }).fail(function (msg) {
-            alert('FAIL')
-        }).always(function (msg) {
-            console.log('ALWAYS');
-        });
-    }
-
-    function thongnhat(id) {
-        let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
-        let data = {
-            "issue": {
-                "status_id": 32,
-            }
-        }
-        $.ajax({
-            type: 'PUT',
-            url: url,
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-        }).done(function () {
-            $($('#' + id + ' td').first()).find('a').text('1. Thống nhất (Signed!)')
-            $($('#' + id + ' td').last()).empty();
-            $($('#' + id + ' td').last()).append('<button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
+            $($('#' + id + ' td').last()).append('<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
         }).fail(function (msg) {
             alert('FAIL')
         }).always(function (msg) {

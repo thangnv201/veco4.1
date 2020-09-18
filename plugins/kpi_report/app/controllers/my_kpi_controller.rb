@@ -15,36 +15,60 @@ class MyKpiController < ApplicationController
     end
     flash.delete(:notice)
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => User.current.id)
-                               .where(:fixed_version_id => $kidanhgia).order("status_id")
-    @total_ti_trong =0
-    @total_cbnv_point =0
-    @total_qltt_point =0
-    @kpi_open_dinh_luong.each do |kpi|
-      if(kpi.status_id != 35)
-        tytrong = issue_customfield_value(kpi,139).to_i
-        @total_ti_trong+= tytrong
-        cbnv_point = issue_customfield_value(kpi,140)
-        if cbnv_point !=""
-          @total_cbnv_point += cbnv_point[0,1].to_i*(tytrong/100.0)
+                               .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
+    result = total_ti_trong(@kpi_open_dinh_luong)
+    @total_ti_trong = result[0]
+    @total_cbnv_point = result[1]
+    @total_qltt_point = result[2]
+
+  end
+
+  def total_ti_trong(kpis)
+    titrong_total = 0
+    cbnv_point_total = 0
+    qltt_point_total = 0
+    kpis.each do |kpi|
+      if (kpi.status_id != 35)
+        tytrong = issue_customfield_value(kpi, 139).to_i
+        titrong_total += tytrong
+        cbnv_point = issue_customfield_value(kpi, 140)
+        if cbnv_point != ""
+          cbnv_point_total += cbnv_point[0, 1].to_i * (tytrong / 100.0)
         end
-        qltt_point = issue_customfield_value(kpi,141)
-        if qltt_point !=""
-          @total_qltt_point += qltt_point[0,1].to_i*(tytrong/100.0)
+        qltt_point = issue_customfield_value(kpi, 141)
+        if qltt_point != ""
+          qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
         end
       end
     end
-
+    return [titrong_total, cbnv_point_total, qltt_point_total]
   end
+
+  $cbnv
+
   def cbnvkpi
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
       $kidanhgia = Project.find(1072).versions.first.id
     end
-    flash.delete(:notice)
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => User.current.id)
                                .where(:fixed_version_id => $kidanhgia)
+    @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
+    if params.key?("cbnv")
+      $cbnv = params["cbnv"].to_i
+    else
+      $cbnv = @cbnv.first.assigned_to_id
+    end
+    @kpi = @kpi_open_dinh_luong.where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
+    result = total_ti_trong(@kpi)
+    @total_ti_trong = result[0]
+    @total_cbnv_point = result[1]
+    @total_qltt_point = result[2]
+    flash.delete(:notice)
+
   end
+
   def status
     @issue = Issue.find(params[:id])
     @status = @issue.new_statuses_allowed_to(User.find(params[:user_id]))
@@ -82,12 +106,15 @@ class MyKpiController < ApplicationController
     }
     render json: data
   end
+
   def get_another_field
+    @user = User.find(params[:user_id])
     @issue = Issue.find(params[:id])
     @caregory = @issue.project.issue_categories
                     .map { |a| a.id == (@issue.category.nil? ? "" : @issue.category.id) ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
+    note = @issue.journals.where.not(:notes => "").map { |a| {"user": User.find(a.user_id).login, "note": a.notes} }
     data = {
-        'note': @issue.notes,
+        'note':note,
         'category': @caregory,
         'description': @issue.description,
         'start_date': @issue.start_date,

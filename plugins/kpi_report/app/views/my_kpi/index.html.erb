@@ -1,19 +1,19 @@
 <% content_for :header_tags do %>
   <%= stylesheet_link_tag 'bootstrap.min', 'mykpi', 'all', 'semantic', 'bootstrap-table.min', 'bootstrap-editable', plugin: 'kpi_report' %>
   <%= javascript_include_tag 'popper.min', 'jquery-2.0.3.min', 'bootstrap.min.js', 'bootstrap-editable.min',
-                             'bootstrap-table.min.js', 'bootstrap-table-editable.min', 'semantic.min.js', 'jquery.validate.min.js', 'bootstrap-table-filter-control.min.js', 'semantic.js', plugin: 'kpi_report' %>
+                             'bootstrap-table.min.js', 'bootstrap-table-editable.min', 'semantic.min.js', 'jquery.validate.min.js', 'bootstrap-table-filter-control.min.js', 'semantic.js', 'moment.js', plugin: 'kpi_report' %>
 <% end %>
 <script>
     $('#header').css("display", "none");
 </script>
 <style>
-    a {
-        color: inherit !important;
-    }
+  a {
+    color: inherit !important;
+  }
 
-    #content {
-        z-index: unset;
-    }
+  #content {
+    z-index: unset;
+  }
 
 </style>
 <button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=913';" type="button" class="btn btn-info">Quay
@@ -21,19 +21,20 @@
 </button>
 <div>
   <div>
-    <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+    <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px;") do %>
       <table style="margin: 0 auto;">
         <tr>
           <td>
             <h4 style="margin: 0">Phụ lục 03: PHIẾU GIAO VÀ ĐÁNH GIÁ KẾT QUẢ THỰC HIỆN NHIỆM VỤ/CÔNG VIỆC CỦA CBNV</h4>
           </td>
-          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
   </div>
   <div>
-    <div style="display: table;margin: 0 auto;">(Kèm theo Quyết định số:   2345/QĐ-CNVTQĐ-TCNL ngày 10 tháng 07 năm 2020 của Chủ tịch Tập đoàn Công nghiệp-Viễn thông Quân đội)
+    <div style="display: table;margin: 0 auto;">(Kèm theo Quyết định số: 2345/QĐ-CNVTQĐ-TCNL ngày 10 tháng 07 năm 2020
+      của Chủ tịch Tập đoàn Công nghiệp-Viễn thông Quân đội)
     </div>
   </div>
   <div style="margin-bottom: 20px">
@@ -52,9 +53,9 @@
     <div style="margin-top: 10px;">Phòng ban trung
       tâm:<strong>  <%= issue_customfield_value(User.current, 54) %></strong></div>
     <div style="margin-top: 10px;display: flex">
-            <div style="width: 80%">Địa điểm làm
-              việc: <%= select_tag "diadiemlamviec", options_for_select(CustomField.find(165).possible_values, issue_customfield_value(User.current, 165)), :style => 'font-weight: bold;' %>
-            </div>
+      <div style="width: 80%">Địa điểm làm
+        việc: <%= select_tag "diadiemlamviec", options_for_select(CustomField.find(165).possible_values, issue_customfield_value(User.current, 165)), :style => 'font-weight: bold;border: 1px #2980b9 solid' %>
+      </div>
 
     </div>
   </div>
@@ -94,11 +95,28 @@
         </thead>
         <tbody>
         <% @kpi_open_dinh_luong.each do |kpi| %>
-          <tr id=<%= kpi.id %> status="saved" onclick="clickIssue(<%= kpi.id %>)">
+          <tr id=<%= kpi.id %> status="saved">
             <td>
               <div style="margin-bottom: 10px;">
-                <a target="_blank" style="background-color: #4183C4;color: white !important;" href="/issues/<%= kpi.id %>">
-                  #<%= kpi.id %></a><br>
+                <% if kpi.status_id == 35 %>
+                  <a target="_blank" style="background-color: #B22222;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 29 %>
+                  <a target="_blank" style="background-color: #7f8c8d;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 32 %>
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 33 %>
+                  <a target="_blank" style="background-color: #e67e22;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 34 %>
+                  <a target="_blank" style="background-color: #8e44ad;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 36 %>
+                  <a target="_blank" style="background-color: #27ae60;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% end %>
               </div>
               <div style="margin-bottom: 10px">
                 <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
@@ -196,7 +214,8 @@
               </td>
             <% elsif kpi.status.id == 35 %>
               <td>
-                <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo</button>
+                <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
+                </button>
               </td>
             <% else %>
               <td>
@@ -220,11 +239,37 @@
           <td></td>
           <td></td>
           <td></td>
-          <td><%=@total_cbnv_point %></td>
-          <td><%=@total_qltt_point %></td>
+          <td><%= @total_cbnv_point %></td>
+          <td><%= @total_qltt_point %></td>
           <td></td>
         </tr>
         </tbody>
+      </table>
+      <table style="margin-top: 30px;border: #1e3041 1px solid">
+        <tr>
+          <td style="border: #1e3041 1px solid"><strong>Điểm đánh giá</strong></td>
+          <td style="border: #1e3041 1px solid"><strong>Xếp loại</strong></td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">4,5 <= Điểm <=5</td>
+          <td style="border: #1e3041 1px solid">Vượt xa yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">3.5 <= Điểm <4.5</td>
+          <td style="border: #1e3041 1px solid">Vượt yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">2.5 <= Điểm <3.5</td>
+          <td style="border: #1e3041 1px solid">Đạt yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">2 <= Điểm <2.5</td>
+          <td style="border: #1e3041 1px solid">Gần yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">Điểm <=2</td>
+          <td style="border: #1e3041 1px solid">Không đạt yêu cầu</td>
+        </tr>
       </table>
     </div>
   </div>
@@ -313,9 +358,7 @@
 </div>
 
 <script>
-    function clickIssue(id) {
-        console.log(id)
-    }
+    $.fn.editable.defaults.mode = 'inline';
 
     $('#diadiemlamviec').change(function () {
         let url = 'http://' + $(location).attr('host') + '/users/' + <%=User.current.id %> +'.json?key=<%=User.current.api_key%>';
@@ -385,10 +428,14 @@
                     url: '/my_kpi/anotherfield/' + $element[0].id + '/<%=User.current.id%>.json',
                     type: 'GET',
                     success: function (response) {
-                        $('#description-issue').prop('disabled',false)
+                        $('#description-issue').prop('disabled', false)
                         $('#description-issue').val(response.description)
-                        $('#notes-issue').prop('disabled',false)
-                        $('#notes-issue').val(response.note)
+                        let notes = ""
+                        response.note.forEach(function (item) {
+                            notes += item.user + ": " + item.note + "\r\n"
+                        })
+                        $('#notes-issue').prop('disabled', false)
+                        $('#notes-issue').val(notes)
                     },
                     error: function (error) {
                         alert('Error: ' + error)
@@ -759,11 +806,9 @@
             let id = $(btn).parent().parent().attr("id");
             let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
             buildData(id)
-            data_kpis[id]["status_id"] = 33
+            data_kpis[id]["status_id"] = "33"
             let data = {
-                "issue": {
-                    "issue": data_kpis[id]
-                }
+                "issue": data_kpis[id]
             }
             $.ajax({
                 type: 'PUT',
@@ -772,7 +817,7 @@
                 data: JSON.stringify(data),
             }).done(function () {
                 $(btn).hide()
-                $($(cells[0]).find('a')).text('2. Tự đánh giá (Done!)')
+                $($(cells[0]).find('a').eq(2)).text('2. Tự đánh giá (Done!)')
                 $($(btn).parent().find('.thaydoi')).prop("disabled", true)
             }).fail(function (msg) {
             }).always(function (msg) {
@@ -849,7 +894,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(this).editable('setValue',author_selected);
+                            $(this).editable('setValue', author_selected);
                         } else if (index == 1) {
                             $(this).editable({
                                 type: 'select',
@@ -918,54 +963,79 @@
                                             break;
                                         case '40':
                                             resetField(cells)
-                                            $(cells[col_s]).find('a').editable({
-                                                type: 'date',
-                                                title: 'Tối thiểu',
-                                                placement: 'right',
-                                                unsavedclass: null,
-                                                format: 'yyyy-mm-dd',
-                                                viewformat: 'dd/mm/yyyy',
-                                                datepicker: {
-                                                    weekStart: 1
-                                                },
-                                                success: function (response, newValue) {
-                                                    buildData(id)
-                                                    data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
-                                                    $(btn_save).prop("disabled", false)
-                                                }
-                                            })
-                                            $(cells[col_b]).find('a').editable({
-                                                type: 'date',
-                                                title: 'Mong đợi',
-                                                placement: 'right',
-                                                unsavedclass: null,
-                                                format: 'yyyy-mm-dd',
-                                                viewformat: 'dd/mm/yyyy',
-                                                datepicker: {
-                                                    weekStart: 1
-                                                },
-                                                success: function (response, newValue) {
-                                                    buildData(id)
-                                                    data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
-                                                    $(btn_save).prop("disabled", false)
-                                                }
-                                            })
-                                            $(cells[col_t]).find('a').editable({
-                                                type: 'date',
-                                                title: 'Thách thức',
-                                                placement: 'top',
-                                                unsavedclass: null,
-                                                format: 'yyyy-mm-dd',
-                                                viewformat: 'dd/mm/yyyy',
-                                                datepicker: {
-                                                    weekStart: 1
-                                                },
-                                                success: function (response, newValue) {
-                                                    buildData(id)
-                                                    data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                                    $(btn_save).prop("disabled", false)
-                                                }
-                                            })
+                                            try {
+                                                $(cells[col_s]).find('a').editable({
+                                                    type: 'combodate',
+                                                    mode: 'popup',
+                                                    title: 'Tối thiểu',
+                                                    placement: 'right',
+                                                    unsavedclass: null,
+                                                    format: 'DD/MM/YYYY',
+                                                    viewformat: 'DD/MM/YYYY',
+                                                    template: 'DD/MM/YYYY',
+                                                    combodate: {
+                                                        minYear: 2000,
+                                                        maxYear: 2030,
+                                                        minuteStep: 1
+                                                    },
+                                                    success: function (response, newValue) {
+                                                        buildData(id)
+                                                        data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
+                                                        $(btn_save).prop("disabled", false)
+                                                    }
+                                                })
+
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
+                                            try {
+                                                $(cells[col_b]).find('a').editable({
+                                                    type: 'combodate',
+                                                    mode: 'popup',
+                                                    title: 'Mong đợi',
+                                                    placement: 'right',
+                                                    unsavedclass: null,
+                                                    format: 'DD/MM/YYYY',
+                                                    viewformat: 'DD/MM/YYYY',
+                                                    template: 'DD/MM/YYYY',
+                                                    combodate: {
+                                                        minYear: 2000,
+                                                        maxYear: 2030,
+                                                        minuteStep: 1
+                                                    },
+                                                    success: function (response, newValue) {
+                                                        buildData(id)
+                                                        data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
+                                                        $(btn_save).prop("disabled", false)
+                                                    }
+                                                })
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
+                                            try {
+                                                $(cells[col_t]).find('a').editable({
+                                                    type: 'combodate',
+                                                    mode: 'popup',
+                                                    title: 'Thách thức',
+                                                    placement: 'top',
+                                                    unsavedclass: null,
+                                                    format: 'DD/MM/YYYY',
+                                                    viewformat: 'DD/MM/YYYY',
+                                                    template: 'DD/MM/YYYY',
+                                                    combodate: {
+                                                        minYear: 2000,
+                                                        maxYear: 2030,
+                                                        minuteStep: 1
+                                                    },
+                                                    success: function (response, newValue) {
+                                                        buildData(id)
+                                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                                        $(btn_save).prop("disabled", false)
+                                                    }
+                                                })
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
                                             break;
                                         case '41':
                                             resetField(cells)
@@ -1006,7 +1076,7 @@
                                     }
                                 }
                             })
-                            $(this).editable('setValue',tracker_selected);
+                            $(this).editable('setValue', tracker_selected);
                         }
                     })
                     //muc tieu ket qua
@@ -1021,7 +1091,7 @@
                             $(btn_save).prop("disabled", false)
                         }
                     })
-                    $(cells[col_muctieu]).find('a').editable('setValue',response.muc_tieu);
+                    $(cells[col_muctieu]).find('a').editable('setValue', response.muc_tieu);
                     //subject
                     $(cells[col_subject]).find('a').editable({
                         type: 'textarea',
@@ -1034,7 +1104,7 @@
                             $(btn_save).prop("disabled", false)
                         }
                     })
-                    $(cells[col_subject]).find('a').editable('setValue',response.subject);
+                    $(cells[col_subject]).find('a').editable('setValue', response.subject);
                     switch (tracker_selected) {
                         case 39:
                             $(cells[col_donvido]).find('a').editable({
@@ -1049,7 +1119,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_donvido]).find('a').editable('setValue',donvido_selected);
+                            $(cells[col_donvido]).find('a').editable('setValue', donvido_selected);
                             $(cells[col_s]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1062,7 +1132,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_s]).find('a').editable('setValue',response.toithieu);
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
                             $(cells[col_b]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1076,7 +1146,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_b]).find('a').editable('setValue',response.mongdoi);
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
                             $(cells[col_t]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1090,60 +1160,84 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_t]).find('a').editable('setValue',response.thachthuc);
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                         case 40:
-                            $(cells[col_s]).find('a').editable({
-                                type: 'date',
-                                title: 'Tối thiểu',
-                                placement: 'top',
-                                unsavedclass: null,
-                                format: 'yyyy-mm-dd',
-                                viewformat: 'dd/mm/yyyy',
-                                datepicker: {
-                                    weekStart: 1
-                                },
-                                success: function (response, newValue) {
-                                    buildData(id)
-                                    data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
-                                }
-                            })
-                            $(cells[col_s]).find('a').editable('setValue',response.toithieu);
-                            $(cells[col_b]).find('a').editable({
-                                type: 'date',
-                                title: 'Mong đợi',
-                                placement: 'top',
-                                unsavedclass: null,
-                                format: 'yyyy-mm-dd',
-                                viewformat: 'dd/mm/yyyy',
-                                datepicker: {
-                                    weekStart: 1
-                                },
-                                success: function (response, newValue) {
-                                    buildData(id)
-                                    data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
-                                }
-                            })
-                            $(cells[col_b]).find('a').editable('setValue',response.mongdoi);
-                            $(cells[col_t]).find('a').editable({
-                                type: 'date',
-                                title: 'Thách thức',
-                                placement: 'top',
-                                unsavedclass: null,
-                                format: 'yyyy-mm-dd',
-                                viewformat: 'dd/mm/yyyy',
-                                datepicker: {
-                                    weekStart: 1
-                                },
-                                success: function (response, newValue) {
-                                    buildData(id)
-                                    data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
-                                }
-                            })
-                            $(cells[col_t]).find('a').editable('setValue',response.thachthuc);
+                            try {
+                                $(cells[col_s]).find('a').editable({
+                                    type: 'combodate',
+                                    mode: 'popup',
+                                    title: 'Tối thiểu',
+                                    placement: 'top',
+                                    unsavedclass: null,
+                                    format: 'DD/MM/YYYY',
+                                    viewformat: 'DD/MM/YYYY',
+                                    template: 'DD/MM/YYYY',
+                                    combodate: {
+                                        minYear: 2000,
+                                        maxYear: 2030,
+                                        minuteStep: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        buildData(id)
+                                        data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
+                                        $(btn_save).prop("disabled", false)
+                                    }
+                                })
+                            } catch (e) {
+                                console.log(e)
+                            }
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            try {
+                                $(cells[col_b]).find('a').editable({
+                                    type: 'combodate',
+                                    mode: 'popup',
+                                    title: 'Mong đợi',
+                                    placement: 'top',
+                                    unsavedclass: null,
+                                    format: 'DD/MM/YYYY',
+                                    viewformat: 'DD/MM/YYYY',
+                                    template: 'DD/MM/YYYY',
+                                    combodate: {
+                                        minYear: 2000,
+                                        maxYear: 2030,
+                                        minuteStep: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        buildData(id)
+                                        data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
+                                        $(btn_save).prop("disabled", false)
+                                    }
+                                })
+                            } catch (e) {
+                                console.log(e)
+                            }
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            try {
+                                $(cells[col_t]).find('a').editable({
+                                    type: 'combodate',
+                                    mode: 'popup',
+                                    title: 'Thách thức',
+                                    placement: 'top',
+                                    unsavedclass: null,
+                                    format: 'DD/MM/YYYY',
+                                    viewformat: 'DD/MM/YYYY',
+                                    template: 'DD/MM/YYYY',
+                                    combodate: {
+                                        minYear: 2000,
+                                        maxYear: 2030,
+                                        minuteStep: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        buildData(id)
+                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                        $(btn_save).prop("disabled", false)
+                                    }
+                                })
+                            } catch (e) {
+                                console.log(e)
+                            }
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                         case 41 :
                             $(cells[col_s]).find('a').editable({
@@ -1157,7 +1251,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_s]).find('a').editable('setValue',response.toithieu);
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
                             $(cells[col_b]).find('a').editable({
                                 type: 'text',
                                 title: 'Mong đợi',
@@ -1169,7 +1263,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_b]).find('a').editable('setValue',response.mongdoi);
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
                             $(cells[col_t]).find('a').editable({
                                 type: 'text',
                                 title: 'Thách thức',
@@ -1181,7 +1275,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_t]).find('a').editable('setValue',response.thachthuc);
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                     }
                     //ty trong
@@ -1197,7 +1291,7 @@
                             $(btn_save).prop("disabled", false)
                         }
                     })
-                    $(cells[col_tytrong]).find('a').editable('setValue',response.ti_trong);
+                    $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
 
                 } else {
                     if (tracker_selected == 39) {
@@ -1213,25 +1307,34 @@
                                 $(btn_save).prop("disabled", false)
                             }
                         })
-                        $(cells[col_kq]).find('a').editable('setValue',response.ketqua);
+                        $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
                     } else if (tracker_selected == 40) {
-                        $(cells[col_kq]).find('a').editable({
-                            type: 'date',
-                            title: 'Kết quả thực hiện',
-                            placement: 'top',
-                            unsavedclass: null,
-                            format: 'yyyy-mm-dd',
-                            viewformat: 'dd/mm/yyyy',
-                            datepicker: {
-                                weekStart: 1
-                            },
-                            success: function (response, newValue) {
-                                buildData(id)
-                                data_kpis[id]["custom_field_values"]["149"] = newValue.toISOString().split("T")[0];
-                                $(btn_save).prop("disabled", false)
-                            }
-                        })
-                        $(cells[col_kq]).find('a').editable('setValue',response.ketqua);
+                        try {
+                            $(cells[col_kq]).find('a').editable({
+                                type: 'combodate',
+                                mode: 'popup',
+                                title: 'Kết quả thực hiện',
+                                placement: 'top',
+                                unsavedclass: null,
+                                format: 'DD/MM/YYYY',
+                                viewformat: 'DD/MM/YYYY',
+                                template: 'DD/MM/YYYY',
+                                combodate: {
+                                    minYear: 2000,
+                                    maxYear: 2030,
+                                    minuteStep: 1
+                                },
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["149"] = newValue.toISOString().split("T")[0];
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                        } catch (err) {
+                            console.log(err)
+                        }
+
                     } else {
                         $(cells[col_kq]).find('a').editable({
                             type: 'text',
@@ -1244,7 +1347,7 @@
                                 $(btn_save).prop("disabled", false)
                             }
                         })
-                        $(cells[col_kq]).find('a').editable('setValue',response.ketqua);
+                        $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
                     }
 
 
@@ -1263,7 +1366,7 @@
                             $(btn_save).prop("disabled", false)
                         }
                     })
-                    $(cells[col_cbnv_point]).find('a').editable('setValue',cbnv_point_selected);
+                    $(cells[col_cbnv_point]).find('a').editable('setValue', cbnv_point_selected);
                 }
 
             },
@@ -1273,10 +1376,12 @@
         });
 
     }
+
     function reset_row(btn) {
         edittable($(btn).parent().parent())
         $($(btn).parent().find('.thaydoi')).prop("disabled", true)
     }
+
     function savetable(btn) {
 
         $(btn).parent().parent()[0].cells.forEach(element => {
