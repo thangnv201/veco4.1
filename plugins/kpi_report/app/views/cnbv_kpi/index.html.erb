@@ -46,7 +46,7 @@
 <body>
 <div>
   <div>
-    <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+    <%= form_tag({:controller => 'cnbv_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
       <table style="margin: 0 auto;">
         <tr>
           <td>
@@ -63,7 +63,7 @@
   </div>
   <input type="hidden" id="version_id1" value="<%=$kidanhgia %>">
   <div style="margin-bottom: 20px">
-    <h4 style="margin: 0">Kỳ đánh giá: <%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></h4>
+
     <table id="kpi_table" class="table table-bordered striped table-responsive" style="width: 100%">
       <thead>
       <tr>
@@ -74,7 +74,7 @@
 <!--        <th rowspan="4">Đơn vị</th>-->
 <!--        <th rowspan="4">Phòng ban</th>-->
 <!--        <th rowspan="4">Tổ nhóm</th>-->
-        <th colspan="6" style="text-align:center">Kết quả hoàn thành nhiệm vụ/công việc quý 3/2020</th>
+        <th colspan="6" style="text-align:center">Kết quả hoàn thành nhiệm vụ/công việc <%= Version.find($kidanhgia).name %></th>
         <th rowspan="4">Ghi chú, đề xuất của người quản lý trực tiếp với CBNV</th>
         <th rowspan="4">Ghi chú, đề xuất của người Chỉ huy với CBNV</th>
         <th rowspan="4" style="width: 200px">Chú ý</th>
@@ -240,7 +240,7 @@
         <td><textarea id="<%= "m_note"+$num.to_s %>" style="width:100%;"><%= @ki_raking[$num][30]  %></textarea> </td>
         <td><textarea id="<%= "note"+$num.to_s %>" style="width:100%;"><%= @ki_raking[$num][31]  %></textarea></td>
         <td>
-          <a title="Lưu" href="#" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-success">
+          <a title="Lưu" href="#" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary">
             <i class="fa fa-check"></i>
           </a>
         </td>
@@ -295,7 +295,7 @@
             manage_note: $('#m_note'+num).val(),
             note: $('#note'+num).val()
         };
-        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/test';
+        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/save';
         $.ajax({
             type:"GET",
             url:url,

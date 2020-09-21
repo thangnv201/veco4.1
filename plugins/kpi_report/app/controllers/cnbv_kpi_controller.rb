@@ -21,7 +21,7 @@ class CnbvKpiController < ApplicationController
     @ki_raking = @records_array.as_json
   end
 
-  def test
+  def save
 
     if params[:ki_id] == ""
       uid = PeopleInformation.where(employee_id: params[:user_code]).take.user_id
