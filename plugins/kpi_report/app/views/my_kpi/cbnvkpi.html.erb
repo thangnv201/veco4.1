@@ -16,311 +16,361 @@
   }
 
 </style>
-<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
-  lại giao diện cũ
-</button>
-<div>
+<% if @kpi_open_dinh_luong.length > 0 %>
+  <button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
+    lại giao diện cũ
+  </button>
+  <div>
+    <div>
+      <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+        <table style="margin: 0 auto;">
+          <tr>
+            <td>
+              <h4 style="margin: 0">PHIẾU GIAO</h4>
+            </td>
+            <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+            <td><%= select_tag "cbnv", options_for_select(@cbnv.map { |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id] }, $cbnv), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+          </tr>
+        </table>
+      <% end %>
+    </div>
+  </div>
+  <div style="font-weight: bold;width: 100%;margin-bottom: 10px">1. Nội dung giao nhiệm vụ, công việc và đánh giá kết
+    quả
+    thực hiện
+  </div>
+  <div style="position: relative" class="outer">
+
+    <div class="inner">
+      <div style="width: 80%">
+        <table id="table"
+               data-show-export="true">
+          <thead>
+          <tr>
+            <th data-field="status">Status</th>
+            <th data-field="muctieu">Mục tiêu</th>
+            <th data-field="chiso">Chỉ số KPI</th>
+            <th data-field="donvido">Đơn vị
+              đo
+            </th>
+            <th data-field="tytrong">Tỷ
+              trọng
+            </th>
+            <th data-field="s">S</th>
+            <th data-field="b">B</th>
+            <th data-field="t">T</th>
+            <th data-field="kq">KQ</th>
+            <th data-field="tu_danh_gia">Tự
+              đánh giá
+            </th>
+            <th data-field="qltt_danh_gia">QLTT
+              đánh giá
+            </th>
+            <th data-field="action">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @kpi.each do |kpi| %>
+            <tr id=<%= kpi.id %> status="saved" onclick="clickIssue(<%= kpi.id %>)">
+              <td>
+                <div style="margin-bottom: 10px;">
+                  <% if kpi.status_id == 35 %>
+                    <a target="_blank" style="background-color: #B22222;color: white !important;" href="/issues/<%= kpi.id %>">
+                      #<%= kpi.id %></a>
+                  <% elsif kpi.status_id == 29 %>
+                    <a target="_blank" style="background-color: #7f8c8d;color: white !important;" href="/issues/<%= kpi.id %>">
+                      #<%= kpi.id %></a>
+                  <% elsif kpi.status_id == 32 %>
+                    <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+                      #<%= kpi.id %></a>
+                  <% elsif kpi.status_id == 33 %>
+                    <a target="_blank" style="background-color: #e67e22;color: white !important;" href="/issues/<%= kpi.id %>">
+                      #<%= kpi.id %></a>
+                  <% elsif kpi.status_id == 34 %>
+                    <a target="_blank" style="background-color: #8e44ad;color: white !important;" href="/issues/<%= kpi.id %>">
+                      #<%= kpi.id %></a>
+                  <% elsif kpi.status_id == 36 %>
+                    <a target="_blank" style="background-color: #27ae60;color: white !important;" href="/issues/<%= kpi.id %>">
+                      #<%= kpi.id %></a>
+                  <% end %>
+                </div>
+
+                <div style="margin-bottom: 10px">
+                  <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
+                </div>
+                <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
+                </div>
+                <div style="margin-bottom: 10px"><strong>Người giao: </strong>
+                  <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.assigned_to.login %></a><br>
+                </div>
+
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
+              </td>
+              <% if kpi.tracker_id == 39 %>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
+                </td>
+              <% end %>
+              <% if kpi.tracker_id == 40 %>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
+                </td>
+              <% end %>
+              <% if kpi.tracker_id == 41 %>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
+                </td>
+                <td>
+                  <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
+                </td>
+              <% end %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
+              </td>
+              <% if kpi.status.id == 29 %>
+                <td>
+                  <!--              <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"-->
+                  <!--                      data-whatever="<%#= kpi.id %>">Hủy KPI-->
+                  <!--              </button>-->
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                </td>
+              <% elsif kpi.status.id == 32 %>
+                <td>
+                  <!--                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%#= kpi.tracker_id %>">-->
+                  <!--                  Tự đánh giá-->
+                  <!--                </button>-->
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                </td>
+              <% elsif kpi.status.id == 35 %>
+                <td>
+                  <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
+                  </button>
+                </td>
+              <% elsif kpi.status.id == 33 %>
+                <td>
+                  <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
+                    Đánh giá
+                  </button>
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                </td>
+              <% else %>
+                <td>
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><%= @total_ti_trong %> %</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><%= @total_cbnv_point %></td>
+            <td><%= @total_qltt_point %></td>
+            <td></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="width: 20%;position: fixed;top:20%;right: 25px">
+      <div class="tag">
+        <div style="height: 60vh;">
+          <form>
+            <div class="form-group">
+              <label for="exampleFormControlTextarea1">Description</label>
+              <textarea disabled class="form-control" id="description-issue" rows="10"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="exampleFormControlTextarea1">Notes</label>
+              <textarea disabled class="form-control" id="notes-issue" rows="10"></textarea>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="width: 100%;display: flex">
+
+    <!--  model huy kpi-->
+    <div style="background: none;z-index: 1050;position: fixed !important;" class="modal fade" id="huyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Hủy KPI</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="modal-form">
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Lý do hủy:</label>
+                <textarea required class="form-control" id="message-text"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="close-huy" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="modal-huy" type="button" class="btn btn-danger">Huỷ KPI</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--  end-->
+    <!--  model tu danh gia-->
+    <div style="background: none;z-index: 1050" class="modal fade" id="tudanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Tự đánh giá</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="tudanhgia-form">
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Kết quả</label>
+                <input type="text" class="form-control" id="ketqua" required>
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Điểm</label>
+                <select style="border:#2f3032 solid 1px" id="tudanhgia-diem" class="custom-select" required>
+                  <option value="">-- Chọn điểm --</option>
+                  <option value="75">1: KQ < T</option>
+                  <option value="76">2: T ≤ KQ < B</option>
+                  <option value="77">3: KQ = B</option>
+                  <option value="78">4: B < KQ < S</option>
+                  <option value="79">5: KQ ≥ S</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="close-tudanhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="btn-tudanhgia" type="button" class="btn btn-danger">Tự đánh giá</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--  end-->
+  </div>
   <div>
     <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
-      <table style="margin: 0 auto;">
-        <tr>
+      <table>
+        <tr style="margin-bottom: 20px;">
           <td>
-            <h4 style="margin: 0">PHIẾU GIAO</h4>
+            <h4>
+              2. Đánh giá yêu cầu tuân thủ
+            </h4>
           </td>
-          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
-          <td><%= select_tag "cbnv", options_for_select(@cbnv.map { |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id] }, $cbnv), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+          <td></td>
+        </tr>
+        <tr style="border: 1px rgb(221,221,221) solid">
+          <td>
+            <h4 style="margin: 0">Tuân thủ địa điểm làm việc: </h4>
+          </td>
+          <td><%= select_tag "location_compliance", options_for_select($tuanthudiadiemlamviec, @cbnv_ki.location_compliance), :style => 'font-weight: bold;', :onchange => 'change_ki(this)', disabled: !@permission_danhgia %></td>
+        </tr>
+        <tr style="border: 1px rgb(221,221,221) solid">
+          <td>
+            <h4 style="margin: 0">Tuân thủ nội quy lao động: </h4>
+          </td>
+          <td><%= select_tag "labor_rules_compliance", options_for_select($tuanthunoiquylaodong, @cbnv_ki.labor_rules_compliance), :style => 'font-weight: bold;', :onchange => 'change_ki(this)', disabled: !@permission_danhgia %></td>
+        </tr>
+        <tr style="border: 1px rgb(221,221,221) solid">
+          <td>
+            <h4 style="margin: 0">Nhận xét chung (option)</h4>
+          </td>
+          <td><%= text_area(:nhanxetchung, nil, size: '50x10',:value =>@cbnv_ki_note.comment ,:onfocusout => 'change_ki(this)') %></td>
         </tr>
       </table>
     <% end %>
   </div>
-</div>
-<div style="font-weight: bold;width: 100%;margin-bottom: 10px">2. Nội dung giao nhiệm vụ, công việc và đánh giá kết quả
-  thực hiện
-</div>
-<div style="position: relative" class="outer">
-
-  <div class="inner">
-    <div style="width: 80%">
-      <table id="table"
-             data-show-export="true">
-        <thead>
-        <tr>
-          <th data-field="status">Status</th>
-          <th data-field="muctieu">Mục tiêu</th>
-          <th data-field="chiso">Chỉ số KPI</th>
-          <th data-field="donvido">Đơn vị
-            đo
-          </th>
-          <th data-field="tytrong">Tỷ
-            trọng
-          </th>
-          <th data-field="s">S</th>
-          <th data-field="b">B</th>
-          <th data-field="t">T</th>
-          <th data-field="kq">KQ</th>
-          <th data-field="tu_danh_gia">Tự
-            đánh giá
-          </th>
-          <th data-field="qltt_danh_gia">QLTT
-            đánh giá
-          </th>
-          <th data-field="action">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @kpi.each do |kpi| %>
-          <tr id=<%= kpi.id %> status="saved" onclick="clickIssue(<%= kpi.id %>)">
-            <td>
-              <div style="margin-bottom: 10px;">
-                <% if kpi.status_id == 35 %>
-                  <a target="_blank" style="background-color: #B22222;color: white !important;" href="/issues/<%= kpi.id %>">
-                    #<%= kpi.id %></a>
-                <% elsif kpi.status_id == 29 %>
-                  <a target="_blank" style="background-color: #7f8c8d;color: white !important;" href="/issues/<%= kpi.id %>">
-                    #<%= kpi.id %></a>
-                <% elsif kpi.status_id == 32 %>
-                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
-                    #<%= kpi.id %></a>
-                <% elsif kpi.status_id == 33 %>
-                  <a target="_blank" style="background-color: #e67e22;color: white !important;" href="/issues/<%= kpi.id %>">
-                    #<%= kpi.id %></a>
-                <% elsif kpi.status_id == 34 %>
-                  <a target="_blank" style="background-color: #8e44ad;color: white !important;" href="/issues/<%= kpi.id %>">
-                    #<%= kpi.id %></a>
-                <% elsif kpi.status_id == 36 %>
-                  <a target="_blank" style="background-color: #27ae60;color: white !important;" href="/issues/<%= kpi.id %>">
-                    #<%= kpi.id %></a>
-                <% end %>
-              </div>
-
-              <div style="margin-bottom: 10px">
-                <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
-              </div>
-              <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
-              </div>
-              <div style="margin-bottom: 10px"><strong>Người giao: </strong>
-                <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.assigned_to.login %></a><br>
-              </div>
-
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
-            </td>
-            <% if kpi.tracker_id == 39 %>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
-              </td>
-            <% end %>
-            <% if kpi.tracker_id == 40 %>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
-              </td>
-            <% end %>
-            <% if kpi.tracker_id == 41 %>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
-              </td>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
-              </td>
-            <% end %>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
-            </td>
-            <td>
-              <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
-            </td>
-            <% if kpi.status.id == 29 %>
-              <td>
-                <!--              <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"-->
-                <!--                      data-whatever="<%#= kpi.id %>">Hủy KPI-->
-                <!--              </button>-->
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                  <i class="glyphicon glyphicon-ok"></i>
-                </button>
-                <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
-                  <i class="glyphicon glyphicon-remove"></i>
-                </button>
-              </td>
-            <% elsif kpi.status.id == 32 %>
-              <td>
-                <!--                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%#= kpi.tracker_id %>">-->
-                <!--                  Tự đánh giá-->
-                <!--                </button>-->
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
-                  <i class="glyphicon glyphicon-ok"></i>
-                </button>
-                <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
-                  <i class="glyphicon glyphicon-remove"></i>
-                </button>
-              </td>
-            <% elsif kpi.status.id == 35 %>
-              <td>
-                <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
-                </button>
-              </td>
-            <% elsif kpi.status.id == 33 %>
-              <td>
-                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
-                  Đánh giá
-                </button>
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                  <i class="glyphicon glyphicon-ok"></i>
-                </button>
-                <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
-                  <i class="glyphicon glyphicon-remove"></i>
-                </button>
-              </td>
-            <% else %>
-              <td>
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                  <i class="glyphicon glyphicon-ok"></i>
-                </button>
-                <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
-                  <i class="glyphicon glyphicon-remove"></i>
-                </button>
-              </td>
-            <% end %>
-          </tr>
-        <% end %>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td><%= @total_ti_trong %> %</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td><%= @total_cbnv_point %></td>
-          <td><%= @total_qltt_point %></td>
-          <td></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div style="width: 20%;position: fixed;top:20%;right: 25px">
-    <div class="tag">
-      <div style="height: 60vh;">
-        <form>
-          <div class="form-group">
-            <label for="exampleFormControlTextarea1">Description</label>
-            <textarea disabled class="form-control" id="description-issue" rows="10"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="exampleFormControlTextarea1">Notes</label>
-            <textarea disabled class="form-control" id="notes-issue" rows="10"></textarea>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-<div style="width: 100%;display: flex">
-
-  <!--  model huy kpi-->
-  <div style="background: none;z-index: 1050;position: fixed !important;" class="modal fade" id="huyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Hủy KPI</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="modal-form">
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Lý do hủy:</label>
-              <textarea required class="form-control" id="message-text"></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="close-huy" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="modal-huy" type="button" class="btn btn-danger">Huỷ KPI</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--  end-->
-  <!--  model tu danh gia-->
-  <div style="background: none;z-index: 1050" class="modal fade" id="tudanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Tự đánh giá</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="tudanhgia-form">
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Kết quả</label>
-              <input type="text" class="form-control" id="ketqua" required>
-            </div>
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Điểm</label>
-              <select style="border:#2f3032 solid 1px" id="tudanhgia-diem" class="custom-select" required>
-                <option value="">-- Chọn điểm --</option>
-                <option value="75">1: KQ < T</option>
-                <option value="76">2: T ≤ KQ < B</option>
-                <option value="77">3: KQ = B</option>
-                <option value="78">4: B < KQ < S</option>
-                <option value="79">5: KQ ≥ S</option>
-              </select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="close-tudanhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="btn-tudanhgia" type="button" class="btn btn-danger">Tự đánh giá</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--  end-->
-</div>
-
+<% end %>
 <script>
-    function clickIssue(id) {
-        console.log(id)
+    $(window).off('beforeunload');
+    function change_ki(ki) {
+        data = {}
+        data[$(ki).attr("name")] = $(ki).val();
+        data['user']= <%=User.current.id %>
+        console.log(data)
+        $.ajax({
+            type: 'PUT',
+            url: '/update_ki' + '.json?key=<%=User.current.api_key%>',
+            contentType: 'application/json',
+            data: JSON.stringify(data), //
+        }).done(function () {
+            console.log('SUCESS')
+        }).fail(function (msg) {
+            console.log('FAIL')
+        }).always(function (msg) {
+            console.log('ALWAYS');
+        });
     }
 
     $('#diadiemlamviec').change(function () {
@@ -397,7 +447,6 @@
                         $('#notes-issue').val(response.note)
                     },
                     error: function (error) {
-                        alert('Error: ' + error)
                     }
                 });
             }
@@ -505,7 +554,6 @@
                 $('#lydodung').val(response.ly_do_huy)
             },
             error: function (error) {
-                alert('Error: ' + error)
             }
         });
     }
@@ -597,10 +645,8 @@
             contentType: 'application/json',
             data: JSON.stringify(data), //
         }).done(function () {
-            alert('SUCESS')
             getStatus($('#issue-id').val())
         }).fail(function (msg) {
-            alert('FAIL')
         }).always(function (msg) {
             console.log('ALWAYS');
         });
@@ -1203,7 +1249,6 @@
                 } else if (status_selected === 33) {
 
 
-
                     qltt_point_selected = typeof response.qltt_point.find(e => e.selected) !== 'undefined' ? response.qltt_point.find(e => e.selected).value : null
                     qltt_point_source = response.qltt_point.map(x => ({value: x.value, text: x.name}))
                     $(cells[col_qltt_point]).find('a').editable({
@@ -1224,7 +1269,6 @@
 
             },
             error: function (error) {
-                alert('Error: ' + error)
             }
         });
 
@@ -1370,7 +1414,6 @@
             $($('#' + id + ' td').last()).empty();
             $($('#' + id + ' td').last()).append('<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
         }).fail(function (msg) {
-            alert('FAIL')
         }).always(function (msg) {
             console.log('ALWAYS');
         });

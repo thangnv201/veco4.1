@@ -5,7 +5,8 @@ class MyKpiController < ApplicationController
 
   accept_api_auth :status
   $kidanhgia = Project.find(1072).versions.first.id
-  $test = "thang"
+  $tuanthudiadiemlamviec = [['Tuân thủ', 1], ['Không tuân thủ', 2]]
+  $tuanthunoiquylaodong = [['Tuân thủ', 1], ['Vi phạm nhưng chưa đến mức kỉ luật', 2], ['Bị xử lý kỉ luật lao động', 3]]
 
   def index
     if params.key?("kidanhgia")
@@ -16,14 +17,14 @@ class MyKpiController < ApplicationController
     flash.delete(:notice)
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => User.current.id)
                                .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
-    result = total_ti_trong(@kpi_open_dinh_luong)
+    result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]
     @total_qltt_point = result[2]
 
   end
 
-  def total_ti_trong(kpis)
+  def total_ti_trong(kpis, cbnv_ki)
     titrong_total = 0
     cbnv_point_total = 0
     qltt_point_total = 0
@@ -41,6 +42,12 @@ class MyKpiController < ApplicationController
         end
       end
     end
+    qltt_point_total = qltt_point_total.round(2)
+    cbnv_point_total = cbnv_point_total.round(2)
+    if !cbnv_ki.nil?
+      cbnv_ki.kpi = qltt_point_total
+      cbnv_ki.save
+    end
     return [titrong_total, cbnv_point_total, qltt_point_total]
   end
 
@@ -54,6 +61,7 @@ class MyKpiController < ApplicationController
     end
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => User.current.id)
                                .where(:fixed_version_id => $kidanhgia)
+    return unless @kpi_open_dinh_luong.length > 0
     @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
     if params.key?("cbnv")
       $cbnv = params["cbnv"].to_i
@@ -61,12 +69,21 @@ class MyKpiController < ApplicationController
       $cbnv = @cbnv.first.assigned_to_id
     end
     @kpi = @kpi_open_dinh_luong.where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
-    result = total_ti_trong(@kpi)
+
+    @permission_danhgia = get_main_qltt($cbnv, $kidanhgia) == User.current.id ? true : false
+    if PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).length == 0
+      PeopleKi.create(:user_id => $cbnv, :version_id => $kidanhgia, :location_compliance => 1, :labor_rules_compliance => 1)
+    end
+    if PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => User.current.id).length == 0
+      PeopleKiNote.create(:user_id => $cbnv, :version_id => $kidanhgia, :lead_id => User.current.id,:comment =>"")
+    end
+    @cbnv_ki = PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).first
+    @cbnv_ki_note = PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => User.current.id).first
+    result = total_ti_trong(@kpi, @cbnv_ki)
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]
     @total_qltt_point = result[2]
     flash.delete(:notice)
-
   end
 
   def status
@@ -114,12 +131,44 @@ class MyKpiController < ApplicationController
                     .map { |a| a.id == (@issue.category.nil? ? "" : @issue.category.id) ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
     note = @issue.journals.where.not(:notes => "").map { |a| {"user": User.find(a.user_id).login, "note": a.notes} }
     data = {
-        'note':note,
+        'note': note,
         'category': @caregory,
         'description': @issue.description,
         'start_date': @issue.start_date,
         'due_date': @issue.due_date,
     }
     render json: data
+  end
+
+  def get_main_qltt(user_id, version)
+    sql = "select author_id,Max(tytrong) as tt from (SELECT  issues.author_id,sum(custom_values.value) as tytrong FROM `issues` inner join custom_values on issues.id = custom_values.customized_id
+WHERE `issues`.`project_id` = 1072 AND `issues`.`assigned_to_id` = " + user_id.to_s + " and fixed_version_id=" + version.to_s + " and custom_values.custom_field_id=139
+group by issues.author_id)   as y"
+    result = ActiveRecord::Base.connection.execute(sql);
+    return result.as_json.first.first
+  end
+
+  def update_people_ki
+    location_compliance = 1
+    labor_rules_compliance = 1
+    people_ki = PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).first
+    people_ki_note = PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => params[:user]).first
+    if params.key?("location_compliance")
+      location_compliance = params[:location_compliance].to_i
+      people_ki.location_compliance = location_compliance
+    end
+    if params.key?("labor_rules_compliance")
+      labor_rules_compliance = params[:labor_rules_compliance].to_i
+      people_ki.labor_rules_compliance = labor_rules_compliance
+    end
+    if params.key?("nhanxetchung[]")
+      note = params["nhanxetchung[]"].to_s
+      people_ki_note.comment = note
+    end
+    if people_ki.save && people_ki_note.save
+      render json: "ok"
+    else
+      render json: "error"
+    end
   end
 end
