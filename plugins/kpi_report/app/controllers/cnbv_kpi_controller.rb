@@ -19,7 +19,6 @@ class CnbvKpiController < ApplicationController
     sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
     @records_array = ActiveRecord::Base.connection.execute(sql)
     @ki_raking = @records_array.as_json
-
   end
 
   def test

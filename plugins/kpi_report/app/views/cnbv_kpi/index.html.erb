@@ -226,9 +226,16 @@
           <% end %>
         </td>
         <td>
-          <% $comment = "" %>
-          haidn4: tốt
-          hamg: tốt
+          <% @comment = PeopleKiNote.where(user_id:@ki_raking[$num][0], version_id:$kidanhgia) %>
+          <% $com = "" %>
+          <% @comment.each do |cmt| %>
+            <% $lead_name = User.find(cmt.lead_id).login %>
+            <% $com << $lead_name %>
+            <% $com << ":" %>
+            <% $com << cmt.comment %>
+            <% $com << "\n" %>
+          <% end %>
+          <%= $com %>
         </td>
         <td><textarea id="<%= "m_note"+$num.to_s %>" style="width:100%;"><%= @ki_raking[$num][30]  %></textarea> </td>
         <td><textarea id="<%= "note"+$num.to_s %>" style="width:100%;"><%= @ki_raking[$num][31]  %></textarea></td>
@@ -251,8 +258,9 @@
 </html>
 
 <script type="text/javascript" charset="utf-8">
+
     function mySelectKI(num){
-        var ki = $('#select_ki'+num).val();
+        let ki = $('#select_ki'+num).val();
         if (ki == "" || ki == "K"){
             $('#text_ki'+num).text("Không đánh giá");
         }
@@ -273,6 +281,7 @@
         }
     }
     function saveChangeKI(btn,num){
+
         let data = $(btn).parent().parent()
         let ki_id = $(btn).parent().parent().attr("ki_id");
         let version_id = $('#version_id1').val();
@@ -293,7 +302,7 @@
             dataType:"json",
             data: empObj,
             success:function(result) {
-                location.reload();
+                //location.reload();
             },
             error: function(){
             }
