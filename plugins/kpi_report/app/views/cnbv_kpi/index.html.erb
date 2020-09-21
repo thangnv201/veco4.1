@@ -1,1 +1,172 @@
-<h2>CnbvKpiController#index</h2>
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'bootstrap.min', 'mykpi', 'all', 'semantic', 'bootstrap-table.min', 'bootstrap-editable', plugin: 'kpi_report' %>
+  <%= javascript_include_tag 'popper.min', 'jquery-2.0.3.min', 'bootstrap.min.js', 'bootstrap-editable.min',
+                             'bootstrap-table.min.js', 'bootstrap-table-editable.min', 'semantic.min.js', 'jquery.validate.min.js', 'bootstrap-table-filter-control.min.js', 'semantic.js', plugin: 'kpi_report' %>
+<% end %>
+<script>
+    $('#header').css("display", "none");
+    $('#top-menu').css("height", "50px")
+    $('#top-menu').css("z-index", "10")
+    $('#top-menu').css("z-index", "10")
+    $('.checkbox').css("display", "none");
+    $('#top-menu').css("position", "relative")
+</script>
+<style>
+  a {
+    color: inherit !important;
+  }
+
+  #content {
+    z-index: unset;
+  }
+  #kpi_table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  #kpi_table th {
+    font-size: 12px;
+  }
+  /*#kpi_table{*/
+  /*  zoom: 100%;*/
+  /*}*/
+    /*select{*/
+    /*  width: 100%;*/
+    /*}*/
+
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div>
+  <div>
+    <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+      <table style="margin: 0 auto;">
+        <tr>
+          <td>
+            <h4 style="margin: 0">Phụ lục 04A: Tổng hợp kết quả đánh giá mức độ hoàn thành nhiệm vụ/công việc của CBNV tại đơn vị </h4>
+          </td>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+        </tr>
+      </table>
+    <% end %>
+  </div>
+  <div>
+    <div style="display: table;margin: 0 auto;">(Kèm theo Quyết định số: 2345/QĐ-CNVTQĐ-TCNL ngày 10 tháng 07 năm 2020 của Tổng Giám đốc Tập đoàn)
+    </div>
+  </div>
+  <div style="margin-bottom: 20px">
+    <h4 style="margin: 0">Kỳ đánh giá: <%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></h4>
+    <table id="kpi_table" class="table table-bordered striped table-responsive" style="width: 100%">
+      <thead>
+      <tr>
+        <th rowspan="4">TT</th>
+        <th rowspan="4">Mã nhân viên</th>
+        <th rowspan="4">Họ và tên</th>
+        <th rowspan="4">Chức danh</th>
+        <th rowspan="4">Đơn vị</th>
+        <th rowspan="4">Phòng ban</th>
+        <th rowspan="4">Tổ nhóm</th>
+        <th colspan="6" style="text-align:center">Kết quả hoàn thành nhiệm vụ/công việc quý 3/2020</th>
+        <th rowspan="4">Ghi chú, đề xuất của người quản lý trực tiếp với CBNV</th>
+        <th rowspan="4">Ghi chú, đề xuất của người Chỉ huy với CBNV</th>
+        <th rowspan="4">Chú ý</th>
+        <th rowspan="4" >Hành động</th>
+      </tr>
+      <tr>
+        <th rowspan="2">Điểm đánh giá</th>
+        <th rowspan="2">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
+        <th rowspan="2">Tuân thủ địa điểm làm việc</th>
+        <th rowspan="2">Tuân thủ Nội quy lao động</th>
+        <th rowspan="2">Xếp loại Ki</th>
+        <th rowspan="2">Xếp loại mức độ hoàn thành nhiệm vụ/công việc</th>
+      </tr>
+
+      </thead>
+      <tbody>
+      <% $num = 0 %>
+      <%# @kpi_raking.each do |kpi| %>
+      <% (1..@kpi_raking.size).each do |i| %>
+      <%# $num+=1 %>
+      <tr>
+        <td><%= $num+1  %></td>
+        <td><%= @kpi_raking[$num].employee_id %></td>
+        <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
+        <td><%= @kpi_raking[$num].job_title %></td>
+        <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
+        <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).first.value %></td>
+        <td></td>
+        <td>100</td>
+        <td>
+          <select disabled>
+            <option>Vượt xa yêu cầu</option>
+            <option>Vượt yêu cầu</option>
+            <option>Đạt yêu cầu</option>
+            <option>Gần đạt yêu cầu</option>
+            <option>Không đạt yêu cầu</option>
+            <option>Không đánh giá</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option>Tuân thủ</option>
+            <option>Không tuân thủ</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option>Tuân thủ</option>
+            <option>Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
+            <option>Bị xử lý kỷ luật lao động</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option></option>
+            <option>A+</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+            <option>K</option>
+          </select>
+        </td>
+        <td>
+          <select disabled>
+            <option>Vượt xa yêu cầu</option>
+            <option>Vượt yêu cầu</option>
+            <option>Đạt yêu cầu</option>
+            <option>Gần đạt yêu cầu</option>
+            <option>Không đạt yêu cầu</option>
+            <option>Không đánh giá</option>
+          </select>
+        </td>
+        <td>
+          haidn4: tốt
+          hamg: tốt
+        </td>
+        <td><textarea style="width:100%;"></textarea> </td>
+        <td><textarea style="width:100%;"></textarea></td>
+        <td>
+          <a title="Lưu" href="#" onclick="saveChangeKPI(this)" class="btn btn-success">
+            <i class="fa fa-check"></i>
+          </a>
+        </td>
+        <tr>
+          <% $num+=1 %>
+      <% end %>
+      </tbody>
+      <tfoot>
+
+      </tfoot>
+    </table>
+  </div>
+</div>
+</body>
+</html>
