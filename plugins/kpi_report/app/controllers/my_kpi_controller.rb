@@ -84,6 +84,9 @@ class MyKpiController < ApplicationController
     @total_cbnv_point = result[1]
     @total_qltt_point = result[2]
     flash.delete(:notice)
+    respond_to do |format|
+      format.html # show.html.erb
+    end
   end
 
   def status
@@ -101,7 +104,8 @@ class MyKpiController < ApplicationController
     @donvido = CustomField.find(138).enumerations.map { |a| a.name == donvido ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
     cbnv_point = issue_customfield_value(@issue, 140)
     @cbnv_point = CustomField.find(140).enumerations.map { |a| a.name == cbnv_point ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
-    @qltt_point = CustomField.find(141).enumerations.map { |a| {'value': a.id, 'name': a.name} }
+    qltt_point = issue_customfield_value(@issue, 141)
+    @qltt_point = CustomField.find(141).enumerations.map { |a| a.name == qltt_point ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
     @tracker = Project.find(1072).trackers.map { |a| a.id == @issue.tracker_id ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
     data = {
         'status': @status,
@@ -129,20 +133,21 @@ class MyKpiController < ApplicationController
     @issue = Issue.find(params[:id])
     @caregory = @issue.project.issue_categories
                     .map { |a| a.id == (@issue.category.nil? ? "" : @issue.category.id) ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
-    note = @issue.journals.where.not(:notes => "").map { |a| {"user": User.find(a.user_id).login, "note": a.notes} }
+    note = @issue.journals.where.not(:notes => "").map { |a|  User.find(a.user_id).login+": "+ a.notes }
     data = {
-        'note': note,
+        'note': note.join("\n"),
         'category': @caregory,
         'description': @issue.description,
         'start_date': @issue.start_date,
         'due_date': @issue.due_date,
+        'status_id': @issue.status_id
     }
     render json: data
   end
 
   def get_main_qltt(user_id, version)
     sql = "select author_id,Max(tytrong) as tt from (SELECT  issues.author_id,sum(custom_values.value) as tytrong FROM `issues` inner join custom_values on issues.id = custom_values.customized_id
-WHERE `issues`.`project_id` = 1072 AND `issues`.`assigned_to_id` = " + user_id.to_s + " and fixed_version_id=" + version.to_s + " and custom_values.custom_field_id=139
+WHERE `issues`.`project_id` = 1072 AND `issues`.`assigned_to_id` = " + user_id.to_s + " and fixed_version_id=" + version.to_s + " and custom_values.custom_field_id=139 and issues.status_id !=35
 group by issues.author_id)   as y"
     result = ActiveRecord::Base.connection.execute(sql);
     return result.as_json.first.first

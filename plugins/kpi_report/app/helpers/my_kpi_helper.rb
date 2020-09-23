@@ -24,4 +24,25 @@ module MyKpiHelper
     end
     return value
   end
+
+  def percent_cbnv(user_id, version)
+    total_kpi = Project.find(1072).issues.where(:author_id => User.current.id)
+                    .where(:fixed_version_id => version)
+                    .where(:assigned_to => user_id)
+                    .where.not(:status_id => 35).count
+    count_da_danh_gia = Project.find(1072).issues.where(:author_id => User.current.id)
+                            .where(:fixed_version_id => version)
+                            .where(:assigned_to => user_id)
+                            .where(:status_id => [29, 32, 33]).count
+    percent = 100 - (count_da_danh_gia * 100.0) / total_kpi
+    result = case
+             when percent == 0
+               "danger"
+             when percent < 100 && percent > 0
+               "doing"
+             when percent == 100
+               "complete"
+             end
+    result
+  end
 end
