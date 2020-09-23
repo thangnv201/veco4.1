@@ -18,12 +18,13 @@ class CnbvKpiController < ApplicationController
     end
     if users_id.size == 0
       @ki_raking = nil
+      @kpi_each = nil
     else
       sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
       @records_array = ActiveRecord::Base.connection.execute(sql)
       @ki_raking = @records_array.as_json
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
     end
-
   end
 
   def save
@@ -31,11 +32,11 @@ class CnbvKpiController < ApplicationController
       check_create = PeopleKi.where(user_id: uid, version_id: params[:version_id]).size
       if check_create > 0
         pkid=PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
-        PeopleKi.update(pkid, :location_compliance => params[:location],
+        PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
                         :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                         :manager_note => params[:manage_note], :note => params[:note]);
       else
-        PeopleKi.create(:user_id => uid, :version_id => params[:version_id], :location_compliance => params[:location],
+        PeopleKi.create(:user_id => uid, :version_id => params[:version_id],:kpi_type =>params[:ki_type], :location_compliance => params[:location],
                         :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                         :manager_note => params[:manage_note], :note => params[:note]);
       end
