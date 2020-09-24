@@ -78,16 +78,41 @@
         </div>
       <% end %>
       <% Project.find(1072).versions.each do |version| %>
-        <% if count_kpi_open(version.id)[0] > 0 %>
+        <% data = count_kpi_open(version.id) %>
+        <% if data[0] > 0 %>
           <div class="ui teal segment">
-            <%= version.name %> :<%= count_kpi_open(version.id)[0] %> KPIs (<%= count_kpi_open(version.id)[3] %>%)
+            <%= version.name %> :<%= data[0] %> KPIs (<%= data[6] %>%)
             <br>
-            <div style="margin-top: 10px">
-              <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=29&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=">
-                Đã thống nhất với
-                QLTT: <%= count_kpi_open(version.id)[1] %>
-                /<%= count_kpi_open(version.id)[0] %> (KPIs) </a>
-            </div>
+            <% if data[1].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=29&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=">
+                  Đang dự thảo: <%= data[1] %>/<%= data[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data[2].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=32&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=">
+                  Đã thống nhất: <%= data[2] %>/<%= data[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data[3].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=33&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=">
+                  Tự đánh giá: <%= data[3] %>/<%= data[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data[4].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=34&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=">
+                  QLTT đã đánh giá: <%= data[4] %>/<%= data[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data[5].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=36&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=assigned_to_id&op%5Bassigned_to_id%5D=%3D&v%5Bassigned_to_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=&t%5B%5D=estimated_hours&t%5B%5D=">
+                  Đã hoàn thành: <%= data[5] %>/<%= data[0] %> (KPIs) </a>
+              </div>
+            <% end %>
           </div>
         <% end %>
       <% end %>
@@ -102,16 +127,41 @@
         </div>
       <% end %>
       <% Project.find(1072).versions.each do |version| %>
-        <% if count_kpi_open_cnbv(version.id)[0] > 0 %>
+        <% data_cbnv = count_kpi_open_cnbv(version.id) %>
+        <% if data_cbnv[0] > 0 %>
           <div class="ui teal segment">
-            <%= version.name %> :<%= count_kpi_open_cnbv(version.id)[0] %> KPIs (<%= count_kpi_open_cnbv(version.id)[3] %>%)
+            <%= version.name %> :<%= data_cbnv[0] %> KPIs (<%= data_cbnv[6] %>%)
             <br>
-            <div style="margin-top: 10px">
-              <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=%E2%9C%93&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=29&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=estimated_hours&t%5B%5D=">
-                Đã thống nhất với
-                CNBV: <%= count_kpi_open_cnbv(version.id)[1] %>
-                /<%= count_kpi_open_cnbv(version.id)[0] %> (KPIs) </a>
-            </div>
+            <% if data_cbnv[1].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=29&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=">
+                  Đang dự thảo: <%= data_cbnv[1] %>/<%= data_cbnv[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data_cbnv[2].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=32&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=">
+                  Đã thống nhất: <%= data_cbnv[2] %>/<%= data_cbnv[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data_cbnv[3].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=33&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=">
+                  Tự đánh giá: <%= data_cbnv[3] %>/<%= data_cbnv[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data_cbnv[4].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=34&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=">
+                  QLTT đã đánh giá: <%= data_cbnv[4] %>/<%= data_cbnv[0] %> (KPIs) </a>
+              </div>
+            <% end %>
+            <% if data_cbnv[5].to_i > 0 %>
+              <div style="margin-top: 10px">
+                <a target="_blank" href="/projects/vht-performance-management-system/issues?utf8=✓&set_filter=1&sort=id%3Adesc&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=36&f%5B%5D=fixed_version_id&op%5Bfixed_version_id%5D=%3D&v%5Bfixed_version_id%5D%5B%5D=<%= version.id %>&f%5B%5D=author_id&op%5Bauthor_id%5D=%3D&v%5Bauthor_id%5D%5B%5D=me&f%5B%5D=&c%5B%5D=project&c%5B%5D=tracker&c%5B%5D=subject&c%5B%5D=status&c%5B%5D=done_ratio&c%5B%5D=author&c%5B%5D=assigned_to&c%5B%5D=visible_watchers&c%5B%5D=start_date&c%5B%5D=due_date&c%5B%5D=cf_1&c%5B%5D=cf_2&group_by=assigned_to&t%5B%5D=">
+                  Đã hoàn thành: <%= data_cbnv[5] %>/<%= data_cbnv[0] %> (KPIs) </a>
+              </div>
+            <% end %>
           </div>
         <% end %>
       <% end %>

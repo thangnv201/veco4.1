@@ -189,44 +189,67 @@ module MyHelper
     @user = User.current
     @user = Person.find(User.current.id)
     data = []
-    kpi_open = @user.assigned_issues.where(:tracker_id => [39, 40, 41]).open.where.not(:status_id => 35)
+    issues = @user.assigned_issues.where(:tracker_id => [39, 40, 41])
+    kpi_open = issues.where.not(:status_id => 35)
                    .where(:fixed_version_id => version_id).count
-    kpi_signed = @user.assigned_issues.where(:tracker_id => [39, 40, 41]).open.where(:status_id => 32)
-                     .where(:fixed_version_id => version_id).count
-    kpi_done = @user.assigned_issues.where(:tracker_id => [39, 40, 41]).open.where(:status_id => 33)
-                   .where(:fixed_version_id => version_id).count
-    total =0
+    kpi_du_thao = issues.where(:status_id => 29)
+                      .where(:fixed_version_id => version_id).count
+    kpi_thongnhat = issues.where(:status_id => 32)
+                        .where(:fixed_version_id => version_id).count
+    kpi_tu_danh_gia = issues.where(:status_id => 33)
+                          .where(:fixed_version_id => version_id).count
+    kpi_qltt_danh_gia = issues.where(:status_id => 34)
+                            .where(:fixed_version_id => version_id).count
+    kpi_close = issues.where(:status_id => 36)
+                            .where(:fixed_version_id => version_id).count
+    total = 0
     @user.assigned_issues.where(:tracker_id => [39, 40, 41]).open.where.not(:status_id => 35)
         .where(:fixed_version_id => version_id).each do |issue|
-      total += Integer(issue_customfield_value(issue,139))
+      total += Integer(issue_customfield_value(issue, 139))
     end
     data << kpi_open
-    data << kpi_signed
-    data << kpi_done
+    data << kpi_du_thao
+    data << kpi_thongnhat
+    data << kpi_tu_danh_gia
+    data << kpi_qltt_danh_gia
+    data << kpi_close
     data << total
     return data
   end
+
   def count_kpi_open_cnbv(version_id)
     @user = User.current
     @user = Person.find(User.current.id)
     data = []
-    kpi_open = Project.find(1072).issues.where(:author_id=>User.current.id).open.where.not(:status_id => 35)
+    issues = Project.find(1072).issues.where(:author_id => User.current.id)
+    kpi_open = issues.where.not(:status_id => 35)
                    .where(:fixed_version_id => version_id).count
-    kpi_signed = Project.find(1072).issues.where(:author_id=>User.current.id).open.where(:status_id => 32)
-                     .where(:fixed_version_id => version_id).count
-    kpi_done = Project.find(1072).issues.where(:author_id=>User.current.id).open.where(:status_id => 33)
-                   .where(:fixed_version_id => version_id).count
-    total =0
-    Project.find(1072).issues.where(:author_id=>User.current.id).open.where.not(:status_id => 35)
+    kpi_du_thao = issues.where(:status_id => 29)
+                      .where(:fixed_version_id => version_id).count
+    kpi_thongnhat = issues.where(:status_id => 32)
+                        .where(:fixed_version_id => version_id).count
+    kpi_tu_danh_gia = issues.where(:status_id => 33)
+                          .where(:fixed_version_id => version_id).count
+    kpi_qltt_danh_gia = issues.where(:status_id => 34)
+                            .where(:fixed_version_id => version_id).count
+    kpi_close = issues.where(:status_id => 36)
+                    .where(:fixed_version_id => version_id).count
+    total = 0
+    Project.find(1072).issues.where(:author_id => User.current.id).open.where.not(:status_id => 35)
         .where(:fixed_version_id => version_id).each do |issue|
-      total += Integer(issue_customfield_value(issue,139))
+      total += Integer(issue_customfield_value(issue, 139))
     end
     data << kpi_open
-    data << kpi_signed
-    data << kpi_done
+    data << kpi_du_thao
+    data << kpi_thongnhat
+    data << kpi_tu_danh_gia
+    data << kpi_qltt_danh_gia
+    data << kpi_close
     data << total
     return data
+    return data
   end
+
   def issue_customfield_value(issue, custom_field_id)
     value = issue.custom_field_values.find { |x| x.custom_field.id == custom_field_id }.value
     if CustomField.find(custom_field_id).field_format == "enumeration"
