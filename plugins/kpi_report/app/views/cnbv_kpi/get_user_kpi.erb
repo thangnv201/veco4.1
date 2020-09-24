@@ -1,0 +1,186 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'bootstrap.min', 'all', 'bootstrap-table.min', 'bootstrap-editable', plugin: 'kpi_report' %>
+  <%= javascript_include_tag 'popper.min', 'jquery-2.0.3.min', 'bootstrap.min.js', 'bootstrap-editable.min',
+                             'bootstrap-table.min.js', 'bootstrap-table-editable.min', 'semantic.min.js', 'jquery.validate.min.js', 'bootstrap-table-filter-control.min.js', 'moment.js', plugin: 'kpi_report' %>
+<% end %>
+<script>
+    $('#header').css("display", "none");
+    $('#header').css("display", "none");
+    $('#top-menu').css("height", "50px")
+    $('#top-menu').css("z-index", "10")
+    $('#top-menu').css("z-index", "10")
+    $('.checkbox').css("display", "none");
+    $('#top-menu').css("position", "relative")
+</script>
+<style>
+  a {
+    color: inherit !important;
+  }
+
+  #content {
+    z-index: unset;
+  }
+
+</style>
+<div style="margin-bottom: 20px">
+  <div style="font-weight: bold;margin-bottom: 10px">1. Thông tin chung</div>
+  <div>Chỉ huy trực
+    tiếp:<strong> <%= Person.find(params[:uid]).manager.nil? ? "N/A" : Person.find(params[:uid]).manager.firstname %></strong>
+  </div>
+  <div style="display: flex;margin-top: 10px;">
+    <div style="width: 25%">Họ và tên:<strong> <%= issue_customfield_value(User.find(params[:uid]), 56) %></strong></div>
+    <div style="width: 25%">Mã nhân viên:<strong>  <%= issue_customfield_value(User.find(params[:uid]), 55) %></strong></div>
+    <div style="width: 25%">Chức danh công việc:<strong>  <%= issue_customfield_value(User.find(params[:uid]), 52) %></strong>
+    </div>
+  </div>
+  <div style="margin-top: 10px;">Cơ quan đơn vị:<strong>  <%= issue_customfield_value(User.find(params[:uid]), 53) %></strong>
+  </div>
+  <div style="margin-top: 10px;">Phòng ban trung
+    tâm:<strong>  <%= issue_customfield_value(User.find(params[:uid]), 54) %></strong></div>
+  <div style="margin-top: 10px;display: flex">
+    <div style="width: 80%">Địa điểm làm
+      việc: <%= select_tag "diadiemlamviec", options_for_select(CustomField.find(165).possible_values, issue_customfield_value(User.find(params[:uid]), 165)), :style => 'font-weight: bold;border: 1px #2980b9 solid' %>
+    </div>
+
+  </div>
+</div>
+<div style="font-weight: bold;width: 100%;margin-bottom: 10px">2. Nội dung giao nhiệm vụ, công việc và đánh giá kết quả
+  thực hiện
+</div>
+<table id="table"
+       data-show-export="true" class="table table-bordered striped table-responsive">
+  <thead>
+  <tr>
+    <th data-field="status">Status</th>
+    <th data-field="muctieu">Mục tiêu</th>
+    <th data-field="chiso">Chỉ số KPI</th>
+    <th data-field="donvido">Đơn vị
+      đo
+    </th>
+    <th data-field="tytrong">Tỷ
+      trọng
+    </th>
+    <th data-field="s">S</th>
+    <th data-field="b">B</th>
+    <th data-field="t">T</th>
+    <th data-field="kq">KQ</th>
+    <th data-field="tu_danh_gia">Tự
+      đánh giá
+    </th>
+    <th data-field="qltt_danh_gia">QLTT
+      đánh giá
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @kpi_open_dinh_luong.each do |kpi| %>
+    <tr id=<%= kpi.id %> status="saved">
+      <td>
+        <div style="margin-bottom: 10px;">
+          <% if kpi.status_id == 35 %>
+            <a target="_blank" style="background-color: #B22222;color: white !important;" href="/issues/<%= kpi.id %>">
+              #<%= kpi.id %></a>
+          <% elsif kpi.status_id == 29 %>
+            <a target="_blank" style="background-color: #7f8c8d;color: white !important;" href="/issues/<%= kpi.id %>">
+              #<%= kpi.id %></a>
+          <% elsif kpi.status_id == 32 %>
+            <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+              #<%= kpi.id %></a>
+          <% elsif kpi.status_id == 33 %>
+            <a target="_blank" style="background-color: #e67e22;color: white !important;" href="/issues/<%= kpi.id %>">
+              #<%= kpi.id %></a>
+          <% elsif kpi.status_id == 34 %>
+            <a target="_blank" style="background-color: #8e44ad;color: white !important;" href="/issues/<%= kpi.id %>">
+              #<%= kpi.id %></a>
+          <% elsif kpi.status_id == 36 %>
+            <a target="_blank" style="background-color: #27ae60;color: white !important;" href="/issues/<%= kpi.id %>">
+              #<%= kpi.id %></a>
+          <% end %>
+        </div>
+        <div style="margin-bottom: 10px">
+          <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
+        </div>
+        <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
+        </div>
+        <div style="margin-bottom: 10px"><strong>Người giao: </strong>
+          <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.author.login %></a><br>
+        </div>
+
+      </td>
+      <td>
+        <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
+      </td>
+      <td>
+        <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
+      </td>
+      <td>
+        <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
+      </td>
+      <td>
+        <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
+      </td>
+      <% if kpi.tracker_id == 39 %>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
+        </td>
+      <% end %>
+      <% if kpi.tracker_id == 40 %>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
+        </td>
+      <% end %>
+      <% if kpi.tracker_id == 41 %>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
+        </td>
+        <td>
+          <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
+        </td>
+      <% end %>
+      <td>
+        <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
+      </td>
+      <td>
+        <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
+      </td>
+    </tr>
+  <% end %>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><%= @total_ti_trong %> %</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><%= @total_cbnv_point %></td>
+    <td><%= @total_qltt_point %></td>
+  </tr>
+  </tbody>
+</table>

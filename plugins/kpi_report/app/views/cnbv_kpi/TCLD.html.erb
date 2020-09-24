@@ -164,7 +164,7 @@
 <body>
 <div>
   <div>
-    <%= form_tag({:controller => 'cnbv_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+    <%= form_tag({:controller => 'cnbv_kpi', :action => 'TCLD'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
       <table style="margin: 0 auto;">
         <tr>
           <td>
@@ -172,6 +172,7 @@
               tại Cơ quan/ Đơn vị </h4>
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "manager", options_for_select(User.where(id: PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq).map { |obj| [obj.firstname, obj.id] }, $pmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
@@ -553,13 +554,6 @@
 
       </tfoot>
     </table>
-    <div class="row" style="text-align: center">
-      <button data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-        <i class="fa fa-check"></i>
-        Chốt KI gửi phòng TCLĐ
-      </button>
-    </div>
-
   </div>
 </div>
 </body>
@@ -831,12 +825,7 @@
         }
     }
 
-    function submitKI() {
-        alert("gửi");
-    }
-
     function detailKPI(uid,vid) {
-
         let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid='+uid+'&&vid='+vid;
         window.open(url, "_blank");
 
