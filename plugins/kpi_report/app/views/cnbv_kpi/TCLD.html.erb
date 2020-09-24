@@ -362,13 +362,12 @@
         <th rowspan="4">Tuân thủ địa điểm làm việc</th>
         <th rowspan="4">Tuân thủ Nội quy lao động</th>
         <th rowspan="4" data-sorter="false">CBNV đánh giá theo tiêu
-          chuẩn<input type="checkbox" name="chk_all_goods" class="chk_all_goods" onClick="checkAll()"></th>
+          chuẩn</th>
         <th rowspan="4">Xếp loại Ki</th>
         <th rowspan="4">Xếp loại mức độ hoàn thành nhiệm vụ/công việc</th>
         <th rowspan="4">Ghi chú, đề xuất của người QLTT với CBNV</th>
         <th rowspan="4" style="width: 200px">Ghi chú, đề xuất của người Chỉ huy với CBNV</th>
         <th rowspan="4" style="width: 200px">Chú ý</th>
-        <th rowspan="4">Hành động</th>
       </tr>
 
 
@@ -415,99 +414,42 @@
             <% end %>
           </td>
           <td>
-            <select>
               <% if @ki_raking[$num][25] == 1 || @ki_raking[$num][25].nil? %>
-                <option value="1" selected="selected">Tuân thủ</option>
-                <option value="2">Không tuân thủ</option>
+                Tuân thủ
               <% elsif @ki_raking[$num][25] == 2 %>
-                <option value="1">Tuân thủ</option>
-                <option value="2" selected="selected">Không tuân thủ</option>
+                Không tuân thủ
               <% end %>
-            </select>
           </td>
           <td>
-            <select>
               <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
-                <option value="1" selected="selected">Tuân thủ</option>
-                <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                <option value="3">Bị xử lý kỷ luật lao động</option>
+                Tuân thủ
               <% elsif @ki_raking[$num][26] == 2 %>
-                <option value="1">Tuân thủ</option>
-                <option value="2" selected="selected">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                <option value="3">Bị xử lý kỷ luật lao động</option>
+                Vi phạm nhưng chưa đến mức bị xử lý kỷ luật
               <% elsif @ki_raking[$num][26] == 3 %>
-                <option value="1">Tuân thủ</option>
-                <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                <option value="3" selected="selected">Bị xử lý kỷ luật lao động</option>
+                Bị xử lý kỷ luật lao động
               <% end %>
-            </select>
           </td>
           <td>
             <% if @ki_raking[$num][24].nil? or @ki_raking[$num][24] == 1 %>
-              <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(this)"></td>
+              <input type="checkbox" name="chk_goods" class="chk_goods" disabled></td>
             <% elsif @ki_raking[$num][24] == 2 %>
-              <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(this)" checked></td>
+              <input type="checkbox" name="chk_goods" class="chk_goods"checked disabled></td>
             <% end %>
             <td>
-              <select id="<%= "select_ki" + $num.to_s %>" onchange="mySelectKI(<%= $num %>)">
                 <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" name="optionchange">A+</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="K">K</option>
                 <% elsif @ki_raking[$num][27] == "A+" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" selected="selected" name="optionchange">A+</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="K">K</option>
+                  A+
                 <% elsif @ki_raking[$num][27] == "A" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" name="optionchange">A+</option>
-                  <option value="A" selected="selected">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="K">K</option>
+                  A
                 <% elsif @ki_raking[$num][27] == "B" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" name="optionchange">A+</option>
-                  <option value="A">A</option>
-                  <option value="B" selected="selected">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="K">K</option>
+                  B
                 <% elsif @ki_raking[$num][27] == "C" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" name="optionchange">A+</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C" selected="selected">C</option>
-                  <option value="D">D</option>
-                  <option value="K">K</option>
+                  C
                 <% elsif @ki_raking[$num][27] == "D" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" name="optionchange">A+</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D" selected="selected">D</option>
-                  <option value="K">K</option>
+                  D
                 <% elsif @ki_raking[$num][27] == "K" %>
-                  <option value="" selected="selected"></option>
-                  <option value="A+" name="optionchange">A+</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="K" selected="selected">K</option>
+                  K
                 <% end %>
-              </select>
             </td>
             <td id="<%= "text_ki" + $num.to_s %>">
               <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
@@ -538,14 +480,9 @@
               <% end %>
               <%= $com %>
             </td>
-            <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;"><%= @ki_raking[$num][30] %></textarea>
+            <td><%= @ki_raking[$num][30] %>
             </td>
-            <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;"><%= @ki_raking[$num][31] %></textarea></td>
-            <td>
-              <a title="Lưu" href="#" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary">
-                <i class="fa fa-check"></i>
-              </a>
-            </td>
+            <td><%= @ki_raking[$num][31] %></td>
             </tr>
         <% $num += 1 %>
       <% end %>
@@ -586,70 +523,6 @@
 
     }
 
-    function saveChangeKI(btn, num) {
-        let data = $(btn).parent().parent()
-        let ki_id = $(btn).parent().parent().attr("ki_id");
-        let version_id = $('#version_id1').val();
-        let ki_type = 1;
-        if (data.find("input:eq(0)").is(':checked') == true) {
-            ki_type = 2;
-        } else {
-            ki_type = 1;
-        }
-        let empObj = {
-            ki_id: ki_id,
-            user_code: data.find("td:eq(1)").text(),
-            version_id: version_id,
-            ki_type: ki_type,
-            location: data.find("select:eq(0)").val(),
-            labor_rules: data.find("select:eq(1)").val(),
-            ki: data.find("select:eq(2)").val(),
-            manage_note: $('#m_note' + num).val(),
-            note: $('#note' + num).val()
-        };
-        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/save';
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: "json",
-            data: empObj,
-            success: function (result) {
-                //location.reload();
-            },
-            error: function () {
-            }
-        })
-    }
-
-
-    function checkAll() {
-
-        if ($('input[name="chk_all_goods"]').is(':checked')) {
-            $('span').addClass("on");
-            $(".chk_goods").prop("checked", true);
-            $('#totalother').text(0);
-            $('#totalprimary').text($('#totalemployee').val());
-        } else {
-            $('span').removeClass("on");
-            $(".chk_goods").prop("checked", false);
-            $('#totalother').text($('#totalemployee').val());
-            $('#totalprimary').text(0);
-        }
-        rentCapacity();
-    }
-
-    function CheckOne(checkbox) {
-        let a = checkbox;
-        if (a.checked == true) {
-            $('#totalother').text(parseInt($('#totalother').text()) - 1);
-            $('#totalprimary').text(parseInt($('#totalprimary').text()) + 1);
-        } else {
-            $('#totalother').text(parseInt($('#totalother').text()) + 1);
-            $('#totalprimary').text(parseInt($('#totalprimary').text()) - 1);
-        }
-        rentCapacity();
-    }
-
     function rentCapacity() {
         let otNumAPlus = 0;
         let otNumA = 0;
@@ -676,22 +549,22 @@
                 $(tr.cells[3]).css('background-color', '#3498db');
             }
             if ($(tr.cells[7]).find("input").is(':checked') == true) {
-                if ($(tr.cells[8]).find("select").val() == "A+") {
+                if ($(tr.cells[8]).text().trim() == "A+") {
                     numAPlus += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "A") {
+                } else if ($(tr.cells[8]).text().trim() == "A") {
                     numA += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "B") {
+                } else if ($(tr.cells[8]).text().trim() == "B") {
                     numB += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "C") {
+                } else if ($(tr.cells[8]).text().trim() == "C") {
                     numC += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "D") {
+                } else if ($(tr.cells[8]).text().trim() == "D") {
                     numD += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "K") {
+                } else if ($(tr.cells[8]).text().trim() == "K") {
                     numK += 1;
                     totalprimary += 1;
                 } else {
@@ -699,22 +572,22 @@
                     totalprimary += 1;
                 }
             } else {
-                if ($(tr.cells[8]).find("select").val() == "A+") {
+                if ($(tr.cells[8]).text().trim() == "A+") {
                     otNumAPlus += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "A") {
+                } else if ($(tr.cells[8]).text().trim() == "A") {
                     otNumA += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "B") {
+                } else if ($(tr.cells[8]).text().trim() == "B") {
                     otNumB += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "C") {
+                } else if ($(tr.cells[8]).text().trim() == "C") {
                     otNumC += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "D") {
+                } else if ($(tr.cells[8]).text().trim() == "D") {
                     otNumD += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "K") {
+                } else if ($(tr.cells[8]).text().trim() == "K") {
                     otNumK += 1;
                     totalother += 1;
                 } else {
