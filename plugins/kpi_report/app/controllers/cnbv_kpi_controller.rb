@@ -10,7 +10,8 @@ class CnbvKpiController < ApplicationController
       $kidanhgia = Project.find(1072).versions.first.id
     end
     $pmid = User.current.id
-    @kpi_raking = PeopleInformation.where(manager_id: $pmid).order(:user_id)
+    $alluser = User.where(status:1).select(:id)
+    @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id:$alluser).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
@@ -38,7 +39,6 @@ class CnbvKpiController < ApplicationController
     else
       $pmid = PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq.first
     end
-    # $pmid = User.current.id
     @kpi_raking = PeopleInformation.where(manager_id: $pmid).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
@@ -68,6 +68,14 @@ class CnbvKpiController < ApplicationController
                         :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                         :manager_note => params[:manage_note], :note => params[:note]);
       end
+  end
+  def saveAllKI
+    check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
+    if check_create > 0
+      PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
+    else
+      PeopleKiLock.create(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
+    end
   end
 
   def get_user_kpi

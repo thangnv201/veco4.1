@@ -39,7 +39,7 @@
     tâm:<strong>  <%= issue_customfield_value(User.find(params[:uid]), 54) %></strong></div>
   <div style="margin-top: 10px;display: flex">
     <div style="width: 80%">Địa điểm làm
-      việc: <%= select_tag "diadiemlamviec", options_for_select(CustomField.find(165).possible_values, issue_customfield_value(User.find(params[:uid]), 165)), :style => 'font-weight: bold;border: 1px #2980b9 solid' %>
+      việc: <strong>  <%= issue_customfield_value(User.find(params[:uid]), 165) %></strong>
     </div>
 
   </div>

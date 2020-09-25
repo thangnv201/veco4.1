@@ -203,7 +203,7 @@
           <tbody>
           <tr>
             <td>A+</td>
-            <td id="otRealAPlusCapa"></td>
+            <td name="validateCapa" id="otRealAPlusCapa"></td>
             <td id="otNumAPlus"></td>
             <td>10%</td>
             <td id="otNumAPlusByCapa"></td>
@@ -211,7 +211,7 @@
           </tr>
           <tr>
             <td>A</td>
-            <td id="otRealACapa"></td>
+            <td name="validateCapa" id="otRealACapa"></td>
             <td id="otNumA"></td>
             <td>15%</td>
             <td id="otNumAByCapa"></td>
@@ -219,7 +219,7 @@
           </tr>
           <tr>
             <td>B</td>
-            <td id="otRealBCapa"></td>
+            <td name="validateCapa" id="otRealBCapa"></td>
             <td id="otNumB"></td>
             <td>60%</td>
             <td id="otNumBByCapa"></td>
@@ -227,7 +227,7 @@
           </tr>
           <tr>
             <td>C</td>
-            <td id="otRealCCapa"></td>
+            <td name="validateCapa" id="otRealCCapa"></td>
             <td id="otNumC"></td>
             <td>12%</td>
             <td id="otNumCByCapa"></td>
@@ -235,7 +235,7 @@
           </tr>
           <tr>
             <td>D</td>
-            <td id="otRealDCapa"></td>
+            <td name="validateCapa" id="otRealDCapa"></td>
             <td id="otNumD"></td>
             <td>3%</td>
             <td id="otNumDByCapa"></td>
@@ -279,7 +279,7 @@
           <tbody>
           <tr>
             <td>A+</td>
-            <td id="realAPlusCapa"></td>
+            <td name="validateCapa" id="realAPlusCapa"></td>
             <td id="numAPlus"></td>
             <td>Không yêu cầu</td>
             <td id="numAPlusByCapa"></td>
@@ -287,7 +287,7 @@
           </tr>
           <tr>
             <td>A</td>
-            <td id="realACapa"></td>
+            <td name="validateCapa" id="realACapa"></td>
             <td id="numA"></td>
             <td>15%</td>
             <td id="numAByCapa"></td>
@@ -295,7 +295,7 @@
           </tr>
           <tr>
             <td>B</td>
-            <td id="realBCapa"></td>
+            <td name="validateCapa" id="realBCapa"></td>
             <td id="numB"></td>
             <td>70%</td>
             <td id="numBByCapa"></td>
@@ -303,7 +303,7 @@
           </tr>
           <tr>
             <td>C</td>
-            <td id="realCCapa"></td>
+            <td name="validateCapa" id="realCCapa"></td>
             <td id="numC"></td>
             <td rowspan="2">15%</td>
             <td id="numCByCapa"></td>
@@ -311,7 +311,7 @@
           </tr>
           <tr>
             <td>D</td>
-            <td id="realDCapa"></td>
+            <td name="validateCapa" id="realDCapa"></td>
             <td id="numD"></td>
             <td id="numDByCapa"></td>
             <td></td>
@@ -553,12 +553,40 @@
 
       </tfoot>
     </table>
-    <div class="row" style="text-align: center">
-      <button data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-        <i class="fa fa-check"></i>
-        Chốt KI gửi phòng TCLĐ
-      </button>
-    </div>
+    <% if $num != 0 %>
+      <% status = check_ki_lock_status(User.current.id,$kidanhgia) %>
+      <% if status == 0 %>
+        <div class="row" style="text-align: center">
+          <button data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-check"></i>
+            Chốt KI gửi phòng TCLĐ
+          </button>
+        </div>
+      <% elsif status == 2 %>
+        <div class="row" style="text-align: center">
+          <button data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-check"></i>
+            Đợi Phòng TCLD chốt KI
+          </button>
+        </div>
+      <% elsif status == 3 %>
+        <div class="row" style="text-align: center">
+          <button data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-check"></i>
+            Phòng TCLD từ chối KI yêu cầu rà soát lại
+          </button>
+        </div>
+      <% elsif status == 4 %>
+        <div class="row" style="text-align: center">
+          <button data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-check"></i>
+            KI đã chốt
+          </button>
+        </div>
+      <% end %>
+
+    <% end %>
+
 
   </div>
 </div>
@@ -587,7 +615,7 @@
         } else if (ki == "D") {
             $('#text_ki' + num).text("Không hoàn thành NV/CV");
         }
-        rentCapacity();
+        //rentCapacity();
 
 
     }
@@ -620,7 +648,7 @@
             dataType: "json",
             data: empObj,
             success: function (result) {
-                //location.reload();
+                rentCapacity();
             },
             error: function () {
             }
@@ -633,28 +661,28 @@
         if ($('input[name="chk_all_goods"]').is(':checked')) {
             $('span').addClass("on");
             $(".chk_goods").prop("checked", true);
-            $('#totalother').text(0);
-            $('#totalprimary').text($('#totalemployee').val());
+            //$('#totalother').text(0);
+            //$('#totalprimary').text($('#totalemployee').val());
         } else {
             $('span').removeClass("on");
             $(".chk_goods").prop("checked", false);
-            $('#totalother').text($('#totalemployee').val());
-            $('#totalprimary').text(0);
+            //$('#totalother').text($('#totalemployee').val());
+            //$('#totalprimary').text(0);
         }
-        rentCapacity();
+        // rentCapacity();
     }
 
-    function CheckOne(checkbox) {
-        let a = checkbox;
-        if (a.checked == true) {
-            $('#totalother').text(parseInt($('#totalother').text()) - 1);
-            $('#totalprimary').text(parseInt($('#totalprimary').text()) + 1);
-        } else {
-            $('#totalother').text(parseInt($('#totalother').text()) + 1);
-            $('#totalprimary').text(parseInt($('#totalprimary').text()) - 1);
-        }
-        rentCapacity();
-    }
+    // function CheckOne(checkbox) {
+    //     let a = checkbox;
+    //     if (a.checked == true) {
+    //         $('#totalother').text(parseInt($('#totalother').text()) - 1);
+    //         $('#totalprimary').text(parseInt($('#totalprimary').text()) + 1);
+    //     } else {
+    //         $('#totalother').text(parseInt($('#totalother').text()) + 1);
+    //         $('#totalprimary').text(parseInt($('#totalprimary').text()) - 1);
+    //     }
+    //     rentCapacity();
+    // }
 
     function rentCapacity() {
         let otNumAPlus = 0;
@@ -676,9 +704,11 @@
                 $(tr.cells[3]).css('background-color', '#e74c3c');
                 $(tr.cells[8]).find("select").val("K")
                 $(tr.cells[8]).find("select").prop('disabled', 'disabled');
-            } else if($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 $(tr.cells[3]).css('background-color', '#f1c40f');
-            } else if($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
+                $(tr.cells[8]).find("select").val("K")
+                $(tr.cells[8]).find("select").prop('disabled', 'disabled');
+            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
                 $(tr.cells[3]).css('background-color', '#3498db');
             }
             if ($(tr.cells[7]).find("input").is(':checked') == true) {
@@ -832,12 +862,47 @@
     }
 
     function submitKI() {
-        alert("gửi");
+        let check = true;
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào hoặc CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+                check = false;
+            }
+        });
+        $('td[name ="validateCapa"]').each(function () {
+            if ($(this)[0].style.backgroundColor == "rgb(231, 76, 60)") {
+                check = false;
+            }
+        });
+        if (check == true) {
+            // let uids = [];
+            // $('#kpi_table >tbody >tr').each(function (index, tr) {
+            //     uids.push($(this).attr("ki_id"));
+            // })
+            let version_id = $('#version_id1').val();
+            let empObj = {
+                version_id: version_id,
+                status: 2
+            };
+            let url = 'http://' + $(location).attr('host') + '/kpi_ranking/saveAllKI';
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                data: empObj,
+                success: function (result) {
+                    alert("đã chốt, đợi phản hồi từ phòng TCLD");
+                },
+                error: function () {
+                }
+            })
+        } else {
+            alert("chưa hết KPI");
+        }
     }
 
-    function detailKPI(uid,vid) {
+    function detailKPI(uid, vid) {
 
-        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid='+uid+'&&vid='+vid;
+        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
         window.open(url, "_blank");
 
     }

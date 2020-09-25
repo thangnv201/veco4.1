@@ -24,4 +24,13 @@ module CnbvKpiHelper
     end
     return value
   end
+
+  def check_ki_lock_status(uid,version)
+    if PeopleKiLock.where(lead_id: uid, version_id: version).size != 0
+      return PeopleKiLock.where(lead_id: uid, version_id: version).first.status
+    else
+      return 0
+    end
+    return 0
+  end
 end
