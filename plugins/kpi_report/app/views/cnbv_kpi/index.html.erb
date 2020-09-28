@@ -403,13 +403,13 @@
               Không đánh giá
             <% elsif @ki_raking[$num][23] < 2 %>
               Không đạt yêu cầu
-            <% elsif 2 <= @ki_raking[$num][23] < 2.5 %>
+            <% elsif 2 <= @ki_raking[$num][23] and @ki_raking[$num][23] < 2.5 %>
               Gần đạt yêu cầu
-            <% elsif 2.5 <= @ki_raking[$num][23] < 3.5 %>
+            <% elsif 2.5 <= @ki_raking[$num][23] and @ki_raking[$num][23] < 3.5 %>
               Đạt yêu cầu
-            <% elsif 3.5 <= @ki_raking[$num][23] < 4.5 %>
+            <% elsif 3.5 <= @ki_raking[$num][23] and @ki_raking[$num][23] < 4.5 %>
               Vượt yêu cầu
-            <% elsif 4.5 <= @ki_raking[$num][23] <= 5 %>
+            <% elsif 4.5 <= @ki_raking[$num][23] and @ki_raking[$num][23] <= 5 %>
               Vượt xa yêu cầu
             <% end %>
           </td>
@@ -555,30 +555,34 @@
     </table>
     <% if $num != 0 %>
       <% status = check_ki_lock_status(User.current.id,$kidanhgia) %>
+      <!--  khởi tạo      a-->
       <% if status == 0 %>
         <div class="row" style="text-align: center">
-          <button data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+          <button id="btndefault" data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
             Chốt KI gửi phòng TCLĐ
           </button>
         </div>
-      <% elsif status == 2 %>
+        <!--  pending      a-->
+      <% elsif status == 1 %>
         <div class="row" style="text-align: center">
-          <button data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+          <button id="btn1" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
             Đợi Phòng TCLD chốt KI
           </button>
         </div>
-      <% elsif status == 3 %>
+        <!--  Từ chối      a-->
+      <% elsif status == 2 %>
         <div class="row" style="text-align: center">
-          <button data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+          <button id="btn2" data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
             Phòng TCLD từ chối KI yêu cầu rà soát lại
           </button>
         </div>
-      <% elsif status == 4 %>
+        <!--  duyệt      a-->
+      <% elsif status == 3 %>
         <div class="row" style="text-align: center">
-          <button data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+          <button id="btn3" data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
             KI đã chốt
           </button>
@@ -881,7 +885,7 @@
             let version_id = $('#version_id1').val();
             let empObj = {
                 version_id: version_id,
-                status: 2
+                status: 1
             };
             let url = 'http://' + $(location).attr('host') + '/kpi_ranking/saveAllKI';
             $.ajax({
@@ -890,6 +894,7 @@
                 dataType: "json",
                 data: empObj,
                 success: function (result) {
+                    $('#btndefault').hide();
                     alert("đã chốt, đợi phản hồi từ phòng TCLD");
                 },
                 error: function () {

@@ -184,6 +184,7 @@
   </div>
   <br>
   <input type="hidden" id="version_id1" value="<%= $kidanhgia %>">
+  <input type="hidden" id="pmid" value="<%= $pmid %>">
   <input type="hidden" id="totalemployee" value="<%= @kpi_raking.size %>">
   <div style="margin-bottom: 20px">
     <div style="font-weight: bold;margin-bottom: 10px">I. Tổng hợp kết quả đánh giá, xếp loại</div>
@@ -344,7 +345,51 @@
 
     <br>
 
-    <div style="font-weight: bold;margin-bottom: 10px">II. Danh sách chi tiết</div>
+
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col col-md-6">
+        II. Danh sách chi tiết
+      </div>
+      <% status = check_ki_lock_status($pmid,$kidanhgia) %>
+      <% if status == 0 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:blue; color: white">Chỉ huy đang đánh giá KI</span>
+        </div>
+        <div class="col col-md-3">
+          Hành động:
+        </div>
+      <% elsif status == 1 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:orange; color: white">Chờ xác nhận</span>
+        </div>
+        <div class="col col-md-3">
+          Hành động:
+          <button onclick="submitFinalKI()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-check"></i>
+            Chốt KI
+          </button>
+          <button onclick="rejectKI()" data-toggle="modal" class="btn btn-danger" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-times-circle"></i>
+            Yêu cầu chấm lại
+          </button>
+        </div>
+      <% elsif status == 2 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:red; color: white">Không chốt KI, Chỉ huy đang đánh giá lại KI</span>
+        </div>
+        <div class="col col-md-3">
+          Hành động:
+        </div>
+      <% elsif status == 3 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:green; color: white">Đã chốt </span>
+        </div>
+        <div class="col col-md-3">
+          Hành động:
+        </div>
+      <% end %>
+
+    </div>
 
     <table id="kpi_table" class="table table-bordered striped table-responsive tablesorter" style="width: 100%">
       <thead style="background-color:#eee;">
@@ -362,7 +407,8 @@
         <th rowspan="4">Tuân thủ địa điểm làm việc</th>
         <th rowspan="4">Tuân thủ Nội quy lao động</th>
         <th rowspan="4" data-sorter="false">CBNV đánh giá theo tiêu
-          chuẩn</th>
+          chuẩn
+        </th>
         <th rowspan="4">Xếp loại Ki</th>
         <th rowspan="4">Xếp loại mức độ hoàn thành nhiệm vụ/công việc</th>
         <th rowspan="4">Ghi chú, đề xuất của người QLTT với CBNV</th>
@@ -403,53 +449,53 @@
               Không đánh giá
             <% elsif @ki_raking[$num][23] < 2 %>
               Không đạt yêu cầu
-            <% elsif 2 <= @ki_raking[$num][23] < 2.5 %>
+            <% elsif 2 <= @ki_raking[$num][23] and @ki_raking[$num][23] < 2.5 %>
               Gần đạt yêu cầu
-            <% elsif 2.5 <= @ki_raking[$num][23] < 3.5 %>
+            <% elsif 2.5 <= @ki_raking[$num][23] and @ki_raking[$num][23] < 3.5 %>
               Đạt yêu cầu
-            <% elsif 3.5 <= @ki_raking[$num][23] < 4.5 %>
+            <% elsif 3.5 <= @ki_raking[$num][23] and @ki_raking[$num][23] < 4.5 %>
               Vượt yêu cầu
-            <% elsif 4.5 <= @ki_raking[$num][23] <= 5 %>
+            <% elsif 4.5 <= @ki_raking[$num][23] and @ki_raking[$num][23] <= 5 %>
               Vượt xa yêu cầu
             <% end %>
           </td>
           <td>
-              <% if @ki_raking[$num][25] == 1 || @ki_raking[$num][25].nil? %>
-                Tuân thủ
-              <% elsif @ki_raking[$num][25] == 2 %>
-                Không tuân thủ
-              <% end %>
+            <% if @ki_raking[$num][25] == 1 || @ki_raking[$num][25].nil? %>
+              Tuân thủ
+            <% elsif @ki_raking[$num][25] == 2 %>
+              Không tuân thủ
+            <% end %>
           </td>
           <td>
-              <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
-                Tuân thủ
-              <% elsif @ki_raking[$num][26] == 2 %>
-                Vi phạm nhưng chưa đến mức bị xử lý kỷ luật
-              <% elsif @ki_raking[$num][26] == 3 %>
-                Bị xử lý kỷ luật lao động
-              <% end %>
+            <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
+              Tuân thủ
+            <% elsif @ki_raking[$num][26] == 2 %>
+              Vi phạm nhưng chưa đến mức bị xử lý kỷ luật
+            <% elsif @ki_raking[$num][26] == 3 %>
+              Bị xử lý kỷ luật lao động
+            <% end %>
           </td>
           <td>
             <% if @ki_raking[$num][24].nil? or @ki_raking[$num][24] == 1 %>
               <input type="checkbox" name="chk_goods" class="chk_goods" disabled></td>
             <% elsif @ki_raking[$num][24] == 2 %>
-              <input type="checkbox" name="chk_goods" class="chk_goods"checked disabled></td>
+              <input type="checkbox" name="chk_goods" class="chk_goods" checked disabled></td>
             <% end %>
             <td>
-                <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
-                <% elsif @ki_raking[$num][27] == "A+" %>
-                  A+
-                <% elsif @ki_raking[$num][27] == "A" %>
-                  A
-                <% elsif @ki_raking[$num][27] == "B" %>
-                  B
-                <% elsif @ki_raking[$num][27] == "C" %>
-                  C
-                <% elsif @ki_raking[$num][27] == "D" %>
-                  D
-                <% elsif @ki_raking[$num][27] == "K" %>
-                  K
-                <% end %>
+              <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
+              <% elsif @ki_raking[$num][27] == "A+" %>
+                A+
+              <% elsif @ki_raking[$num][27] == "A" %>
+                A
+              <% elsif @ki_raking[$num][27] == "B" %>
+                B
+              <% elsif @ki_raking[$num][27] == "C" %>
+                C
+              <% elsif @ki_raking[$num][27] == "D" %>
+                D
+              <% elsif @ki_raking[$num][27] == "K" %>
+                K
+              <% end %>
             </td>
             <td id="<%= "text_ki" + $num.to_s %>">
               <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
@@ -541,9 +587,9 @@
                 $(tr.cells[3]).css('background-color', '#e74c3c');
                 $(tr.cells[8]).find("select").val("K")
                 $(tr.cells[8]).find("select").prop('disabled', 'disabled');
-            } else if($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 $(tr.cells[3]).css('background-color', '#f1c40f');
-            } else if($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
+            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
                 $(tr.cells[3]).css('background-color', '#3498db');
             }
             if ($(tr.cells[7]).find("input").is(':checked') == true) {
@@ -696,9 +742,51 @@
         }
     }
 
-    function detailKPI(uid,vid) {
-        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid='+uid+'&&vid='+vid;
+    function detailKPI(uid, vid) {
+        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
         window.open(url, "_blank");
 
+    }
+    function submitFinalKI() {
+        let version_id = $('#version_id1').val();
+        let pmid = $('#pmid').val();
+        let empObj = {
+            version_id: version_id,
+            pmid: pmid,
+            status: 3
+        };
+        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/tcldsave';
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            data: empObj,
+            success: function (result) {
+                location.reload();
+            },
+            error: function () {
+            }
+        })
+    }
+    function rejectKI() {
+        let version_id = $('#version_id1').val();
+        let pmid = $('#pmid').val();
+        let empObj = {
+            version_id: version_id,
+            status: 2,
+            pmid: pmid
+        };
+        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/tcldsave';
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            data: empObj,
+            success: function (result) {
+                location.reload();
+            },
+            error: function () {
+            }
+        })
     }
 </script>
