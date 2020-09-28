@@ -342,8 +342,29 @@
     </div>
 
     <br>
-
-    <div style="font-weight: bold;margin-bottom: 10px">II. Danh sách chi tiết</div>
+    <% status = check_ki_lock_status(User.current.id,$kidanhgia) %>
+    <div class="row">
+      <div class="col col-md-6">
+        II. Danh sách chi tiết
+      </div>
+      <% if status == 0 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:blue; color: white">Đang đánh giá KI</span>
+        </div>
+      <% elsif status == 1 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:orange; color: white">Chờ xác nhận</span>
+        </div>
+      <% elsif status == 2 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:red; color: white">Chỉ huy đang đánh giá lại KI</span>
+        </div>
+      <% elsif status == 3 %>
+        <div class="col col-md-3">
+          Trang thái: <span style="background-color:green; color: white">KI đã được lưu</span>
+        </div>
+      <% end %>
+    </div>
 
     <table id="kpi_table" class="table table-bordered striped table-responsive tablesorter" style="width: 100%">
       <thead style="background-color:#eee;">
@@ -554,7 +575,7 @@
       </tfoot>
     </table>
     <% if $num != 0 %>
-      <% status = check_ki_lock_status(User.current.id,$kidanhgia) %>
+
       <!--  khởi tạo      a-->
       <% if status == 0 %>
         <div class="row" style="text-align: center">
@@ -574,19 +595,13 @@
         <!--  Từ chối      a-->
       <% elsif status == 2 %>
         <div class="row" style="text-align: center">
-          <button id="btn2" data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+          <button id="btn2" data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
             Phòng TCLD từ chối KI yêu cầu rà soát lại
           </button>
         </div>
         <!--  duyệt      a-->
-      <% elsif status == 3 %>
-        <div class="row" style="text-align: center">
-          <button id="btn3" data-toggle="modal"  class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-check"></i>
-            KI đã chốt
-          </button>
-        </div>
+
       <% end %>
 
     <% end %>
