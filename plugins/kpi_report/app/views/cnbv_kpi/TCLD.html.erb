@@ -397,11 +397,6 @@
         <th rowspan="4">TT</th>
         <th rowspan="4">Mã nhân viên</th>
         <th rowspan="4">Họ và tên</th>
-        <!--        <th rowspan="4">Chức danh</th>-->
-        <!--        <th rowspan="4">Đơn vị</th>-->
-        <!--        <th rowspan="4">Phòng ban</th>-->
-        <!--        <th rowspan="4">Tổ nhóm</th>-->
-        <!--        <th colspan="6" style="text-align:center">Kết quả hoàn thành nhiệm vụ/công việc <%#= Version.find($kidanhgia).name %></th>-->
         <th rowspan="4">Điểm đánh giá</th>
         <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
         <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -425,10 +420,6 @@
           <td><%= $num + 1 %></td>
           <td><%= @kpi_raking[$num].employee_id %></td>
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
-          <!--        <td><%#= @kpi_raking[$num].job_title %></td>-->
-          <!--        <td><%#= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>-->
-          <!--        <td><%#= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).first.value %></td>-->
-          <!--        <td></td>-->
           <td>
             <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size == 0 %>
               <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
