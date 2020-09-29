@@ -1332,14 +1332,17 @@
 
     function submitKI() {
         let check = true;
-        $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào hoặc CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
-                check = false;
-            }
-        });
+        let message = "";
         $('td[name ="validateCapa"]').each(function () {
             if ($(this)[0].style.backgroundColor == "rgb(231, 76, 60)") {
                 check = false;
+                message = "Vui lòng kiểm tra lại điều kiện về tỷ lệ KI";
+            }
+        });
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào hoặc CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+                check = false;
+                message = "chưa chấm hết KI";
             }
         });
         if (check == true) {
@@ -1363,7 +1366,7 @@
                 }
             })
         } else {
-            alert("chưa hết KPI");
+            alert(message);
         }
     }
 
