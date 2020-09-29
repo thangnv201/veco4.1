@@ -67,8 +67,6 @@ class MyController < ApplicationController
       #my kpi
       @kpi_open = @user.assigned_issues.where(:tracker_id => [39, 40, 41]).open.where.not(:status_id => 35).count
       @kpi_cbnv_open = Project.find(1072).issues.where(:author_id =>User.current.id).open.where.not(:status_id => 35).count
-
-      byebug
       @groups = @user.pref.my_page_groups
       @blocks = @user.pref.my_page_layout
     end
@@ -85,7 +83,6 @@ class MyController < ApplicationController
 
   # Edit user's account
   def account
-    byebug
     @user = User.current
     @pref = @user.pref
     if request.put?

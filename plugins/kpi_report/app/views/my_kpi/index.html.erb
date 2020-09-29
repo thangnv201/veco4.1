@@ -433,15 +433,15 @@
                     type: 'GET',
                     success: function (response) {
                         $('#description-issue').val(response.description)
-                        if(response.status_id ==29){
+                        if (response.status_id == 29) {
                             $('#description-issue').prop('disabled', false)
-                            $('#description-issue').focusout(function() {
+                            $('#description-issue').focusout(function () {
                                 data = {
                                     "issue": {
                                         "description": $('#description-issue').val(),
                                     }
                                 }
-                                console.log(JSON.stringify(data)+' '+$element[0].id)
+                                console.log(JSON.stringify(data) + ' ' + $element[0].id)
                                 let url = 'http://' + $(location).attr('host') + '/issues/' + $element[0].id + '.json?key=<%=User.current.api_key%>';
                                 $.ajax({
                                     type: 'PUT',
@@ -454,15 +454,15 @@
                                     console.log('ALWAYS');
                                 });
                             })
-                        }else {
+                        } else {
                             $('#description-issue').prop('disabled', true)
                         }
                         $('#notes-issue').val(response.note)
                         $('#add-notes').prop('disabled', false)
                         $('#add-notes').keyup(function (event) {
                             if (event.keyCode == 13) {
-                                note =$('#add-notes').val();
-                                if(note ==='') return;
+                                note = $('#add-notes').val();
+                                if (note === '') return;
                                 data = {
                                     "issue": {
                                         "notes": note.substring(0, note.length - 1),
@@ -476,8 +476,8 @@
                                     data: JSON.stringify(data), //
                                 }).done(function () {
                                     $('#add-notes').val('')
-                                    $('#notes-issue').val(function(i, text) {
-                                        return text+'\n<%=User.current.login%>: '+note;
+                                    $('#notes-issue').val(function (i, text) {
+                                        return text + '\n<%=User.current.login%>: ' + note;
                                     });
                                 }).fail(function (msg) {
                                 }).always(function (msg) {
@@ -1341,6 +1341,8 @@
                     })
                     $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
 
+                } else if (status_selected == 36) {
+                    savetable(btn_save)
                 } else {
                     if (tracker_selected == 39) {
                         $(cells[col_kq]).find('a').editable({

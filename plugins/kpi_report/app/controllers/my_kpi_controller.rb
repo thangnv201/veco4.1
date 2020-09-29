@@ -21,7 +21,26 @@ class MyKpiController < ApplicationController
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]
     @total_qltt_point = result[2]
+    update_kpi_point(@kpi_open_dinh_luong, User.current.id)
+  end
 
+  def update_kpi_point(kpis, user_id)
+    if PeopleKi.where(:user_id => user_id).where(:version_id => $kidanhgia).length == 0
+      PeopleKi.create(:user_id => user_id, :version_id => $kidanhgia, :location_compliance => 1, :labor_rules_compliance => 1)
+    end
+    @cbnv_ki = PeopleKi.where(:user_id => user_id).where(:version_id => $kidanhgia).first
+    qltt_point_total = 0
+    kpis.each do |kpi|
+      if (kpi.status_id != 35)
+        tytrong = issue_customfield_value(kpi, 139).to_i
+        qltt_point = issue_customfield_value(kpi, 141)
+        if qltt_point != ""
+          qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
+        end
+      end
+    end
+    @cbnv_ki.kpi = qltt_point_total
+    @cbnv_ki.save
   end
 
   def total_ti_trong(kpis, cbnv_ki)
@@ -44,10 +63,7 @@ class MyKpiController < ApplicationController
     end
     qltt_point_total = qltt_point_total.round(2)
     cbnv_point_total = cbnv_point_total.round(2)
-    if !cbnv_ki.nil?
-      cbnv_ki.kpi = qltt_point_total
-      cbnv_ki.save
-    end
+
     return [titrong_total, cbnv_point_total, qltt_point_total]
   end
 
@@ -75,7 +91,7 @@ class MyKpiController < ApplicationController
       PeopleKi.create(:user_id => $cbnv, :version_id => $kidanhgia, :location_compliance => 1, :labor_rules_compliance => 1)
     end
     if PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => User.current.id).length == 0
-      PeopleKiNote.create(:user_id => $cbnv, :version_id => $kidanhgia, :lead_id => User.current.id,:comment =>"")
+      PeopleKiNote.create(:user_id => $cbnv, :version_id => $kidanhgia, :lead_id => User.current.id, :comment => "")
     end
     @cbnv_ki = PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).first
     @cbnv_ki_note = PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => User.current.id).first
@@ -133,7 +149,7 @@ class MyKpiController < ApplicationController
     @issue = Issue.find(params[:id])
     @caregory = @issue.project.issue_categories
                     .map { |a| a.id == (@issue.category.nil? ? "" : @issue.category.id) ? {'value': a.id, 'name': a.name, 'selected': true} : {'value': a.id, 'name': a.name} }
-    note = @issue.journals.where.not(:notes => "").map { |a|  User.find(a.user_id).login+": "+ a.notes }
+    note = @issue.journals.where.not(:notes => "").map { |a| User.find(a.user_id).login + ": " + a.notes }
     data = {
         'note': note.join("\n"),
         'category': @caregory,

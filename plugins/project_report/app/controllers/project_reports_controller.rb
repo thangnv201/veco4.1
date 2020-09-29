@@ -102,7 +102,6 @@ class ProjectReportsController < ApplicationController
     @data_tuong_lai.each do |key,value|
       @data_tuong_lai_table << [value["stt"],key,value["subject"],value["status"],value["due_date"],value["muc_tieu"],value["tien_do"],value["assignee"],value["ke_hoach"],value["vuong_mac"]]
     end
-    byebug
     respond_to do |format|
       format.docx { headers["Content-Disposition"] = "attachment; filename=\"caracal.docx\"" }
     end

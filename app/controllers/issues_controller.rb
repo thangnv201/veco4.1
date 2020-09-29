@@ -129,15 +129,6 @@ class IssuesController < ApplicationController
       raise ::Unauthorized
     end
     call_hook(:controller_issues_new_before_save, {:params => params, :issue => @issue})
-    if @issue.tracker_id == 39 || @issue.tracker_id == 40 || @issue.tracker_id == 41
-      unless @issue.assigned_to_id.nil?
-        @user = Person.find(@issue.assigned_to_id)
-        @manager_id = @user.manager_id
-        unless @manager_id.nil?
-          @issue.author_id = @manager_id
-        end
-      end
-    end
     @issue.save_attachments(params[:attachments] || (params[:issue] && params[:issue][:uploads]))
     if @issue.save
       call_hook(:controller_issues_new_after_save, {:params => params, :issue => @issue})
@@ -174,7 +165,6 @@ class IssuesController < ApplicationController
   end
 
   def update
-    byebug
     changeStatus = false
     if @issue.status_id.to_i != params[:issue][:status_id].to_i
       changeStatus = true
