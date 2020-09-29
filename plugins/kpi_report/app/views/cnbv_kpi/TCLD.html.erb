@@ -153,6 +153,17 @@
     white-space: nowrap;
   }
 
+  .danger {
+    background-color: #e74c3c;
+  }
+
+  .doing {
+    background-color: #f1c40f;
+  }
+  .complete {
+    background-color: #3498db;
+  }
+
 </style>
 
 <!DOCTYPE html>
@@ -172,7 +183,7 @@
               tại Cơ quan/ Đơn vị </h4>
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
-          <td><%= select_tag "manager", options_for_select(User.where(id: PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq).map { |obj| [obj.firstname, obj.id] }, $pmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "manager", options_for_select(User.where(id: PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq).map { |obj| [obj.firstname, obj.id, {:class => style_select(obj.id,$kidanhgia)}] }, $pmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
@@ -382,7 +393,7 @@
         </div>
       <% elsif status == 3 %>
         <div class="col col-md-3">
-          Trang thái: <span style="background-color:green; color: white">KI đã được lưu </span>
+          Trang thái: <span style="background-color:green; color: white">KI đã được ghi nhận </span>
         </div>
         <div class="col col-md-3">
           Hành động:

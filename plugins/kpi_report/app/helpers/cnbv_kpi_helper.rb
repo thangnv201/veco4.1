@@ -33,4 +33,20 @@ module CnbvKpiHelper
     end
     return 0
   end
+
+  def style_select(uid,version)
+    if PeopleKiLock.where(lead_id: uid, version_id: version).size != 0
+      status=PeopleKiLock.where(lead_id: uid, version_id: version).first.status
+      if status == 0 and status == 2
+        return "doing"
+        elsif status == 1
+        return "danger"
+        elsif status == 3
+        return "complete"
+      end
+    else
+      return "doing"
+    end
+    return "doing"
+  end
 end

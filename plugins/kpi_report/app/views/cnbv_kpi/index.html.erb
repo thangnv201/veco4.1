@@ -361,7 +361,7 @@
         </div>
       <% elsif status == 3 %>
         <div class="col col-md-3">
-          Trang thái: <span style="background-color:green; color: white">KI đã được lưu</span>
+          Trang thái: <span style="background-color:green; color: white">KI đã được ghi nhận</span>
         </div>
       <% end %>
     </div>
@@ -372,11 +372,6 @@
           <th rowspan="4">TT</th>
           <th rowspan="4">Mã nhân viên</th>
           <th rowspan="4">Họ và tên</th>
-          <!--        <th rowspan="4">Chức danh</th>-->
-          <!--        <th rowspan="4">Đơn vị</th>-->
-          <!--        <th rowspan="4">Phòng ban</th>-->
-          <!--        <th rowspan="4">Tổ nhóm</th>-->
-          <!--        <th colspan="6" style="text-align:center">Kết quả hoàn thành nhiệm vụ/công việc <%#= Version.find($kidanhgia).name %></th>-->
           <th rowspan="4">Điểm đánh giá</th>
           <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
           <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -400,10 +395,6 @@
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
-            <!--        <td><%#= @kpi_raking[$num].job_title %></td>-->
-            <!--        <td><%#= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>-->
-            <!--        <td><%#= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).first.value %></td>-->
-            <!--        <td></td>-->
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size == 0 %>
                 <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -435,7 +426,7 @@
               <% end %>
             </td>
             <td>
-              <select>
+              <select onchange="selectRightLocation(<%= $num %>)">
                 <% if @ki_raking[$num][25] == 1 || @ki_raking[$num][25].nil? %>
                   <option value="1" selected="selected">Tuân thủ</option>
                   <option value="2">Không tuân thủ</option>
@@ -446,7 +437,7 @@
               </select>
             </td>
             <td>
-              <select>
+              <select onchange="selectRightLaw(<%= $num %>)">
                 <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
                   <option value="1" selected="selected">Tuân thủ</option>
                   <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
@@ -464,9 +455,9 @@
             </td>
             <td>
               <% if @ki_raking[$num][24].nil? or @ki_raking[$num][24] == 1 %>
-                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(this)"></td>
+                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(<%= $num %>)"></td>
               <% elsif @ki_raking[$num][24] == 2 %>
-                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(this)" checked></td>
+                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(<%= $num %>)" checked></td>
               <% end %>
               <td>
                 <select id="<%= "select_ki" + $num.to_s %>" onchange="mySelectKI(<%= $num %>)">
@@ -558,13 +549,13 @@
                 <% end %>
                 <%= $com %>
               </td>
-              <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;"><%= @ki_raking[$num][30] %></textarea>
+              <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;" onchange="changeMNote(<%= $num %>)"><%= @ki_raking[$num][30] %></textarea>
               </td>
-              <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;"><%= @ki_raking[$num][31] %></textarea></td>
+              <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea></td>
               <td>
-                <a title="Lưu" href="#" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary">
+                <button id="<%= "button" + $num.to_s %>" title="Lưu" data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
                   <i class="fa fa-check"></i>
-                </a>
+                </button>
               </td>
               </tr>
           <% $num += 1 %>
@@ -719,11 +710,6 @@
           <th rowspan="4">TT</th>
           <th rowspan="4">Mã nhân viên</th>
           <th rowspan="4">Họ và tên</th>
-          <!--        <th rowspan="4">Chức danh</th>-->
-          <!--        <th rowspan="4">Đơn vị</th>-->
-          <!--        <th rowspan="4">Phòng ban</th>-->
-          <!--        <th rowspan="4">Tổ nhóm</th>-->
-          <!--        <th colspan="6" style="text-align:center">Kết quả hoàn thành nhiệm vụ/công việc <%#= Version.find($kidanhgia).name %></th>-->
           <th rowspan="4">Điểm đánh giá</th>
           <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
           <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -747,10 +733,6 @@
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
-            <!--        <td><%#= @kpi_raking[$num].job_title %></td>-->
-            <!--        <td><%#= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>-->
-            <!--        <td><%#= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 54).select(:value).take(1).first.value %></td>-->
-            <!--        <td></td>-->
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size == 0 %>
                 <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -782,7 +764,7 @@
               <% end %>
             </td>
             <td>
-              <select>
+              <select onchange="selectRightLocation(<%= $num %>)">
                 <% if @ki_raking[$num][25] == 1 || @ki_raking[$num][25].nil? %>
                   <option value="1" selected="selected">Tuân thủ</option>
                   <option value="2">Không tuân thủ</option>
@@ -793,7 +775,7 @@
               </select>
             </td>
             <td>
-              <select>
+              <select onchange="selectRightLaw(<%= $num %>)">
                 <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
                   <option value="1" selected="selected">Tuân thủ</option>
                   <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
@@ -811,9 +793,9 @@
             </td>
             <td>
               <% if @ki_raking[$num][24].nil? or @ki_raking[$num][24] == 1 %>
-                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(this)"></td>
+                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(<%= $num %>)"></td>
               <% elsif @ki_raking[$num][24] == 2 %>
-                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(this)" checked></td>
+                <input type="checkbox" name="chk_goods" class="chk_goods" onclick="CheckOne(<%= $num %>)" checked></td>
               <% end %>
               <td>
                 <select id="<%= "select_ki" + $num.to_s %>" onchange="mySelectKI(<%= $num %>)">
@@ -905,13 +887,13 @@
                 <% end %>
                 <%= $com %>
               </td>
-              <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;"><%= @ki_raking[$num][30] %></textarea>
+              <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;" onchange="changeMNote(<%= $num %>)"><%= @ki_raking[$num][30] %></textarea>
               </td>
-              <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;"><%= @ki_raking[$num][31] %></textarea></td>
+              <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea></td>
               <td>
-                <a title="Lưu" href="#" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary">
+                <button id="<%= "button" + $num.to_s %>" title="Lưu" data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
                   <i class="fa fa-check"></i>
-                </a>
+                </button>
               </td>
               </tr>
           <% $num += 1 %>
@@ -1072,15 +1054,9 @@
             Chốt KI gửi phòng TCLĐ
           </button>
         </div>
-        <!--  pending      a-->
+        <!--  đợi duyệt      a-->
       <% elsif status == 1 %>
-<!--        <div class="row" style="text-align: center">-->
-<!--          <button id="btn1" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">-->
-<!--            <i class="fa fa-check"></i>-->
-<!--            Đợi Phòng TCLD chốt KI-->
-<!--          </button>-->
-<!--        </div>-->
-        <!--  Từ chối      a-->
+        <!--  từ chối      a-->
       <% elsif status == 2 %>
         <div class="row" style="text-align: center">
           <button id="btn2" data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
@@ -1088,8 +1064,6 @@
             Phòng TCLD từ chối KI yêu cầu rà soát lại
           </button>
         </div>
-        <!--  duyệt      a-->
-
       <% end %>
 
     <% end %>
@@ -1123,11 +1097,12 @@
             $('#text_ki' + num).text("Không hoàn thành NV/CV");
         }
         //rentCapacity();
-
+        $('#button' + num).prop("disabled", false);
 
     }
 
     function saveChangeKI(btn, num) {
+        $(btn).prop("disabled", true);
         let data = $(btn).parent().parent()
         let ki_id = $(btn).parent().parent().attr("ki_id");
         let version_id = $('#version_id1').val();
@@ -1162,34 +1137,21 @@
         })
     }
 
+    function CheckOne(num) {
+        $('#button'+num).prop("disabled", false);
+    }
+
 
     function checkAll() {
 
         if ($('input[name="chk_all_goods"]').is(':checked')) {
             $('span').addClass("on");
             $(".chk_goods").prop("checked", true);
-            //$('#totalother').text(0);
-            //$('#totalprimary').text($('#totalemployee').val());
         } else {
             $('span').removeClass("on");
             $(".chk_goods").prop("checked", false);
-            //$('#totalother').text($('#totalemployee').val());
-            //$('#totalprimary').text(0);
         }
-        // rentCapacity();
     }
-
-    // function CheckOne(checkbox) {
-    //     let a = checkbox;
-    //     if (a.checked == true) {
-    //         $('#totalother').text(parseInt($('#totalother').text()) - 1);
-    //         $('#totalprimary').text(parseInt($('#totalprimary').text()) + 1);
-    //     } else {
-    //         $('#totalother').text(parseInt($('#totalother').text()) + 1);
-    //         $('#totalprimary').text(parseInt($('#totalprimary').text()) - 1);
-    //     }
-    //     rentCapacity();
-    // }
 
     function rentCapacity() {
         let otNumAPlus = 0;
@@ -1381,10 +1343,6 @@
             }
         });
         if (check == true) {
-            // let uids = [];
-            // $('#kpi_table >tbody >tr').each(function (index, tr) {
-            //     uids.push($(this).attr("ki_id"));
-            // })
             let version_id = $('#version_id1').val();
             let empObj = {
                 version_id: version_id,
@@ -1410,9 +1368,22 @@
     }
 
     function detailKPI(uid, vid) {
-
         let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
         window.open(url, "_blank");
-
     }
+
+    function selectRightLaw(num) {
+        $('#button'+num).prop("disabled", false);
+    }
+
+    function selectRightLocation(num) {
+        $('#button'+num).prop("disabled", false);
+    }
+    function changeMNote(num) {
+        $('#button'+num).prop("disabled", false);
+    }
+    function changeNote(num) {
+        $('#button'+num).prop("disabled", false);
+    }
+
 </script>
