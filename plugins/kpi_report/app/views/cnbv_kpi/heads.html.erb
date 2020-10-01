@@ -175,7 +175,7 @@
 <body>
 <div>
   <div>
-    <%= form_tag({:controller => 'cnbv_kpi', :action => 'TCLD'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+    <%= form_tag({:controller => 'cnbv_kpi', :action => 'heads'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
       <table style="margin: 0 auto;">
         <tr>
           <td>
@@ -183,7 +183,7 @@
               tại Cơ quan/ Đơn vị </h4>
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
-          <td><%= select_tag "manager", options_for_select(User.where(id: PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq).map { |obj| [obj.firstname, obj.id, {:class => style_select(obj.id,$kidanhgia)}] }, $pmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "headid", options_for_select(User.where(id: Department.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq).map { |obj| [obj.firstname, obj.id, {:class => style_select(obj.id,$kidanhgia)}] }, $pmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
@@ -362,43 +362,7 @@
         II. Danh sách chi tiết
       </div>
       <% status = check_ki_lock_status($pmid,$kidanhgia) %>
-      <% if status == 0 %>
-        <div class="col col-md-3">
-          Trang thái: <span style="background-color:blue; color: white">Chỉ huy đang đánh giá KI</span>
-        </div>
-        <div class="col col-md-3">
-          Hành động:
-        </div>
-      <% elsif status == 1 %>
-        <div class="col col-md-3">
-          Trang thái: <span style="background-color:orange; color: white">Chờ xác nhận</span>
-        </div>
-        <div class="col col-md-3">
-          Hành động:
-          <button onclick="submitFinalKI()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-check"></i>
-            Chốt KI
-          </button>
-          <button onclick="rejectKI()" data-toggle="modal" class="btn btn-danger" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-times-circle"></i>
-            Yêu cầu chấm lại
-          </button>
-        </div>
-      <% elsif status == 2 %>
-        <div class="col col-md-3">
-          Trang thái: <span style="background-color:red; color: white">Không chốt KI, Chỉ huy đang đánh giá lại KI</span>
-        </div>
-        <div class="col col-md-3">
-          Hành động:
-        </div>
-      <% elsif status == 3 %>
-        <div class="col col-md-3">
-          Trang thái: <span style="background-color:green; color: white">KI đã được ghi nhận </span>
-        </div>
-        <div class="col col-md-3">
-          Hành động:
-        </div>
-      <% end %>
+
 
     </div>
 

@@ -56,6 +56,87 @@ class CnbvKpiController < ApplicationController
     end
   end
 
+  def heads
+    if params.key?("kidanhgia")
+      $kidanhgia = params["kidanhgia"].to_i
+    else
+      $kidanhgia = Project.find(1072).versions.first.id
+    end
+    $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
+    if params.key?("headid")
+      $pmid = params["headid"].to_i
+    else
+      $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
+    end
+    $alluser = User.where(status:1).select(:id)
+    dids = []
+    @department_id = Department.where(head_id: $pmid)
+    @department_id.each do |dep|
+      dids.push(dep.id)
+      lft = Department.find(dep.id).lft
+      rgt = Department.find(dep.id).rgt
+      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s)
+      @ids.each do |obj|
+        dids.push(obj.id)
+      end
+    end
+    @kpi_raking = PeopleInformation.where(department_id: dids, user_id:$alluser).order(:user_id)
+    users_id = []
+    @kpi_raking.each do |kpi|
+      users_id.push(kpi.user_id)
+    end
+    if users_id.size == 0
+      @ki_raking = nil
+      @kpi_each = nil
+    else
+      sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
+      @records_array = ActiveRecord::Base.connection.execute(sql)
+      @ki_raking = @records_array.as_json
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+    end
+  end
+
+  def heads2
+    if params.key?("kidanhgia")
+      $kidanhgia = params["kidanhgia"].to_i
+    else
+      $kidanhgia = Project.find(1072).versions.first.id
+    end
+    $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
+    if params.key?("headid")
+      $pmid = params["headid"].to_i
+    else
+      $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
+    end
+    $alluser = User.where(status:1).select(:id)
+    dids = []
+    did = DepartmentHead.where(head_id: $pmid).select(:department_id)
+    @department_id = Department.where(id: did)
+    @department_id.each do |dep|
+      dids.push(dep.id)
+      lft = Department.find(dep.id).lft
+      rgt = Department.find(dep.id).rgt
+      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s)
+      @ids.each do |obj|
+        dids.push(obj.id)
+      end
+    end
+    @kpi_raking = PeopleInformation.where(department_id: dids, user_id:$alluser).order(:user_id)
+    users_id = []
+    @kpi_raking.each do |kpi|
+      users_id.push(kpi.user_id)
+    end
+    if users_id.size == 0
+      @ki_raking = nil
+      @kpi_each = nil
+    else
+      sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
+      @records_array = ActiveRecord::Base.connection.execute(sql)
+      @ki_raking = @records_array.as_json
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+    end
+  end
+
   def save
       uid = PeopleInformation.where(employee_id: params[:user_code]).take.user_id
       check_create = PeopleKi.where(user_id: uid, version_id: params[:version_id]).size

@@ -743,9 +743,21 @@
                   <% end %>
                 </a>
               <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size != 0 && Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size != Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size %>
-                <a title="KPI chưa chấm hết" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)"><%= @ki_raking[$num][23] %></a>
+                <a title="KPI chưa chấm hết" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                  <% if @ki_raking[$num][23] == nil %>
+                    0.0
+                  <% else %>
+                    <%= @ki_raking[$num][23] %>
+                  <% end %>
+                </a>
               <% else %>
-                <a title="KPI đã chấm hết" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)"><%= @ki_raking[$num][23] %></a>
+                <a title="KPI đã chấm hết" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                  <% if @ki_raking[$num][23] == nil %>
+                    0.0
+                  <% else %>
+                    <%= @ki_raking[$num][23] %>
+                  <% end %>
+                </a>
               <% end %>
             </td>
             <td>
