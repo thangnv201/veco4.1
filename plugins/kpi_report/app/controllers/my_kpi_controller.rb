@@ -4,7 +4,7 @@ class MyKpiController < ApplicationController
   self.main_menu = false
 
   accept_api_auth :status
-  $kidanhgia = Project.find(1072).versions.first.id
+  $kidanhgia
   $tuanthudiadiemlamviec = [['Tuân thủ', 1], ['Không tuân thủ', 2]]
   $tuanthunoiquylaodong = [['Tuân thủ', 1], ['Vi phạm nhưng chưa đến mức kỉ luật', 2], ['Bị xử lý kỉ luật lao động', 3]]
 
@@ -12,7 +12,7 @@ class MyKpiController < ApplicationController
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     flash.delete(:notice)
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => User.current.id)
@@ -41,6 +41,30 @@ class MyKpiController < ApplicationController
     end
     @cbnv_ki.kpi = qltt_point_total
     @cbnv_ki.save
+  end
+
+  def updatekpipoint
+    byebug
+    issue = Issue.find(params["issue_id"].to_i)
+    user_id = issue.assigned_to_id
+    version = issue.fixed_version_id
+    if PeopleKi.where(:user_id => user_id).where(:version_id => version).length == 0
+      PeopleKi.create(:user_id => user_id, :version_id => version, :location_compliance => 1, :labor_rules_compliance => 1)
+    end
+    cbnv_ki = PeopleKi.where(:user_id => user_id).where(:version_id => version).first
+    qltt_point_total = 0
+    Project.find(1072).issues.where(:assigned_to => user_id)
+        .where.not(:status_id => 35)
+        .where(:fixed_version_id => version).each do |kpi|
+      tytrong = issue_customfield_value(kpi, 139).to_i
+      qltt_point = issue_customfield_value(kpi, 141)
+      if qltt_point != ""
+        qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
+      end
+    end
+    cbnv_ki.kpi = qltt_point_total
+    cbnv_ki.save
+    render json: cbnv_ki
   end
 
   def total_ti_trong(kpis, cbnv_ki)
@@ -73,9 +97,10 @@ class MyKpiController < ApplicationController
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => User.current.id)
+                               .where.not(:status_id => 35)
                                .where(:fixed_version_id => $kidanhgia)
     return unless @kpi_open_dinh_luong.length > 0
     @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
@@ -191,5 +216,30 @@ group by issues.author_id)   as y"
     else
       render json: "error"
     end
+  end
+
+  def importkpi
+    @option = [['Cá nhân', User.current.id]]
+    manager = Person.find(User.current.id).manager
+    @option.push(['Quản lí trực tiếp: ' + manager.login, manager.id]) unless manager.nil?
+    @kidanhgia = Project.find(1072).versions.map { |obj| [obj.name, obj.id] }
+  end
+
+  def convertkpi
+    data = []
+    params["issue"].each do |id|
+      org_issue = Issue.find(id)
+      issue = org_issue.copy
+      issue.status_id = 29
+      issue.fixed_version_id = params["fixed_version_id"]
+      issue.author_id = org_issue.author_id
+      kq = IssueCustomField.find_by_name('Chỉ tiêu Thực hiện (KQ)')
+      cbnv_point = IssueCustomField.find_by_name('Điểm CBNV tự đánh giá')
+      qltt_point = IssueCustomField.find_by_name('Điểm QLTT đánh giá')
+      issue.custom_field_values = {kq.id => '', cbnv_point.id => '', qltt_point.id => ''}
+      issue.save
+      data.push(issue.id)
+    end
+    render json: data
   end
 end

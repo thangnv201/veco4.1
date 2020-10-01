@@ -19,6 +19,8 @@
 <button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=913';" type="button" class="btn btn-info">Quay
   lại giao diện cũ
 </button>
+<button onclick="location.href='/my_kpi/import';" type="button" class="btn btn-info">Tạo KPI
+</button>
 <div>
   <div>
     <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px;") do %>
@@ -899,9 +901,9 @@
     const col_subject = 2;
     const col_donvido = 3;
     const col_tytrong = 4;
-    const col_s = 5;
+    const col_t = 5;
     const col_b = 6;
-    const col_t = 7;
+    const col_s = 7;
     const col_kq = 8;
     const col_cbnv_point = 9;
     const col_qltt_point = 10;
@@ -1215,7 +1217,7 @@
                                 $(cells[col_s]).find('a').editable({
                                     type: 'combodate',
                                     mode: 'popup',
-                                    title: 'Tối thiểu',
+                                    title: 'Thách thức',
                                     placement: 'top',
                                     unsavedclass: null,
                                     format: 'DD/MM/YYYY',
@@ -1228,19 +1230,14 @@
                                     },
                                     success: function (response, newValue) {
                                         buildData(id)
-                                        data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
+                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
                                         $(btn_save).prop("disabled", false)
                                     }
                                 })
-                            } catch (e) {
-                                console.log(e)
-                            }
-                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
-                            try {
                                 $(cells[col_b]).find('a').editable({
                                     type: 'combodate',
                                     mode: 'popup',
-                                    title: 'Mong đợi',
+                                    title: 'Thách thức',
                                     placement: 'top',
                                     unsavedclass: null,
                                     format: 'DD/MM/YYYY',
@@ -1253,15 +1250,10 @@
                                     },
                                     success: function (response, newValue) {
                                         buildData(id)
-                                        data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
+                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
                                         $(btn_save).prop("disabled", false)
                                     }
                                 })
-                            } catch (e) {
-                                console.log(e)
-                            }
-                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
-                            try {
                                 $(cells[col_t]).find('a').editable({
                                     type: 'combodate',
                                     mode: 'popup',
@@ -1282,10 +1274,11 @@
                                         $(btn_save).prop("disabled", false)
                                     }
                                 })
+
                             } catch (e) {
                                 console.log(e)
                             }
-                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+
                             break;
                         case 41 :
                             $(cells[col_s]).find('a').editable({
@@ -1341,7 +1334,7 @@
                     })
                     $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
 
-                } else if (status_selected == 36) {
+                } else if (status_selected == 36 ||status_selected == 34 ) {
                     savetable(btn_save)
                 } else {
                     if (tracker_selected == 39) {

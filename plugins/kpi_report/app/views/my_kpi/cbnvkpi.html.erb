@@ -1,7 +1,7 @@
 <% content_for :header_tags do %>
   <%= stylesheet_link_tag 'bootstrap.min', 'mykpi', 'all', 'semantic', 'bootstrap-table.min', 'bootstrap-editable', plugin: 'kpi_report' %>
   <%= javascript_include_tag 'popper.min', 'jquery-2.0.3.min', 'bootstrap.min.js', 'bootstrap-editable.min',
-                             'bootstrap-table.min.js', 'bootstrap-table-editable.min', 'semantic.min.js', 'jquery.validate.min.js', 'bootstrap-table-filter-control.min.js', 'semantic.js', plugin: 'kpi_report' %>
+                             'bootstrap-table.min.js', 'bootstrap-table-editable.min', 'semantic.min.js', 'jquery.validate.min.js', 'bootstrap-table-filter-control.min.js', 'semantic.js', 'moment.js', plugin: 'kpi_report' %>
 <% end %>
 <script>
     $('#header').css("display", "none");
@@ -18,70 +18,77 @@
   .danger {
     background-color: #e74c3c;
   }
+  .danger:hover{
+    background-color: green;
+  }
 
   .doing {
     background-color: #f1c40f;
   }
+
   .complete {
     background-color: #3498db;
   }
 
 </style>
-  <button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
-    lại giao diện cũ
-  </button>
+<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
+  lại giao diện cũ
+</button>
+<div>
   <div>
-    <div>
-      <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
-        <table style="margin: 0 auto;">
-          <tr>
-            <td>
-              <h4 style="margin: 0">PHIẾU GIAO</h4>
-            </td>
-            <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+    <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+      <table style="margin: 0 auto;">
+        <tr>
+          <td>
+            <h4 style="margin: 0">PHIẾU GIAO</h4>
+          </td>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+          <% if !@cbnv.nil? %>
             <td><%= select_tag "cbnv", options_for_select(@cbnv.map {
                 |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id, {:class => percent_cbnv(obj.assigned_to_id, $kidanhgia)}] },
                                                           $cbnv), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
-          </tr>
-        </table>
-      <% end %>
-    </div>
+          <% end %>
+        </tr>
+      </table>
+    <% end %>
   </div>
-  <div style="font-weight: bold;width: 100%;margin-bottom: 10px">1. Nội dung giao nhiệm vụ, công việc và đánh giá kết
-    quả
-    thực hiện
-  </div>
-  <div style="position: relative" class="outer">
+</div>
+<div style="font-weight: bold;width: 100%;margin-bottom: 10px">1. Nội dung giao nhiệm vụ, công việc và đánh giá kết
+  quả
+  thực hiện
+</div>
+<div style="position: relative" class="outer">
 
-    <div class="inner">
-      <div style="width: 80%">
-        <table id="table"
-               data-show-export="true">
-          <thead>
-          <tr>
-            <th data-field="status">Status</th>
-            <th data-field="muctieu">Mục tiêu</th>
-            <th data-field="chiso">Chỉ số KPI</th>
-            <th data-field="donvido">Đơn vị
-              đo
-            </th>
-            <th data-field="tytrong">Tỷ
-              trọng
-            </th>
-            <th data-field="s">T</th>
-            <th data-field="b">B</th>
-            <th data-field="t">S</th>
-            <th data-field="kq">KQ</th>
-            <th data-field="tu_danh_gia">Tự
-              đánh giá
-            </th>
-            <th data-field="qltt_danh_gia">QLTT
-              đánh giá
-            </th>
-            <th data-field="action">Action</th>
-          </tr>
-          </thead>
-          <tbody>
+  <div class="inner">
+    <div style="width: 80%">
+      <table id="table"
+             data-show-export="true">
+        <thead>
+        <tr>
+          <th data-field="status">Status</th>
+          <th data-field="muctieu">Mục tiêu</th>
+          <th data-field="chiso">Chỉ số KPI</th>
+          <th data-field="donvido">Đơn vị
+            đo
+          </th>
+          <th data-field="tytrong">Tỷ
+            trọng
+          </th>
+          <th data-field="s">T</th>
+          <th data-field="b">B</th>
+          <th data-field="t">S</th>
+          <th data-field="kq">KQ</th>
+          <th data-field="tu_danh_gia">Tự
+            đánh giá
+          </th>
+          <th data-field="qltt_danh_gia">QLTT
+            đánh giá
+          </th>
+          <th data-field="action">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% if !@kpi.nil? %>
           <% @kpi.each do |kpi| %>
             <tr id=<%= kpi.id %> status="saved" onclick="clickIssue(<%= kpi.id %>)">
               <td>
@@ -242,101 +249,103 @@
             <td></td>
             <td></td>
             <td><%= @total_cbnv_point %></td>
-            <td><%= @total_qltt_point %></td>
+            <td id="total_qltt_point"><%= @total_qltt_point %></td>
             <td></td>
           </tr>
-          </tbody>
-        </table>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="width: 20%;position: fixed;top:20%;right: 25px">
+    <div class="tag">
+      <div style="height: 60vh;">
+        <form>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Description</label>
+            <textarea disabled class="form-control" id="description-issue" rows="10"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Notes</label>
+            <textarea disabled class="form-control" id="notes-issue" rows="10"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Add notes</label>
+            <textarea disabled class="form-control" id="add-notes" rows="5"></textarea>
+          </div>
+        </form>
       </div>
     </div>
-    <div style="width: 20%;position: fixed;top:20%;right: 25px">
-      <div class="tag">
-        <div style="height: 60vh;">
-          <form>
+  </div>
+</div>
+<div style="width: 100%;display: flex">
+
+  <!--  model huy kpi-->
+  <div style="background: none;z-index: 1050;position: fixed !important;" class="modal fade" id="huyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Hủy KPI</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="modal-form">
             <div class="form-group">
-              <label for="exampleFormControlTextarea1">Description</label>
-              <textarea disabled class="form-control" id="description-issue" rows="10"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlTextarea1">Notes</label>
-              <textarea disabled class="form-control" id="notes-issue" rows="10"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="exampleFormControlTextarea1">Add notes</label>
-              <textarea disabled class="form-control" id="add-notes" rows="5"></textarea>
+              <label for="message-text" class="col-form-label">Lý do hủy:</label>
+              <textarea required class="form-control" id="message-text"></textarea>
             </div>
           </form>
         </div>
-      </div>
-    </div>
-  </div>
-  <div style="width: 100%;display: flex">
-
-    <!--  model huy kpi-->
-    <div style="background: none;z-index: 1050;position: fixed !important;" class="modal fade" id="huyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Hủy KPI</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="modal-form">
-              <div class="form-group">
-                <label for="message-text" class="col-form-label">Lý do hủy:</label>
-                <textarea required class="form-control" id="message-text"></textarea>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button id="close-huy" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button id="modal-huy" type="button" class="btn btn-danger">Huỷ KPI</button>
-          </div>
+        <div class="modal-footer">
+          <button id="close-huy" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="modal-huy" type="button" class="btn btn-danger">Huỷ KPI</button>
         </div>
       </div>
     </div>
-    <!--  end-->
-    <!--  model tu danh gia-->
-    <div style="background: none;z-index: 1050" class="modal fade" id="tudanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Tự đánh giá</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="tudanhgia-form">
-              <div class="form-group">
-                <label for="message-text" class="col-form-label">Kết quả</label>
-                <input type="text" class="form-control" id="ketqua" required>
-              </div>
-              <div class="form-group">
-                <label for="message-text" class="col-form-label">Điểm</label>
-                <select style="border:#2f3032 solid 1px" id="tudanhgia-diem" class="custom-select" required>
-                  <option value="">-- Chọn điểm --</option>
-                  <option value="75">1: KQ < T</option>
-                  <option value="76">2: T ≤ KQ < B</option>
-                  <option value="77">3: KQ = B</option>
-                  <option value="78">4: B < KQ < S</option>
-                  <option value="79">5: KQ ≥ S</option>
-                </select>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button id="close-tudanhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button id="btn-tudanhgia" type="button" class="btn btn-danger">Tự đánh giá</button>
-          </div>
+  </div>
+  <!--  end-->
+  <!--  model tu danh gia-->
+  <div style="background: none;z-index: 1050" class="modal fade" id="tudanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tự đánh giá</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="tudanhgia-form">
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Kết quả</label>
+              <input type="text" class="form-control" id="ketqua" required>
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Điểm</label>
+              <select style="border:#2f3032 solid 1px" id="tudanhgia-diem" class="custom-select" required>
+                <option value="">-- Chọn điểm --</option>
+                <option value="75">1: KQ < T</option>
+                <option value="76">2: T ≤ KQ < B</option>
+                <option value="77">3: KQ = B</option>
+                <option value="78">4: B < KQ < S</option>
+                <option value="79">5: KQ ≥ S</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="close-tudanhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="btn-tudanhgia" type="button" class="btn btn-danger">Tự đánh giá</button>
         </div>
       </div>
     </div>
-    <!--  end-->
   </div>
-  <div>
+  <!--  end-->
+</div>
+<div>
+  <% if !@kpi.nil? %>
     <table>
       <tr style="margin-bottom: 20px;">
         <td>
@@ -365,7 +374,8 @@
         <td><%= text_area(:nhanxetchung, nil, size: '50x10', :value => @cbnv_ki_note.comment, :onfocusout => 'change_ki(this)') %></td>
       </tr>
     </table>
-  </div>
+  <% end %>
+</div>
 <script>
     $.fn.editable.defaults.mode = 'inline';
     $(window).off('beforeunload');
@@ -460,15 +470,15 @@
                     type: 'GET',
                     success: function (response) {
                         $('#description-issue').val(response.description)
-                        if(response.status_id ==29){
+                        if (response.status_id == 29) {
                             $('#description-issue').prop('disabled', false)
-                            $('#description-issue').focusout(function() {
+                            $('#description-issue').focusout(function () {
                                 data = {
                                     "issue": {
                                         "description": $('#description-issue').val(),
                                     }
                                 }
-                                console.log(JSON.stringify(data)+' '+$element[0].id)
+                                console.log(JSON.stringify(data) + ' ' + $element[0].id)
                                 let url = 'http://' + $(location).attr('host') + '/issues/' + $element[0].id + '.json?key=<%=User.current.api_key%>';
                                 $.ajax({
                                     type: 'PUT',
@@ -481,10 +491,37 @@
                                     console.log('ALWAYS');
                                 });
                             })
-                        }else {
+                        } else {
                             $('#description-issue').prop('disabled', true)
                         }
                         $('#notes-issue').val(response.note)
+                        $('#add-notes').prop('disabled', false)
+                        $('#add-notes').keyup(function (event) {
+                            if (event.keyCode == 13) {
+                                note = $('#add-notes').val();
+                                if (note === '') return;
+                                data = {
+                                    "issue": {
+                                        "notes": note.substring(0, note.length - 1),
+                                    }
+                                }
+                                let url = 'http://' + $(location).attr('host') + '/issues/' + $element[0].id + '.json?key=<%=User.current.api_key%>';
+                                $.ajax({
+                                    type: 'PUT',
+                                    url: url,
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(data), //
+                                }).done(function () {
+                                    $('#add-notes').val('')
+                                    $('#notes-issue').val(function (i, text) {
+                                        return text + '\n<%=User.current.login%>: ' + note;
+                                    });
+                                }).fail(function (msg) {
+                                }).always(function (msg) {
+                                    console.log('ALWAYS');
+                                });
+                            }
+                        });
                     },
                     error: function (error) {
                     }
@@ -804,9 +841,6 @@
     $("#tb-dinhluong tr").click(function () {
         $(this).addClass("selected").siblings().removeClass("selected");
     });
-    $('#table').load(function () {
-        console.log(this)
-    })
 
     $(document).ready(function () {
         $('#table >tbody >tr').each(function (index, tr) {
@@ -862,11 +896,33 @@
                 $(cells[col_qltt_point]).find('a').editable('destroy')
                 $($(cells[0]).find('a').eq(2)).text('3. QLTT đánh giá (Approved!)')
                 $($(btn).parent().find('.thaydoi')).prop("disabled", true)
+                updatekpi(id)
             }).fail(function (msg) {
             }).always(function (msg) {
                 console.log('ALWAYS');
             });
         }
+    }
+
+    function updatekpi(id) {
+        console.log(id)
+        let url = 'http://' + $(location).attr('host') + '/my_kpi/update_kpi_point.json'
+        let data = {
+            "issue_id": id
+        }
+        console.log(data)
+        $.ajax({
+            type: 'POST',
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+        }).done(function (response) {
+            console.log(response)
+            $('#total_qltt_point').text(response.kpi)
+        }).fail(function (msg) {
+        }).always(function (msg) {
+            console.log('ALWAYS');
+        });
     }
 
     function thongnhatKPI(btn) {
@@ -918,9 +974,9 @@
     const col_subject = 2;
     const col_donvido = 3;
     const col_tytrong = 4;
-    const col_s = 5;
+    const col_t = 5;
     const col_b = 6;
-    const col_t = 7;
+    const col_s = 7;
     const col_kq = 8;
     const col_cbnv_point = 9;
     const col_qltt_point = 10;
@@ -1030,54 +1086,72 @@
                                             break;
                                         case '40':
                                             resetField(cells)
-                                            $(cells[col_s]).find('a').editable({
-                                                type: 'date',
-                                                title: 'Tối thiểu',
-                                                placement: 'right',
-                                                unsavedclass: null,
-                                                format: 'yyyy-mm-dd',
-                                                viewformat: 'dd/mm/yyyy',
-                                                datepicker: {
-                                                    weekStart: 1
-                                                },
-                                                success: function (response, newValue) {
-                                                    buildData(id)
-                                                    data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
-                                                    $(btn_save).prop("disabled", false)
-                                                }
-                                            })
-                                            $(cells[col_b]).find('a').editable({
-                                                type: 'date',
-                                                title: 'Mong đợi',
-                                                placement: 'right',
-                                                unsavedclass: null,
-                                                format: 'yyyy-mm-dd',
-                                                viewformat: 'dd/mm/yyyy',
-                                                datepicker: {
-                                                    weekStart: 1
-                                                },
-                                                success: function (response, newValue) {
-                                                    buildData(id)
-                                                    data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
-                                                    $(btn_save).prop("disabled", false)
-                                                }
-                                            })
-                                            $(cells[col_t]).find('a').editable({
-                                                type: 'date',
-                                                title: 'Thách thức',
-                                                placement: 'top',
-                                                unsavedclass: null,
-                                                format: 'yyyy-mm-dd',
-                                                viewformat: 'dd/mm/yyyy',
-                                                datepicker: {
-                                                    weekStart: 1
-                                                },
-                                                success: function (response, newValue) {
-                                                    buildData(id)
-                                                    data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                                    $(btn_save).prop("disabled", false)
-                                                }
-                                            })
+                                            try {
+                                                $(cells[col_t]).find('a').editable({
+                                                    type: 'combodate',
+                                                    mode: 'popup',
+                                                    title: 'Tối thiểu',
+                                                    placement: 'right',
+                                                    unsavedclass: null,
+                                                    format: 'DD/MM/YYYY',
+                                                    viewformat: 'DD/MM/YYYY',
+                                                    template: 'DD/MM/YYYY',
+                                                    combodate: {
+                                                        minYear: 2000,
+                                                        maxYear: 2030,
+                                                        minuteStep: 1
+                                                    },
+                                                    success: function (response, newValue) {
+                                                        buildData(id)
+                                                        data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
+                                                        $(btn_save).prop("disabled", false)
+                                                    }
+                                                })
+                                                $(cells[col_b]).find('a').editable({
+                                                    type: 'combodate',
+                                                    mode: 'popup',
+                                                    title: 'Mong đợi',
+                                                    placement: 'right',
+                                                    unsavedclass: null,
+                                                    format: 'DD/MM/YYYY',
+                                                    viewformat: 'DD/MM/YYYY',
+                                                    template: 'DD/MM/YYYY',
+                                                    combodate: {
+                                                        minYear: 2000,
+                                                        maxYear: 2030,
+                                                        minuteStep: 1
+                                                    },
+                                                    success: function (response, newValue) {
+                                                        buildData(id)
+                                                        data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
+                                                        $(btn_save).prop("disabled", false)
+                                                    }
+                                                })
+                                                $(cells[col_s]).find('a').editable({
+                                                    type: 'combodate',
+                                                    mode: 'popup',
+                                                    title: 'Thách thức',
+                                                    placement: 'top',
+                                                    unsavedclass: null,
+                                                    format: 'DD/MM/YYYY',
+                                                    viewformat: 'DD/MM/YYYY',
+                                                    template: 'DD/MM/YYYY',
+                                                    combodate: {
+                                                        minYear: 2000,
+                                                        maxYear: 2030,
+                                                        minuteStep: 1
+                                                    },
+                                                    success: function (response, newValue) {
+                                                        buildData(id)
+                                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                                        $(btn_save).prop("disabled", false)
+                                                    }
+                                                })
+
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
+
                                             break;
                                         case '41':
                                             resetField(cells)
@@ -1205,57 +1279,71 @@
                             $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                         case 40:
-                            $(cells[col_s]).find('a').editable({
-                                type: 'date',
-                                title: 'Tối thiểu',
-                                placement: 'top',
-                                unsavedclass: null,
-                                format: 'yyyy-mm-dd',
-                                viewformat: 'dd/mm/yyyy',
-                                datepicker: {
-                                    weekStart: 1
-                                },
-                                success: function (response, newValue) {
-                                    buildData(id)
-                                    data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
-                                }
-                            })
-                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
-                            $(cells[col_b]).find('a').editable({
-                                type: 'date',
-                                title: 'Mong đợi',
-                                placement: 'top',
-                                unsavedclass: null,
-                                format: 'yyyy-mm-dd',
-                                viewformat: 'dd/mm/yyyy',
-                                datepicker: {
-                                    weekStart: 1
-                                },
-                                success: function (response, newValue) {
-                                    buildData(id)
-                                    data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
-                                }
-                            })
-                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
-                            $(cells[col_t]).find('a').editable({
-                                type: 'date',
-                                title: 'Thách thức',
-                                placement: 'top',
-                                unsavedclass: null,
-                                format: 'yyyy-mm-dd',
-                                viewformat: 'dd/mm/yyyy',
-                                datepicker: {
-                                    weekStart: 1
-                                },
-                                success: function (response, newValue) {
-                                    buildData(id)
-                                    data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
-                                }
-                            })
-                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            try {
+                                $(cells[col_s]).find('a').editable({
+                                    type: 'combodate',
+                                    mode: 'popup',
+                                    title: 'Thách thức',
+                                    placement: 'top',
+                                    unsavedclass: null,
+                                    format: 'DD/MM/YYYY',
+                                    viewformat: 'DD/MM/YYYY',
+                                    template: 'DD/MM/YYYY',
+                                    combodate: {
+                                        minYear: 2000,
+                                        maxYear: 2030,
+                                        minuteStep: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        buildData(id)
+                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                        $(btn_save).prop("disabled", false)
+                                    }
+                                })
+                                $(cells[col_b]).find('a').editable({
+                                    type: 'combodate',
+                                    mode: 'popup',
+                                    title: 'Thách thức',
+                                    placement: 'top',
+                                    unsavedclass: null,
+                                    format: 'DD/MM/YYYY',
+                                    viewformat: 'DD/MM/YYYY',
+                                    template: 'DD/MM/YYYY',
+                                    combodate: {
+                                        minYear: 2000,
+                                        maxYear: 2030,
+                                        minuteStep: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        buildData(id)
+                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                        $(btn_save).prop("disabled", false)
+                                    }
+                                })
+                                $(cells[col_t]).find('a').editable({
+                                    type: 'combodate',
+                                    mode: 'popup',
+                                    title: 'Thách thức',
+                                    placement: 'top',
+                                    unsavedclass: null,
+                                    format: 'DD/MM/YYYY',
+                                    viewformat: 'DD/MM/YYYY',
+                                    template: 'DD/MM/YYYY',
+                                    combodate: {
+                                        minYear: 2000,
+                                        maxYear: 2030,
+                                        minuteStep: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        buildData(id)
+                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                        $(btn_save).prop("disabled", false)
+                                    }
+                                })
+
+                            } catch (e) {
+                                console.log(e)
+                            }
                             break;
                         case 41 :
                             $(cells[col_s]).find('a').editable({
@@ -1378,10 +1466,14 @@
                 }).done(function () {
                     $('#close-huy').click();
                     $($($('#' + id + ' td').first()).find('a').eq(2)).text('4. Hủy (Cancel!!)')
-                    $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#B22222");
+                    $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#b22222");
                     $($('#' + id + ' td').last()).empty();
                     $($('#' + id + ' td').last()).append('<button type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
                 }).fail(function (msg) {
+                    let a = JSON.parse(msg.responseText)
+                    console.log(a)
+                    alert(a.errors.toString())
+                    $('#close-huy').click();
                 }).always(function (msg) {
                     console.log('ALWAYS');
                 });
