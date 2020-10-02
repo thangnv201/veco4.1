@@ -1318,7 +1318,7 @@
             manage_note: $('#m_note' + num).val(),
             note: $('#note' + num).val()
         };
-        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/save';
+        let url = 'http://' + $(location).attr('host') + '/ki_ranking/save';
         $.ajax({
             type: "GET",
             url: url,
@@ -1549,7 +1549,7 @@
                 version_id: version_id,
                 status: 1
             };
-            let url = 'http://' + $(location).attr('host') + '/kpi_ranking/saveAllKI';
+            let url = 'http://' + $(location).attr('host') + '/ki_ranking/saveAllKI';
             $.ajax({
                 type: "GET",
                 url: url,
@@ -1569,7 +1569,7 @@
     }
 
     function detailKPI(uid, vid) {
-        let url = 'http://' + $(location).attr('host') + '/kpi_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
+        let url = 'http://' + $(location).attr('host') + '/ki_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
         window.open(url, "_blank");
     }
 
