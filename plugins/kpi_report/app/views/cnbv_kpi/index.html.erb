@@ -342,14 +342,31 @@
     </div>
 
     <br>
-    <% status = check_ki_lock_status(User.current.id,$kidanhgia) %>
-    <div class="row">
+    <% status = check_ki_lock_status(User.current.id, $kidanhgia) %>
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col col-md-6">
         II. Danh sách chi tiết
       </div>
       <% if status == 0 %>
         <div class="col col-md-3">
           Trang thái: <span style="background-color:blue; color: white">Đang đánh giá KI</span>
+        </div>
+        <div class="col col-md-3">
+          Hành động:
+          <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+            Tự sinh KI theo điểm
+          </button>
+<!--          <button onclick="rendKIByCapa()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">-->
+<!--            Tự sinh KI theo tỷ lệ-->
+<!--          </button>-->
+          <button onclick="resetKI()" data-toggle="modal" class="btn btn-secondary" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-times-circle"></i>
+            Reset
+          </button>
+<!--          <button onclick="saveAllKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">-->
+<!--            <i class="fa fa-check"></i>-->
+<!--            Lưu toàn bộ KI-->
+<!--          </button>-->
         </div>
       <% elsif status == 1 %>
         <div class="col col-md-3">
@@ -378,7 +395,7 @@
           <th rowspan="4">Tuân thủ Nội quy lao động</th>
           <th rowspan="4">CBNV đánh giá theo tiêu
             chuẩn<input type="checkbox" name="chk_all_goods" class="chk_all_goods" onClick="checkAll()"></th>
-          <th rowspan="4" class="extractor-select sorter-grades">Xếp loại Ki</th>
+          <th rowspan="4">Xếp loại Ki</th>
           <th rowspan="4">Xếp loại mức độ hoàn thành nhiệm vụ/công việc</th>
           <th rowspan="4">Ghi chú, đề xuất của người QLTT với CBNV</th>
           <th rowspan="4" style="width: 200px">Ghi chú, đề xuất của người Chỉ huy với CBNV</th>
@@ -561,9 +578,12 @@
                 <% end %>
                 <%= $com %>
               </td>
-              <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;" onchange="changeMNote(<%= $num %>)"><%= @ki_raking[$num][30] %></textarea>
+              <td>
+                <textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;" onchange="changeMNote(<%= $num %>)"><%= @ki_raking[$num][30] %></textarea>
               </td>
-              <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea></td>
+              <td>
+                <textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea>
+              </td>
               <td>
                 <button id="<%= "button" + $num.to_s %>" title="Lưu" data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
                   <i class="fa fa-check"></i>
@@ -923,9 +943,12 @@
                 <% end %>
                 <%= $com %>
               </td>
-              <td><textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;" onchange="changeMNote(<%= $num %>)"><%= @ki_raking[$num][30] %></textarea>
+              <td>
+                <textarea id="<%= "m_note" + $num.to_s %>" style="width:100%;" onchange="changeMNote(<%= $num %>)"><%= @ki_raking[$num][30] %></textarea>
               </td>
-              <td><textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea></td>
+              <td>
+                <textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea>
+              </td>
               <td>
                 <button id="<%= "button" + $num.to_s %>" title="Lưu" data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
                   <i class="fa fa-check"></i>
@@ -1125,10 +1148,10 @@
 <script type="text/javascript" charset="utf-8">
     $.tablesorter.addParser({
         id: 'checkbox',
-        is: function(s) {
+        is: function (s) {
             return false;
         },
-        format: function(s, table, cell) {
+        format: function (s, table, cell) {
             let $c = $(cell).find('input');
             return $c.length ? $c.is(':checked') ? 1 : 2 : s;
         },
@@ -1137,71 +1160,73 @@
     $.tablesorter.addParser({
         // set a unique id
         id: "select",
-        is: function(s) {
+        is: function (s) {
             return false;
         },
-        format: function(s, table, cell) {
-            return  $c = $(cell).find('select').val().toLowerCase();
-            return $c ? $c:"1";
+        format: function (s, table, cell) {
+            return $c = $(cell).find('select').val().toLowerCase();
+            return $c ? $c : "1";
         },
         type: 'text'
     });
     $.tablesorter.addParser({
         // set a unique id
         id: "textarea",
-        is: function(s) {
+        is: function (s) {
             return false;
         },
-        format: function(s, table, cell) {
-            return  $c = $(cell).find('textarea').val().toLowerCase();
-            return $c ? $c:"1";
+        format: function (s, table, cell) {
+            return $c = $(cell).find('textarea').val().toLowerCase();
+            return $c ? $c : "1";
         },
         type: 'text'
     });
-    $(window).load(function(){
-        let $table = $('#kpi_table'),
-            $sticky, // = $table[0].config.widgetOptions.$sticky
-            doChecky = function(c, col){
-                $table.find('tbody tr td:nth-child(' + (parseInt(col,10) + 1) + ') input').each(function(){
-                    this.checked = c;
-                    $(this).trigger('change');
-                });
-            };
-
-        // using .on() which requires jQuery 1.7+
-        $table.find('tbody')
-            .on('change', 'input', function(){
-                var chk = $table[0].config.parsers[$(this).closest('td')[0].cellIndex];
-                // if the checkbox isn't being parsed by the checkbox parser, ignore it.
-                if (chk && chk.id !== 'checkbox') { return; }
-                $(this).closest('tr').toggleClass('checked', this.checked);
-                $(this).trigger('updateCell', [ $(this).closest('td'), true ]); // true = resort
-                // if a server side database needs to be updated, do it here
-            })
-            .end().find('thead input')
-            // Click on checkbox in table header to toggle all inputs
-            .on('change', function(){
-                var c = this.checked,
-                    col = $(this).closest('th').attr('data-column');
-                doChecky(c, col);
-                // update sticky header
-                $table[0].config.widgetOptions.$sticky.find('th:eq(' + col + ') input')[0].checked = c;
-            })
-            .on('mouseup', function(){
-                return false;
-            });
-        // make sticky header checkbox work
-        $table[0].config.widgetOptions.$sticky.find('thead input')
-            .on('change', function(){
-                var c = this.checked,
-                    col = $(this).closest('th').attr('data-column');
-                doChecky(c, col);
-                // update main header
-                $table.find('th:eq(' + col + ') input')[0].checked = c;
-            })
-            .on('mouseup', function(){
-                return false;
-            });
+    $(window).load(function () {
+        // let $table = $('#kpi_table'),
+        //     $sticky, // = $table[0].config.widgetOptions.$sticky
+        //     doChecky = function (c, col) {
+        //         $table.find('tbody tr td:nth-child(' + (parseInt(col, 10) + 1) + ') input').each(function () {
+        //             this.checked = c;
+        //             $(this).trigger('change');
+        //         });
+        //     };
+        //
+        // // using .on() which requires jQuery 1.7+
+        // $table.find('tbody')
+        //     .on('change', 'input', function () {
+        //         var chk = $table[0].config.parsers[$(this).closest('td')[0].cellIndex];
+        //         // if the checkbox isn't being parsed by the checkbox parser, ignore it.
+        //         if (chk && chk.id !== 'checkbox') {
+        //             return;
+        //         }
+        //         $(this).closest('tr').toggleClass('checked', this.checked);
+        //         $(this).trigger('updateCell', [$(this).closest('td'), true]); // true = resort
+        //         // if a server side database needs to be updated, do it here
+        //     })
+        //     .end().find('thead input')
+        //     // Click on checkbox in table header to toggle all inputs
+        //     .on('change', function () {
+        //         var c = this.checked,
+        //             col = $(this).closest('th').attr('data-column');
+        //         doChecky(c, col);
+        //         // update sticky header
+        //         $table[0].config.widgetOptions.$sticky.find('th:eq(' + col + ') input')[0].checked = c;
+        //     })
+        //     .on('mouseup', function () {
+        //         return false;
+        //     });
+        // // make sticky header checkbox work
+        // $table[0].config.widgetOptions.$sticky.find('thead input')
+        //     .on('change', function () {
+        //         var c = this.checked,
+        //             col = $(this).closest('th').attr('data-column');
+        //         doChecky(c, col);
+        //         // update main header
+        //         $table.find('th:eq(' + col + ') input')[0].checked = c;
+        //     })
+        //     .on('mouseup', function () {
+        //         return false;
+        //     });
 
         let alreadyUpdating = false;
         $("#kpi_table").find('tbody').on('change', 'select', function (e) {
@@ -1229,20 +1254,20 @@
         });
     });
 
-    $(function(){
+    $(function () {
         $('#kpi_table').tablesorter({
             theme: 'blackice',
-            sortList: [[0,0],[1,0]],
+            sortList: [[0, 0], [1, 0]],
             widgets: ['zebra', 'stickyHeaders'],
             headers: {
-                5:{ sorter: 'select' },
-                6:{ sorter: 'select' },
+                5: {sorter: 'select'},
+                6: {sorter: 'select'},
                 7: {
                     sorter: 'checkbox'
                 },
-                8:{ sorter: 'select' },
-                11:{ sorter: 'textarea' },
-                12:{ sorter: 'textarea' }
+                8: {sorter: 'select'},
+                11: {sorter: 'textarea'},
+                12: {sorter: 'textarea'}
             }
         });
     });
@@ -1308,7 +1333,7 @@
     }
 
     function CheckOne(num) {
-        $('#button'+num).prop("disabled", false);
+        $('#button' + num).prop("disabled", false);
     }
 
 
@@ -1321,6 +1346,9 @@
             $('span').removeClass("on");
             $(".chk_goods").prop("checked", false);
         }
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            $(tr.cells[13]).find("button").prop("disabled", false);
+        });
     }
 
     function rentCapacity() {
@@ -1529,8 +1557,8 @@
                 data: empObj,
                 success: function (result) {
                     $('#btndefault').hide();
-                    if(alert('đã chốt, đợi phản hồi từ phòng TCLD')){}
-                    else    window.location.reload();
+                    if (alert('đã chốt, đợi phản hồi từ phòng TCLD')) {
+                    } else window.location.reload();
                 },
                 error: function () {
                 }
@@ -1546,17 +1574,59 @@
     }
 
     function selectRightLaw(num) {
-        $('#button'+num).prop("disabled", false);
+        $('#button' + num).prop("disabled", false);
     }
 
     function selectRightLocation(num) {
-        $('#button'+num).prop("disabled", false);
+        $('#button' + num).prop("disabled", false);
     }
+
     function changeMNote(num) {
-        $('#button'+num).prop("disabled", false);
+        $('#button' + num).prop("disabled", false);
     }
+
     function changeNote(num) {
-        $('#button'+num).prop("disabled", false);
+        $('#button' + num).prop("disabled", false);
     }
+
+    function rendKIByPoint() {
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            let a = $(tr.cells[3]).text().trim();
+            if(parseFloat(a)<2){
+                $(tr.cells[8]).find("select").val("D");
+                $(tr.cells[9]).text("Không hoàn thành NV/CV");
+                $(tr.cells[13]).find("button").prop("disabled", false);
+            }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
+                $(tr.cells[8]).find("select").val("C");
+                $(tr.cells[9]).text("Hoàn thành NV/CV");
+                $(tr.cells[13]).find("button").prop("disabled", false);
+            }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
+                $(tr.cells[8]).find("select").val("B");
+                $(tr.cells[9]).text("Hoàn thành NV/CV");
+                $(tr.cells[13]).find("button").prop("disabled", false);
+            }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
+                $(tr.cells[8]).find("select").val("A");
+                $(tr.cells[9]).text("Hoàn thành NV/CV");
+                $(tr.cells[13]).find("button").prop("disabled", false);
+            }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
+                $(tr.cells[8]).find("select").val("A+");
+                $(tr.cells[9]).text("Hoàn thành NV/CV");
+                $(tr.cells[13]).find("button").prop("disabled", false);
+            }
+        });
+    }
+
+    function rendKIByCapa() {
+        alert("Chức năng đang phát triển")
+    }
+
+    function resetKI() {
+        location.reload()
+    }
+
+    function saveAllKI() {
+        alert("Chức năng đang phát triển")
+    }
+
 
 </script>
