@@ -157,6 +157,17 @@ class CnbvKpiController < ApplicationController
   end
 
   def saveAllKI
+    $alluser = User.where(status:1).select(:id)
+    @people_in = PeopleInformation.where(manager_id: User.current.id, user_id:$alluser).order(:user_id)
+    users_id = []
+    @people_in.each do |kpi|
+      users_id.push(kpi.user_id)
+    end
+    @issues = Issue.where(assigned_to_id:users_id, fixed_version_id:params[:version_id]).where.not(status_id: 35)
+    @issues.each do |obj|
+      obj.status_id = 36
+      obj.save
+    end
     check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
     if check_create > 0
       PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);

@@ -396,7 +396,7 @@
           <td><%= @kpi_raking[$num].employee_id %></td>
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
           <td>
-            <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size == 0 %>
+            <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
               <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                 <% if @ki_raking[$num][23] == nil %>
                   0.0
@@ -404,7 +404,7 @@
                   <%= @ki_raking[$num][23] %>
                 <% end %>
               </a>
-            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size != 0 && Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where(:status_id => 34).size != Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size %>
+            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size != 0 && Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size != Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size %>
               <a title="KPI chưa chấm hết" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                 <% if @ki_raking[$num][23] == nil %>
                   0.0
