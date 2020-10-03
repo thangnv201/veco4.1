@@ -396,8 +396,16 @@
           <td><%= @kpi_raking[$num].employee_id %></td>
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
           <td>
-            <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
-              <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+            <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
+              <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                <% if @ki_raking[$num][23] == nil %>
+                  0.0
+                <% else %>
+                  <%= @ki_raking[$num][23] %>
+                <% end %>
+              </a>
+            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
+              <a title="CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                 <% if @ki_raking[$num][23] == nil %>
                   0.0
                 <% else %>
@@ -561,9 +569,10 @@
         let numK = 0;
         let totalprimary = 0;
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào hoặc CBNV chưa được chấm KPI") {
+            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI") {
                 $(tr.cells[3]).css('background-color', '#e74c3c');
                 $(tr.cells[8]).find("select").val("K")
+                $(tr.cells[9]).text("Không đánh giá");
                 $(tr.cells[8]).find("select").prop('disabled', 'disabled');
             } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 $(tr.cells[3]).css('background-color', '#f1c40f');

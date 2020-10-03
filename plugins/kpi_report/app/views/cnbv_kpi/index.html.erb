@@ -363,10 +363,10 @@
             <i class="fa fa-times-circle"></i>
             Reset
           </button>
-<!--          <button onclick="saveAllKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">-->
-<!--            <i class="fa fa-check"></i>-->
-<!--            Lưu toàn bộ KI-->
-<!--          </button>-->
+          <button onclick="saveRendKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">
+            <i class="fa fa-check"></i>
+            Lưu toàn bộ KI
+          </button>
         </div>
       <% elsif status == 1 %>
         <div class="col col-md-3">
@@ -413,8 +413,16 @@
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
             <td>
-              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
-                <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
+                <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                  <% if @ki_raking[$num][23] == nil %>
+                    0.0
+                  <% else %>
+                    <%= @ki_raking[$num][23] %>
+                  <% end %>
+                </a>
+              <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
+                <a title="CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                   <% if @ki_raking[$num][23] == nil %>
                     0.0
                   <% else %>
@@ -628,8 +636,16 @@
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
             <td>
-              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
-                <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
+                <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                  <% if @ki_raking[$num][23] == nil %>
+                    0.0
+                  <% else %>
+                    <%= @ki_raking[$num][23] %>
+                  <% end %>
+                </a>
+              <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
+                <a title="CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                   <% if @ki_raking[$num][23] == nil %>
                     0.0
                   <% else %>
@@ -778,8 +794,16 @@
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
             <td>
-              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
-                <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
+                <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                  <% if @ki_raking[$num][23] == nil %>
+                    0.0
+                  <% else %>
+                    <%= @ki_raking[$num][23] %>
+                  <% end %>
+                </a>
+              <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
+                <a title="CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                   <% if @ki_raking[$num][23] == nil %>
                     0.0
                   <% else %>
@@ -993,8 +1017,16 @@
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
             <td>
-              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
-                <a title="không có KPI nào hoặc CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
+                <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
+                  <% if @ki_raking[$num][23] == nil %>
+                    0.0
+                  <% else %>
+                    <%= @ki_raking[$num][23] %>
+                  <% end %>
+                </a>
+              <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
+                <a title="CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                   <% if @ki_raking[$num][23] == nil %>
                     0.0
                   <% else %>
@@ -1297,7 +1329,7 @@
     }
 
     function saveChangeKI(btn, num) {
-        $(btn).prop("disabled", true);
+
         let data = $(btn).parent().parent()
         let ki_id = $(btn).parent().parent().attr("ki_id");
         let version_id = $('#version_id1').val();
@@ -1326,6 +1358,7 @@
             data: empObj,
             success: function (result) {
                 rentCapacity();
+                $(btn).prop("disabled", true);
             },
             error: function () {
             }
@@ -1367,13 +1400,19 @@
         let numK = 0;
         let totalprimary = 0;
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào hoặc CBNV chưa được chấm KPI") {
+            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI") {
                 $(tr.cells[3]).css('background-color', '#e74c3c');
                 $(tr.cells[8]).find("select").val("K")
+                $(tr.cells[9]).text("Không đánh giá");
+                $(tr.cells[8]).find("select").prop('disabled', 'disabled');
+            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào") {
+                $(tr.cells[8]).find("select").val("K")
+                $(tr.cells[9]).text("Không đánh giá");
                 $(tr.cells[8]).find("select").prop('disabled', 'disabled');
             } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 $(tr.cells[3]).css('background-color', '#f1c40f');
                 $(tr.cells[8]).find("select").val("K")
+                $(tr.cells[9]).text("Không đánh giá");
                 $(tr.cells[8]).find("select").prop('disabled', 'disabled');
             } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
                 $(tr.cells[3]).css('background-color', '#3498db');
@@ -1538,7 +1577,7 @@
             }
         });
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào hoặc CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 check = false;
                 message = "chưa chấm hết KI";
             }
@@ -1592,27 +1631,30 @@
     function rendKIByPoint() {
         $('#kpi_table >tbody >tr').each(function (index, tr) {
             let a = $(tr.cells[3]).text().trim();
-            if(parseFloat(a)<2){
-                $(tr.cells[8]).find("select").val("D");
-                $(tr.cells[9]).text("Không hoàn thành NV/CV");
-                $(tr.cells[13]).find("button").prop("disabled", false);
-            }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
-                $(tr.cells[8]).find("select").val("C");
-                $(tr.cells[9]).text("Hoàn thành NV/CV");
-                $(tr.cells[13]).find("button").prop("disabled", false);
-            }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
-                $(tr.cells[8]).find("select").val("B");
-                $(tr.cells[9]).text("Hoàn thành NV/CV");
-                $(tr.cells[13]).find("button").prop("disabled", false);
-            }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
-                $(tr.cells[8]).find("select").val("A");
-                $(tr.cells[9]).text("Hoàn thành NV/CV");
-                $(tr.cells[13]).find("button").prop("disabled", false);
-            }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
-                $(tr.cells[8]).find("select").val("A+");
-                $(tr.cells[9]).text("Hoàn thành NV/CV");
-                $(tr.cells[13]).find("button").prop("disabled", false);
+            if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
+                if(parseFloat(a)<2){
+                    $(tr.cells[8]).find("select").val("D");
+                    $(tr.cells[9]).text("Không hoàn thành NV/CV");
+                    $(tr.cells[13]).find("button").prop("disabled", false);
+                }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
+                    $(tr.cells[8]).find("select").val("C");
+                    $(tr.cells[9]).text("Hoàn thành NV/CV");
+                    $(tr.cells[13]).find("button").prop("disabled", false);
+                }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
+                    $(tr.cells[8]).find("select").val("B");
+                    $(tr.cells[9]).text("Hoàn thành NV/CV");
+                    $(tr.cells[13]).find("button").prop("disabled", false);
+                }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
+                    $(tr.cells[8]).find("select").val("A");
+                    $(tr.cells[9]).text("Hoàn thành NV/CV");
+                    $(tr.cells[13]).find("button").prop("disabled", false);
+                }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
+                    $(tr.cells[8]).find("select").val("A+");
+                    $(tr.cells[9]).text("Hoàn thành NV/CV");
+                    $(tr.cells[13]).find("button").prop("disabled", false);
+                }
             }
+
         });
     }
 
@@ -1624,8 +1666,50 @@
         location.reload()
     }
 
-    function saveAllKI() {
-        alert("Chức năng đang phát triển")
+    function saveRendKI() {
+        let objs = [];
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            let ki_type =1;
+            if ($(tr.cells[7]).find("input").is(':checked') == true) {
+                ki_type = 2;
+            } else {
+                ki_type = 1;
+            }
+            let empObj = {
+                ki_id: $(tr).attr("ki_id"),
+                user_code: $(tr.cells[1]).text(),
+                version_id: $('#version_id1').val(),
+                ki_type: ki_type,
+                location: $(tr.cells[5]).find("select").val(),
+                labor_rules: $(tr.cells[6]).find("select").val(),
+                ki: $(tr.cells[8]).find("select").val(),
+                manage_note: $(tr.cells[11]).find("textarea").val(),
+                note: $(tr.cells[12]).find("textarea").val()
+            };
+            objs.push(empObj);
+
+        });
+        let empObj1 = {
+            id: 1,
+            obj: objs
+        };
+        let url = 'http://' + $(location).attr('host') + '/ki_ranking/saveRendKI';
+        $.ajax({
+            type: 'GET',
+            url: url,
+            contentType: 'application/json',
+            dataType: 'json',
+            data: empObj1,
+            success: function (result) {
+                rentCapacity();
+            },
+            error: function () {
+            }
+        })
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            $(tr.cells[13]).find("button").prop("disabled", true);
+        });
+
     }
 
 

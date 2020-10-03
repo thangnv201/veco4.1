@@ -152,6 +152,25 @@ class CnbvKpiController < ApplicationController
       end
   end
 
+  def saveRendKI
+
+    objects = params[:obj]
+    objects.each do |key, value|
+      uid = PeopleInformation.where(employee_id: value["user_code"]).take.user_id
+      check_create = PeopleKi.where(user_id: uid, version_id: value["version_id"]).size
+      if check_create > 0
+        pkid=PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.id
+        PeopleKi.update(pkid, :location_compliance => value["location"], :kpi_type => value["ki_type"],
+                        :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
+                        :manager_note => value["manage_note"], :note => value["note"]);
+      else
+        PeopleKi.create(:user_id => uid, :version_id => value["version_id"],:kpi_type =>value["ki_type"], :location_compliance => value["location"],
+                        :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
+                        :manager_note => value["manage_note"], :note => value["note"]);
+      end
+    end
+  end
+
   def tcldsave
     PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id],:status =>params[:status]);
   end
