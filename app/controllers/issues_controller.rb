@@ -736,7 +736,7 @@ class IssuesController < ApplicationController
       @user.each do |userPM|
         @userSMS = VecoPhone.where(name: userPM.login)
         if issue.assigned_to_id != userPM.id
-          handle_sendSMS(@userSMS, noticeArr).deliver
+          handle_sendSMS(@userSMS, noticeArr)
         end
       end
     end
@@ -744,7 +744,7 @@ class IssuesController < ApplicationController
     if status == 2
       (User.where(id: issue.assigned_to_id)).each do |getUser|
         @userSMS = VecoPhone.where(name: getUser.login)
-        handle_sendSMS(@userSMS, noticeArr).deliver
+        handle_sendSMS(@userSMS, noticeArr)
       end
     end
 
@@ -752,7 +752,7 @@ class IssuesController < ApplicationController
       #Trang thai: Yêu cầu cập nhật (issue status 20)
       (User.where(id: issue.assigned_to_id)).each do |getUser|
         @userSMS = VecoPhone.where(name: getUser.login)
-       handle_sendSMS(@userSMS, noticeArr).deliver
+       handle_sendSMS(@userSMS, noticeArr)
       end
     end
     if status == 4
@@ -760,7 +760,7 @@ class IssuesController < ApplicationController
       idPM = issue.custom_value_for(81).value
       loginPM = User.where(id: idPM).first.login
       @userSMS = VecoPhone.where(name: loginPM)
-      handle_sendSMS(@userSMS, noticeArr).deliver
+      handle_sendSMS(@userSMS, noticeArr)
     end
     if status == 5
       # KPI gui CBNV

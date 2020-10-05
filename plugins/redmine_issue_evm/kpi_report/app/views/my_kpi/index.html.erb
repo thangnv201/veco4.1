@@ -15,47 +15,54 @@
     z-index: unset;
   }
 
-  .danger {
-    background-color: #e74c3c;
-  }
-
-  .danger:hover {
-    background-color: green;
-  }
-
-  .doing {
-    background-color: #f1c40f;
-  }
-
-  .complete {
-    background-color: #3498db;
-  }
-
 </style>
-<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
+<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=913';" type="button" class="btn btn-info">Quay
   lại giao diện cũ
+</button>
+<button onclick="location.href='/my_kpi/import';" type="button" class="btn btn-info">Tạo KPI
 </button>
 <div>
   <div>
-    <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+    <%= form_tag({:controller => 'my_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px;") do %>
       <table style="margin: 0 auto;">
         <tr>
           <td>
-            <h4 style="margin: 0">PHIẾU GIAO</h4>
+            <h4 style="margin: 0">Phụ lục 03: PHIẾU GIAO VÀ ĐÁNH GIÁ KẾT QUẢ THỰC HIỆN NHIỆM VỤ/CÔNG VIỆC CỦA CBNV</h4>
           </td>
-          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
-          <% if !@cbnv.nil? %>
-            <td><%= select_tag "cbnv", options_for_select(@cbnv.map {
-                |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id, {:class => percent_cbnv(obj.assigned_to_id, $kidanhgia)}] },
-                                                          $cbnv), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
-          <% end %>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
   </div>
+  <div>
+    <div style="display: table;margin: 0 auto;">(Kèm theo Quyết định số: 2345/QĐ-CNVTQĐ-TCNL ngày 10 tháng 07 năm 2020
+      của Chủ tịch Tập đoàn Công nghiệp-Viễn thông Quân đội)
+    </div>
+  </div>
+  <div style="margin-bottom: 20px">
+    <div style="font-weight: bold;margin-bottom: 10px">1. Thông tin chung</div>
+    <div>Chỉ huy trực
+      tiếp:<strong> <%= Person.find(User.current.id).manager.nil? ? "N/A" : Person.find(User.current.id).manager.firstname %></strong>
+    </div>
+    <div style="display: flex;margin-top: 10px;">
+      <div style="width: 25%">Họ và tên:<strong> <%= issue_customfield_value(User.current, 56) %></strong></div>
+      <div style="width: 25%">Mã nhân viên:<strong>  <%= issue_customfield_value(User.current, 55) %></strong></div>
+      <div style="width: 25%">Chức danh công việc:<strong>  <%= issue_customfield_value(User.current, 52) %></strong>
+      </div>
+    </div>
+    <div style="margin-top: 10px;">Cơ quan đơn vị:<strong>  <%= issue_customfield_value(User.current, 53) %></strong>
+    </div>
+    <div style="margin-top: 10px;">Phòng ban trung
+      tâm:<strong>  <%= issue_customfield_value(User.current, 54) %></strong></div>
+    <div style="margin-top: 10px;display: flex">
+      <div style="width: 80%">Địa điểm làm
+        việc: <%= select_tag "diadiemlamviec", options_for_select(CustomField.find(165).possible_values, issue_customfield_value(User.current, 165)), :style => 'font-weight: bold;border: 1px #2980b9 solid' %>
+      </div>
+
+    </div>
+  </div>
 </div>
-<div style="font-weight: bold;width: 100%;margin-bottom: 10px">1. Nội dung giao nhiệm vụ, công việc và đánh giá kết
-  quả
+<div style="font-weight: bold;width: 100%;margin-bottom: 10px">2. Nội dung giao nhiệm vụ, công việc và đánh giá kết quả
   thực hiện
 </div>
 <div style="position: relative" class="outer">
@@ -89,175 +96,186 @@
         </tr>
         </thead>
         <tbody>
-        <% if !@kpi.nil? %>
-          <% @kpi.each do |kpi| %>
-            <tr id=<%= kpi.id %> status="saved" onclick="clickIssue(<%= kpi.id %>)">
-              <td>
-                <div style="margin-bottom: 10px;">
-                  <% if kpi.status_id == 35 %>
-                    <a target="_blank" style="background-color: #e74c3c;color: white !important;" href="/issues/<%= kpi.id %>">
-                      #<%= kpi.id %></a>
-                  <% elsif kpi.status_id == 29 %>
-                    <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
-                      #<%= kpi.id %></a>
-                  <% elsif kpi.status_id == 32 %>
-                    <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
-                      #<%= kpi.id %></a>
-                  <% elsif kpi.status_id == 33 %>
-                    <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
-                      #<%= kpi.id %></a>
-                  <% elsif kpi.status_id == 34 %>
-                    <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
-                      #<%= kpi.id %></a>
-                  <% elsif kpi.status_id == 36 %>
-                    <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
-                      #<%= kpi.id %></a>
-                  <% end %>
-                </div>
+        <% @kpi_open_dinh_luong.each do |kpi| %>
+          <tr id=<%= kpi.id %> status="saved">
+            <td>
+              <div style="margin-bottom: 10px;">
+                <% if kpi.status_id == 35 %>
+                  <a target="_blank" style="background-color: #e74c3c;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 29 %>
+                  <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 32 %>
+                  <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 33 %>
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 34 %>
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% elsif kpi.status_id == 36 %>
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
+                    #<%= kpi.id %></a>
+                <% end %>
+              </div>
+              <div style="margin-bottom: 10px">
+                <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
+              </div>
+              <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
+              </div>
+              <div style="margin-bottom: 10px"><strong>Người giao: </strong>
+                <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.author.login %></a><br>
+              </div>
 
-                <div style="margin-bottom: 10px">
-                  <a href="#" id=<%= kpi.id.to_s + "_tracker" %>><%= kpi.tracker.name %></a><br>
-                </div>
-                <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
-                </div>
-                <div style="margin-bottom: 10px"><strong>Người giao: </strong>
-                  <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.assigned_to.login %></a><br>
-                </div>
-
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
+            </td>
+            <% if kpi.tracker_id == 39 %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
               </td>
               <td>
-                <a href="#" id=<%= kpi.id.to_s + "_muctieu" %>> <%= issue_customfield_value(kpi, 1) %></a>
+                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
               </td>
               <td>
-                <a href="#" id=<%= kpi.id.to_s + "_subject" %>> <%= kpi.subject %></a>
+                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
               </td>
               <td>
-                <a href="#" id=<%= kpi.id.to_s + "_donvido" %>><%= issue_customfield_value(kpi, 138) %></a>
+                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
+              </td>
+            <% end %>
+            <% if kpi.tracker_id == 40 %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
               </td>
               <td>
-                <a href="#" id=<%= kpi.id.to_s + "_titrong" %>> <%= issue_customfield_value(kpi, 139) %></a>
-              </td>
-              <% if kpi.tracker_id == 39 %>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 142) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 143) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 144) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 145) %></a>
-                </td>
-              <% end %>
-              <% if kpi.tracker_id == 40 %>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 146) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
-                </td>
-              <% end %>
-              <% if kpi.tracker_id == 41 %>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
-                </td>
-                <td>
-                  <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
-                </td>
-              <% end %>
-              <td>
-                <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
+                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 147) %></a>
               </td>
               <td>
-                <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
+                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 148) %></a>
               </td>
-              <% if kpi.status.id == 29 %>
-                <td>
-                  <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="thongnhatKPI(this)" data-tracker="<%= kpi.tracker_id %>">
-                    Thống Nhất
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
-                          data-whatever="<%= kpi.id %>">Hủy KPI
-                  </button>
-                </td>
-              <% elsif kpi.status.id == 32 %>
-                <td>
-                  <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" type="button" class="btn btn-default">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                </td>
-              <% elsif kpi.status.id == 35 %>
-                <td>
-                  <button style="width: 100px" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
-                  </button>
-                </td>
-              <% elsif kpi.status.id == 33 %>
-                <td>
-                  <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" type="button" class="btn btn-default">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
-                    Đánh giá
-                  </button>
-                </td>
-              <% else %>
-                <td>
-                  <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="btn btn-default">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><%= @total_ti_trong %> %</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><%= @total_cbnv_point %></td>
-            <td id="total_qltt_point"><%= @total_qltt_point %></td>
-            <td></td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 149) %></a>
+              </td>
+            <% end %>
+            <% if kpi.tracker_id == 41 %>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_s" %>><%= issue_customfield_value(kpi, 158) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_b" %>> <%= issue_customfield_value(kpi, 159) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_t" %>> <%= issue_customfield_value(kpi, 160) %></a>
+              </td>
+              <td>
+                <a href="#" id=<%= kpi.id.to_s + "_kq" %>> <%= issue_customfield_value(kpi, 151) %></a>
+              </td>
+            <% end %>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_cbnv_point" %>> <%= issue_customfield_value(kpi, 140) %></a>
+            </td>
+            <td>
+              <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
+            </td>
+            <% if kpi.status.id == 29 %>
+              <td>
+                <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
+                        data-whatever="<%= kpi.id %>">Hủy KPI
+                </button>
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% elsif kpi.status.id == 32 %>
+              <td>
+                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
+                  Tự đánh giá
+                </button>
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% elsif kpi.status.id == 35 %>
+              <td>
+                <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
+                </button>
+              </td>
+            <% else %>
+              <td>
+                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+              </td>
+            <% end %>
           </tr>
         <% end %>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><%= @total_ti_trong %> %</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><%= @total_cbnv_point %></td>
+          <td><%= @total_qltt_point %></td>
+          <td></td>
+        </tr>
         </tbody>
+      </table>
+      <table style="margin-top: 30px;border: #1e3041 1px solid">
+        <tr>
+          <td style="border: #1e3041 1px solid"><strong>Điểm đánh giá</strong></td>
+          <td style="border: #1e3041 1px solid"><strong>Xếp loại</strong></td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">4,5 <= Điểm <=5</td>
+          <td style="border: #1e3041 1px solid">Vượt xa yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">3.5 <= Điểm <4.5</td>
+          <td style="border: #1e3041 1px solid">Vượt yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">2.5 <= Điểm <3.5</td>
+          <td style="border: #1e3041 1px solid">Đạt yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">2 <= Điểm <2.5</td>
+          <td style="border: #1e3041 1px solid">Gần yêu cầu</td>
+        </tr>
+        <tr>
+          <td style="border: #1e3041 1px solid">Điểm <=2</td>
+          <td style="border: #1e3041 1px solid">Không đạt yêu cầu</td>
+        </tr>
       </table>
     </div>
   </div>
-  <div style="width: 20%;position: fixed;top:20%;right: 25px">
+  <div style="width: 20%;position: fixed;top:30%;right: 25px">
     <div class="tag">
       <div style="height: 60vh;">
         <form>
@@ -306,66 +324,68 @@
     </div>
   </div>
   <!--  end-->
+  <!--  model tu danh gia-->
+  <div style="background: none;z-index: 1050" class="modal fade" id="tudanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tự đánh giá</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="tudanhgia-form">
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Kết quả</label>
+              <input type="text" class="form-control" id="ketqua" required>
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Điểm</label>
+              <select style="border:#2f3032 solid 1px" id="tudanhgia-diem" class="custom-select" required>
+                <option value="">-- Chọn điểm --</option>
+                <option value="75">1: KQ < T</option>
+                <option value="76">2: T ≤ KQ < B</option>
+                <option value="77">3: KQ = B</option>
+                <option value="78">4: B < KQ < S</option>
+                <option value="79">5: KQ ≥ S</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="close-tudanhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="btn-tudanhgia" type="button" class="btn btn-danger">Tự đánh giá</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--  end-->
 </div>
-<div>
-  <% if !@kpi.nil? %>
-    <table>
-      <tr style="margin-bottom: 20px;">
-        <td>
-          <h4>
-            2. Đánh giá yêu cầu tuân thủ
-          </h4>
-        </td>
-        <td></td>
-      </tr>
-      <tr style="border: 1px rgb(221,221,221) solid">
-        <td>
-          <h4 style="margin: 0">Tuân thủ địa điểm làm việc: </h4>
-        </td>
-        <td><%= select_tag "location_compliance", options_for_select($tuanthudiadiemlamviec, @cbnv_ki.location_compliance), :style => 'font-weight: bold;', :onchange => 'change_ki(this)', disabled: !@permission_danhgia %></td>
-      </tr>
-      <tr style="border: 1px rgb(221,221,221) solid">
-        <td>
-          <h4 style="margin: 0">Tuân thủ nội quy lao động: </h4>
-        </td>
-        <td><%= select_tag "labor_rules_compliance", options_for_select($tuanthunoiquylaodong, @cbnv_ki.labor_rules_compliance), :style => 'font-weight: bold;', :onchange => 'change_ki(this)', disabled: !@permission_danhgia %></td>
-      </tr>
-      <tr style="border: 1px rgb(221,221,221) solid">
-        <td>
-          <h4 style="margin: 0">Nhận xét chung (option)</h4>
-        </td>
-        <td><%= text_area(:nhanxetchung, nil, size: '50x10', :value => @cbnv_ki_note.comment, :onfocusout => 'change_ki(this)') %></td>
-      </tr>
-    </table>
-  <% end %>
-</div>
+
 <script>
     $.fn.editable.defaults.mode = 'inline';
-    $(window).off('beforeunload');
-    window.onbeforeunload = () => {
-    }
 
-    function change_ki(ki) {
-        data = {}
-        data[$(ki).attr("name")] = $(ki).val();
-        data['user'] = <%=User.current.id %>
-            data['cbnv'] = $('#cbnv').val()
-        data['kidanhgia'] = $('#kidanhgia').val()
-        console.log(data)
+    $('#diadiemlamviec').change(function () {
+        let url = 'http://' + $(location).attr('host') + '/my/account.json?key=<%=User.current.api_key%>';
+        let data = {
+            "user": {
+                "custom_field_values": {
+                    "165": $(this).find(":selected").text()
+                }
+            }
+        }
         $.ajax({
             type: 'PUT',
-            url: '/update_ki' + '.json?key=<%=User.current.api_key%>',
+            url: url,
             contentType: 'application/json',
             data: JSON.stringify(data),
         }).done(function () {
-            console.log('SUCESS')
         }).fail(function (msg) {
-            console.log('FAIL')
         }).always(function (msg) {
             console.log('ALWAYS');
         });
-    }
-
+    })
     $('#tracker').dropdown({
         onChange: function (value, text, $selectedItem) {
             if (value == 39) {
@@ -441,7 +461,6 @@
                         }
                         $('#notes-issue').val(response.note)
                         $('#add-notes').prop('disabled', false)
-                        $('#add-notes').off()
                         $('#add-notes').keyup(function (event) {
                             if (event.keyCode == 13) {
                                 note = $('#add-notes').val();
@@ -577,6 +596,7 @@
                 $('#lydodung').val(response.ly_do_huy)
             },
             error: function (error) {
+                alert('Error: ' + error)
             }
         });
     }
@@ -668,8 +688,10 @@
             contentType: 'application/json',
             data: JSON.stringify(data), //
         }).done(function () {
+            alert('SUCESS')
             getStatus($('#issue-id').val())
         }).fail(function (msg) {
+            alert('FAIL')
         }).always(function (msg) {
             console.log('ALWAYS');
         });
@@ -787,6 +809,9 @@
     $("#tb-dinhluong tr").click(function () {
         $(this).addClass("selected").siblings().removeClass("selected");
     });
+    $('#table').load(function () {
+        console.log(this)
+    })
 
     $(document).ready(function () {
         $('#table >tbody >tr').each(function (index, tr) {
@@ -818,8 +843,11 @@
         let id = $(btn).parent().parent().attr("id");
         let cells = $(btn).parent().parent()[0].cells
         let fail = []
-        if ($(cells[col_qltt_point]).find('a').text() === "Empty") {
-            fail.push("Đánh giá")
+        if ($(cells[col_cbnv_point]).find('a').text() === "Empty") {
+            fail.push("Tự đánh giá")
+        }
+        if ($(cells[col_kq]).find('a').text() === "Empty") {
+            fail.push("KQ")
         }
         if (fail.length != 0) {
             alert(fail.join(",") + " không được để trống")
@@ -828,7 +856,7 @@
             let id = $(btn).parent().parent().attr("id");
             let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
             buildData(id)
-            data_kpis[id]["status_id"] = "34"
+            data_kpis[id]["status_id"] = "33"
             let data = {
                 "issue": data_kpis[id]
             }
@@ -839,60 +867,13 @@
                 data: JSON.stringify(data),
             }).done(function () {
                 $(btn).hide()
-                $(cells[col_qltt_point]).find('a').editable('destroy')
-                $($(cells[0]).find('a').eq(2)).text('3. QLTT đánh giá (Approved!)')
+                $($(cells[0]).find('a').eq(2)).text('2. Tự đánh giá (Done!)')
                 $($(btn).parent().find('.thaydoi')).prop("disabled", true)
-                updatekpi(id)
             }).fail(function (msg) {
             }).always(function (msg) {
                 console.log('ALWAYS');
             });
         }
-    }
-
-    function updatekpi(id) {
-        console.log(id)
-        let url = 'http://' + $(location).attr('host') + '/my_kpi/update_kpi_point.json'
-        let data = {
-            "issue_id": id
-        }
-        console.log(data)
-        $.ajax({
-            type: 'POST',
-            url: url,
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-        }).done(function (response) {
-            console.log(response)
-            $('#total_qltt_point').text(response.kpi)
-        }).fail(function (msg) {
-        }).always(function (msg) {
-            console.log('ALWAYS');
-        });
-    }
-
-    function thongnhatKPI(btn) {
-        let id = $(btn).parent().parent().attr("id");
-        let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
-        data = {
-            "issue": {
-                "status_id": 32,
-            }
-        }
-        $.ajax({
-            type: 'PUT',
-            url: url,
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-        }).done(function () {
-            $(btn).hide()
-            $(btn).parent().find('.btn-danger').hide()
-            $($($('#' + id + ' td').first()).find('a').eq(2)).text('1. Thống nhất (Signed!)')
-            savetable(btn);
-        }).fail(function (msg) {
-        }).always(function (msg) {
-            console.log('ALWAYS');
-        });
     }
 
     function saveChangeKPI(btn) {
@@ -908,7 +889,6 @@
             data: JSON.stringify(data),
         }).done(function () {
             $(btn).prop("disabled", true)
-            updatekpi(id)
         }).fail(function (msg) {
         }).always(function (msg) {
             console.log('ALWAYS');
@@ -977,6 +957,7 @@
                                     buildData(id)
                                     data_kpis[id]["tracker_id"] = newValue
                                     cells = $(this).parent().parent().parent()[0].cells
+                                    console.log(cells)
                                     switch (String(newValue)) {
                                         case '39':
                                             resetField(cells)
@@ -1034,7 +1015,7 @@
                                         case '40':
                                             resetField(cells)
                                             try {
-                                                $(cells[col_t]).find('a').editable({
+                                                $(cells[col_s]).find('a').editable({
                                                     type: 'combodate',
                                                     mode: 'popup',
                                                     title: 'Tối thiểu',
@@ -1054,6 +1035,11 @@
                                                         $(btn_save).prop("disabled", false)
                                                     }
                                                 })
+
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
+                                            try {
                                                 $(cells[col_b]).find('a').editable({
                                                     type: 'combodate',
                                                     mode: 'popup',
@@ -1074,7 +1060,11 @@
                                                         $(btn_save).prop("disabled", false)
                                                     }
                                                 })
-                                                $(cells[col_s]).find('a').editable({
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
+                                            try {
+                                                $(cells[col_t]).find('a').editable({
                                                     type: 'combodate',
                                                     mode: 'popup',
                                                     title: 'Thách thức',
@@ -1094,11 +1084,9 @@
                                                         $(btn_save).prop("disabled", false)
                                                     }
                                                 })
-
                                             } catch (e) {
                                                 console.log(e)
                                             }
-
                                             break;
                                         case '41':
                                             resetField(cells)
@@ -1195,7 +1183,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            // $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
                             $(cells[col_b]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1209,7 +1197,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            // $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
                             $(cells[col_t]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1223,7 +1211,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            // $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                         case 40:
                             try {
@@ -1291,6 +1279,7 @@
                             } catch (e) {
                                 console.log(e)
                             }
+
                             break;
                         case 41 :
                             $(cells[col_s]).find('a').editable({
@@ -1346,40 +1335,99 @@
                     })
                     $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
 
-                } else if (status_selected === 33 || status_selected === 34) {
-                    qltt_point_selected = typeof response.qltt_point.find(e => e.selected) !== 'undefined' ? response.qltt_point.find(e => e.selected).value : null
-                    qltt_point_source = response.qltt_point.map(x => ({value: x.value, text: x.name}))
+                } else if (status_selected == 36 ||status_selected == 34 ) {
+                    savetable(btn_save)
+                } else {
+                    if (tracker_selected == 39) {
+                        $(cells[col_kq]).find('a').editable({
+                            type: 'number',
+                            step: 'any',
+                            title: 'Kết quả thực hiện',
+                            placement: 'right',
+                            unsavedclass: null,
+                            success: function (response, newValue) {
+                                buildData(id)
+                                data_kpis[id]["custom_field_values"]["145"] = newValue
+                                $(btn_save).prop("disabled", false)
+                            }
+                        })
+                        $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                    } else if (tracker_selected == 40) {
+                        try {
+                            $(cells[col_kq]).find('a').editable({
+                                type: 'combodate',
+                                mode: 'popup',
+                                title: 'Kết quả thực hiện',
+                                placement: 'top',
+                                unsavedclass: null,
+                                format: 'DD/MM/YYYY',
+                                viewformat: 'DD/MM/YYYY',
+                                template: 'DD/MM/YYYY',
+                                combodate: {
+                                    minYear: 2000,
+                                    maxYear: 2030,
+                                    minuteStep: 1
+                                },
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["149"] = newValue.toISOString().split("T")[0];
+                                    $(btn_save).prop("disabled", false)
+                                }
+                            })
+                            $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                        } catch (err) {
+                            console.log(err)
+                        }
 
-                    $(cells[col_qltt_point]).find('a').editable({
+                    } else {
+                        $(cells[col_kq]).find('a').editable({
+                            type: 'text',
+                            title: 'Kết quả thực hiện',
+                            placement: 'right',
+                            unsavedclass: null,
+                            success: function (response, newValue) {
+                                buildData(id)
+                                data_kpis[id]["custom_field_values"]["151"] = newValue
+                                $(btn_save).prop("disabled", false)
+                            }
+                        })
+                        $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                    }
+
+
+                    cbnv_point_selected = typeof response.cbnv_point.find(e => e.selected) !== 'undefined' ? response.cbnv_point.find(e => e.selected).value : null
+                    cbnv_point_source = response.cbnv_point.map(x => ({value: x.value, text: x.name}))
+                    $(cells[col_cbnv_point]).find('a').editable({
                         type: 'select',
-                        title: 'QLTT đánh giá điểm',
+                        title: 'Tự đánh giá điểm',
                         placement: 'left',
-                        value: qltt_point_selected,
-                        source: qltt_point_source,
+                        value: cbnv_point_selected,
+                        source: cbnv_point_source,
                         unsavedclass: null,
                         success: function (response, newValue) {
                             buildData(id)
-                            data_kpis[id]["custom_field_values"]["141"] = newValue
+                            data_kpis[id]["custom_field_values"]["140"] = newValue
                             $(btn_save).prop("disabled", false)
                         }
                     })
-                    $(cells[col_qltt_point]).find('a').editable('setValue', qltt_point_selected);
+                    $(cells[col_cbnv_point]).find('a').editable('setValue', cbnv_point_selected);
                 }
 
             },
             error: function (error) {
+                alert('Error: ' + error)
             }
         });
 
     }
 
     function reset_row(btn) {
-        savetable(btn)
         edittable($(btn).parent().parent())
         $($(btn).parent().find('.thaydoi')).prop("disabled", true)
     }
 
     function savetable(btn) {
+
         $(btn).parent().parent()[0].cells.forEach(element => {
             content = $(element).find('a')
             content.editable('destroy')
@@ -1413,12 +1461,8 @@
                     $($($('#' + id + ' td').first()).find('a').eq(2)).text('4. Hủy (Cancel!!)')
                     $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#b22222");
                     $($('#' + id + ' td').last()).empty();
-                    $($('#' + id + ' td').last()).append('<button style="width: 100px" type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
+                    $($('#' + id + ' td').last()).append('<button type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
                 }).fail(function (msg) {
-                    let a = JSON.parse(msg.responseText)
-                    console.log(a)
-                    alert(a.errors.toString())
-                    $('#close-huy').click();
                 }).always(function (msg) {
                     console.log('ALWAYS');
                 });
@@ -1517,15 +1561,9 @@
             $($($('#' + id + ' td').first()).find('a').eq(2)).text('0. Dự thảo (Draft)')
             $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#f1c40f");
             $($('#' + id + ' td').last()).empty();
-            $($('#' + id + ' td').last()).append('<button type="button" style="width: 100%;" class="btn btn-primary" onclick="thongnhatKPI(this)" >Thống Nhất</button>')
-            $($('#' + id + ' td').last()).append('<button type="button" style="width: 100%;margin-top: 10px" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
-            $($('#' + id + ' td').last()).append('<button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">' +
-                '                    <i class="glyphicon glyphicon-ok"></i></button>' +
-                '                  <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">' +
-                '                    <i class="glyphicon glyphicon-remove"></i> </button>')
-
-
+            $($('#' + id + ' td').last()).append('<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
         }).fail(function (msg) {
+            alert('FAIL')
         }).always(function (msg) {
             console.log('ALWAYS');
         });

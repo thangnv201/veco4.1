@@ -19,7 +19,9 @@
 <button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=913';" type="button" class="btn btn-info">Quay
   lại giao diện cũ
 </button>
-<button onclick="location.href='/my_kpi/import';" type="button" class="btn btn-info">Tạo KPI
+<button onclick="location.href='/my_kpi/import';" type="button" class="btn btn-info">Chuyển KPI từ kì khác
+</button>
+<button onclick="location.href='projects/vht-performance-management-system/issues/new';" type="button" class="btn btn-info">Tạo mới KPI
 </button>
 <div>
   <div>
@@ -110,10 +112,10 @@
                   <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
                     #<%= kpi.id %></a>
                 <% elsif kpi.status_id == 33 %>
-                  <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
                     #<%= kpi.id %></a>
                 <% elsif kpi.status_id == 34 %>
-                  <a target="_blank" style="background-color: #f1c40f;color: white !important;" href="/issues/<%= kpi.id %>">
+                  <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
                     #<%= kpi.id %></a>
                 <% elsif kpi.status_id == 36 %>
                   <a target="_blank" style="background-color: #3498db;color: white !important;" href="/issues/<%= kpi.id %>">
@@ -192,39 +194,40 @@
             </td>
             <% if kpi.status.id == 29 %>
               <td>
-                <!--              <button style="width: 100%" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"-->
-                <!--                      data-whatever="<%#= kpi.id %>">Hủy KPI-->
-                <!--              </button>-->
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
+                <button title="Save" style="width: 100px;margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
                   <i class="glyphicon glyphicon-remove"></i>
+                </button>
+                <button title="Cancel" style="width: 100px;margin-top: 10px" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
+                        data-whatever="<%= kpi.id %>">Hủy KPI
                 </button>
               </td>
             <% elsif kpi.status.id == 32 %>
               <td>
-                <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
-                  Tự đánh giá
-                </button>
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
+
+                <button title="Save" style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
+                <button title="Cancel" onclick="reset_row(this)" style="width: 100px;margin-top: 10px" type="button" class="btn btn-default">
                   <i class="glyphicon glyphicon-remove"></i>
+                </button>
+                <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
+                  Tự đánh giá
                 </button>
               </td>
             <% elsif kpi.status.id == 35 %>
               <td>
-                <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
+                <button style="width: 100px;" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
                 </button>
               </td>
             <% else %>
               <td>
-                <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                <button title="Save" style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
+                <button title="Cancel" onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="btn btn-default">
                   <i class="glyphicon glyphicon-remove"></i>
                 </button>
               </td>
@@ -324,50 +327,14 @@
     </div>
   </div>
   <!--  end-->
-  <!--  model tu danh gia-->
-  <div style="background: none;z-index: 1050" class="modal fade" id="tudanhgiaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Tự đánh giá</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="tudanhgia-form">
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Kết quả</label>
-              <input type="text" class="form-control" id="ketqua" required>
-            </div>
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Điểm</label>
-              <select style="border:#2f3032 solid 1px" id="tudanhgia-diem" class="custom-select" required>
-                <option value="">-- Chọn điểm --</option>
-                <option value="75">1: KQ < T</option>
-                <option value="76">2: T ≤ KQ < B</option>
-                <option value="77">3: KQ = B</option>
-                <option value="78">4: B < KQ < S</option>
-                <option value="79">5: KQ ≥ S</option>
-              </select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="close-tudanhgia" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="btn-tudanhgia" type="button" class="btn btn-danger">Tự đánh giá</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--  end-->
+
 </div>
 
 <script>
     $.fn.editable.defaults.mode = 'inline';
 
     $('#diadiemlamviec').change(function () {
-        let url = 'http://' + $(location).attr('host') + '/users/' + <%=User.current.id %> +'.json?key=<%=User.current.api_key%>';
+        let url = 'http://' + $(location).attr('host') + '/my/account.json?key=<%=User.current.api_key%>';
         let data = {
             "user": {
                 "custom_field_values": {
@@ -461,6 +428,7 @@
                         }
                         $('#notes-issue').val(response.note)
                         $('#add-notes').prop('disabled', false)
+                        $('#add-notes').off()
                         $('#add-notes').keyup(function (event) {
                             if (event.keyCode == 13) {
                                 note = $('#add-notes').val();
@@ -956,7 +924,8 @@
                                     $(btn_save).prop("disabled", false)
                                     buildData(id)
                                     data_kpis[id]["tracker_id"] = newValue
-                                    cells = $(this).parent().parent()[0].cells
+                                    cells = $(this).parent().parent().parent()[0].cells
+                                    console.log(cells)
                                     switch (String(newValue)) {
                                         case '39':
                                             resetField(cells)
@@ -1182,7 +1151,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            // $(cells[col_s]).find('a').editable('setValue', response.toithieu);
                             $(cells[col_b]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1196,7 +1165,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            // $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
                             $(cells[col_t]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1210,7 +1179,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            // $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                         case 40:
                             try {
@@ -1457,9 +1426,10 @@
                     data: JSON.stringify(data),
                 }).done(function () {
                     $('#close-huy').click();
-                    $($('#' + id + ' td').first()).find('a').text('4. Hủy (Cancel!!)')
+                    $($($('#' + id + ' td').first()).find('a').eq(2)).text('4. Hủy (Cancel!!)')
+                    $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#b22222");
                     $($('#' + id + ' td').last()).empty();
-                    $($('#' + id + ' td').last()).append('<button type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
+                    $($('#' + id + ' td').last()).append('<button style="width: 100px" type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
                 }).fail(function (msg) {
                 }).always(function (msg) {
                     console.log('ALWAYS');
@@ -1556,9 +1526,10 @@
             contentType: 'application/json',
             data: JSON.stringify(data),
         }).done(function () {
-            $($('#' + id + ' td').first()).find('a').text('0. Dự thảo (Draft)')
+            $($($('#' + id + ' td').first()).find('a').eq(2)).text('0. Dự thảo (Draft)')
+            $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#f1c40f");
             $($('#' + id + ' td').last()).empty();
-            $($('#' + id + ' td').last()).append('<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
+            $($('#' + id + ' td').last()).append('<button style="width: 100px" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
         }).fail(function (msg) {
             alert('FAIL')
         }).always(function (msg) {
