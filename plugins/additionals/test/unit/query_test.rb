@@ -1,4 +1,4 @@
-require File.expand_path '../../test_helper', __FILE__
+require File.expand_path('../../test_helper', __FILE__)
 
 class QueryTest < Additionals::TestCase
   fixtures :projects, :users, :members, :member_roles, :roles,
@@ -41,7 +41,7 @@ class QueryTest < Additionals::TestCase
     @role2.add_permission!('view_issues', 'show_hidden_roles_in_memberbox')
     @role2.save!
 
-    @project = projects :projects_001
+    @project = projects(:projects_001)
 
     @user_with_hide = User.generate!(firstname: 'hide1', lastname: 'role')
     m = Member.new(user_id: @user_with_hide.id, project_id: @project.id)

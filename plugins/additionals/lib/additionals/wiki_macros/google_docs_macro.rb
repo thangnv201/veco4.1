@@ -28,7 +28,7 @@ module Additionals
         raise '<link> is not a Google document.' unless v.start_with? 'https://docs.google.com/'
 
         src = v.dup
-        unless src.include? '?'
+        unless src.include?('?')
           src << if src.include?('edit')
                    '?rm=minimal'
                  else
@@ -37,17 +37,17 @@ module Additionals
         end
 
         s = []
-        s << tag.iframe(width: width, height: height, src: src, frameborder: 0, allowfullscreen: 'true')
+        s << content_tag(:iframe, '', width: width, height: height, src: src, frameborder: 0, allowfullscreen: 'true')
         if options[:edit_link].present?
           raise '<edit_link> is not a Google document.' unless options[:edit_link].start_with? 'https://docs.google.com/'
 
-          s << tag.br
+          s << tag(:br)
           s << link_to(font_awesome_icon('fab_google-drive', post_text: :label_open_in_google_docs),
                        options[:edit_link],
                        class: 'external')
         end
 
-        safe_join s
+        safe_join(s)
       end
     end
   end

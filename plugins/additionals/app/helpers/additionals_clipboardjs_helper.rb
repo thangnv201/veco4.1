@@ -12,11 +12,12 @@ module AdditionalsClipboardjsHelper
 
     data['clipboard-text'] = clipboard_text_from_button if clipboard_text_from_button.present?
 
-    tag.button id: "zc_#{target}",
-               class: 'clipboard_button far fa-copy',
-               type: 'button',
-               title: l(:label_copy_to_clipboard),
-               data: data
+    content_tag(:button, nil,
+                id: "zc_#{target}",
+                class: 'clipboard_button far fa-copy',
+                type: 'button',
+                title: l(:label_copy_to_clipboard),
+                data: data)
   end
 
   def render_clipboardjs_javascript(target)

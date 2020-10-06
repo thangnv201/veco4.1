@@ -7,11 +7,11 @@ module Additionals
                          issue_path(options[:issue]),
                          class: options[:issue].css_classes)
       elsif options[:user]
-        title << safe_join([avatar(options[:user], size: 50), options[:user].name], ' ')
+        title << avatar(options[:user], size: 50) + ' ' + options[:user].name
       end
       title << options[:name] if options[:name]
       title << h(options[:query].name) if options[:query] && !options[:query].new_record?
-      safe_join title, Additionals::LIST_SEPARATOR
+      safe_join(title, Additionals::LIST_SEPARATOR)
     end
 
     def additionals_title_for_locale(title, lang)
@@ -28,9 +28,9 @@ module Additionals
 
     def additionals_i18n_title(options, title)
       i18n_title = "#{title}_#{::I18n.locale}".to_sym
-      if options.key? i18n_title
+      if options.key?(i18n_title)
         options[i18n_title]
-      elsif options.key? title
+      elsif options.key?(title)
         options[title]
       end
     end
@@ -41,11 +41,11 @@ module Additionals
       if comment_id.nil?
         content
       else
-        render_issue_with_comment issue, content, comment_id, only_path: only_path
+        render_issue_with_comment(issue, content, comment_id, only_path)
       end
     end
 
-    def render_issue_with_comment(issue, content, comment_id, only_path: false)
+    def render_issue_with_comment(issue, content, comment_id, only_path = false)
       journal = issue.journals.select(:notes, :private_notes, :user_id).offset(comment_id - 1).limit(1).first
       comment = if journal
                   user = User.current
@@ -139,7 +139,7 @@ module Additionals
       Array(module_names).each do |module_name|
         s << send("additionals_load_#{module_name}")
       end
-      safe_join s
+      safe_join(s)
     end
 
     def system_uptime
@@ -207,7 +207,7 @@ module Additionals
                   locals: { field_id: sanitize_to_id(name),
                             ajax_url: send("#{type}_path", project_id: options[:project], user_id: options[:user_id]),
                             options: options })
-      safe_join s
+      safe_join(s)
     end
 
     def project_list_css_classes(project, level)
@@ -218,6 +218,17 @@ module Additionals
         classes << "idnt-#{level}"
       end
       classes.join(' ')
+    end
+
+    def options_with_custom_fields(type, format, current, options = {})
+      klass = Object.const_get("#{type}CustomField")
+      fields = []
+      fields << ["- #{l(:label_disabled)} -", 0] if options[:include_disabled]
+      klass.sorted.each do |field|
+        fields << [field.name, field.id] if Array(format).include?(field.field_format)
+      end
+
+      options_for_select(fields, current)
     end
 
     def addtionals_textarea_cols(text, options = {})
@@ -236,18 +247,18 @@ module Additionals
     end
 
     def additionals_include_js(js_name)
-      if additionals_already_loaded 'js', js_name
+      if additionals_already_loaded('js', js_name)
         ''
       else
-        javascript_include_tag js_name, plugin: 'additionals'
+        javascript_include_tag(js_name, plugin: 'additionals') + "\n"
       end
     end
 
     def additionals_include_css(css)
-      if additionals_already_loaded 'css', css
+      if additionals_already_loaded('css', css)
         ''
       else
-        stylesheet_link_tag css, plugin: 'additionals'
+        stylesheet_link_tag(css, plugin: 'additionals') + "\n"
       end
     end
 
@@ -258,15 +269,15 @@ module Additionals
     end
 
     def additionals_load_clipboardjs
-      additionals_include_js 'clipboard.min'
+      additionals_include_js('clipboard.min')
     end
 
     def additionals_load_observe_field
-      additionals_include_js 'additionals_observe_field'
+      additionals_include_js('additionals_observe_field')
     end
 
     def additionals_load_font_awesome
-      additionals_include_css 'fontawesome-all.min'
+      additionals_include_css('fontawesome-all.min')
     end
 
     def additionals_load_chartjs
@@ -275,11 +286,11 @@ module Additionals
     end
 
     def additionals_load_chartjs_datalabels
-      additionals_include_js 'chartjs-plugin-datalabels.min'
+      additionals_include_js('chartjs-plugin-datalabels.min')
     end
 
     def additionals_load_chartjs_colorschemes
-      additionals_include_js 'chartjs-plugin-colorschemes.min'
+      additionals_include_js('chartjs-plugin-colorschemes.min')
     end
 
     def additionals_load_mermaid
@@ -288,23 +299,11 @@ module Additionals
     end
 
     def additionals_load_d3
-      additionals_include_js 'd3.min'
+      additionals_include_js('d3.min')
     end
 
     def additionals_load_d3plus
-      additionals_include_js 'd3plus.full.min'
-    end
-
-    def additionals_load_d3plus_old
-      additionals_include_js 'd3plus-old.full.min'
-    end
-
-    def additionals_load_d3plus_hierarchy
-      additionals_include_js 'd3plus-hierarchy.full'
-    end
-
-    def additionals_load_d3plus_network
-      additionals_include_js 'd3plus-network.full.min'
+      additionals_include_js('d3plus.full.min')
     end
 
     def user_with_avatar(user, options = {})
@@ -313,8 +312,8 @@ module Additionals
       if user.type == 'Group'
         if options[:no_link]
           user.name
-        elsif Redmine::Plugin.installed? 'redmine_hrm'
-          link_to_hrm_group user
+        elsif Redmine::Plugin.installed?('redmine_hrm')
+          link_to_hrm_group(user)
         else
           user.name
         end
@@ -326,9 +325,9 @@ module Additionals
         s << if options[:no_link]
                user.name
              else
-               link_to_user user
+               link_to_user(user)
              end
-        safe_join s
+        safe_join(s)
       end
     end
 
@@ -336,6 +335,26 @@ module Additionals
       options_for_select({ l(:button_hide) => '',
                            l(:label_top_menu) => 'top',
                            l(:label_app_menu) => 'app' }, active)
+    end
+
+    def options_for_overview_select(active)
+      options_for_select({ l(:button_hide) => '',
+                           l(:show_on_redmine_home) => 'home',
+                           l(:show_on_project_overview) => 'project',
+                           l(:show_always) => 'always' }, active)
+    end
+
+    # if project exists, for project/show
+    # if project does not exist, for welcome/index
+    def option_of_overview_select(selected, project = nil)
+      project.present? && %w[project always].include?(selected) ||
+        project.nil? && %w[home always].include?(selected)
+    end
+
+    def options_for_welcome_select(active)
+      options_for_select({ l(:button_hide) => '',
+                           l(:show_welcome_left) => 'left',
+                           l(:show_welcome_right) => 'right' }, active)
     end
 
     def human_float_number(value, options = {})

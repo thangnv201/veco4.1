@@ -69,7 +69,7 @@ module Additionals
         src << Additionals.meteoblue_flag(options, :spot, true)
         src << Additionals.meteoblue_flag(options, :pressure, false)
 
-        tag.iframe width: width, height: height, src: src, frameborder: 0
+        content_tag(:iframe, '', width: width, height: height, src: src, frameborder: 0)
       end
     end
   end

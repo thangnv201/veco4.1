@@ -1,6 +1,6 @@
-require File.expand_path '../../test_helper', __FILE__
+require File.expand_path('../../test_helper', __FILE__)
 
-class JavascriptLibraryTest < Additionals::IntegrationTest
+class JavascriptLibraryTest < Redmine::IntegrationTest
   fixtures :projects,
            :users,
            :roles,
@@ -14,28 +14,39 @@ class JavascriptLibraryTest < Additionals::IntegrationTest
            :enumerations,
            :custom_fields,
            :custom_values,
-           :custom_fields_trackers,
-           :dashboards, :dashboard_roles,
-           :queries
+           :custom_fields_trackers
 
-  def test_not_loaded_chart_css_library
-    skip if Redmine::Plugin.installed?('redmine_reporting')
-
+  def test_loaded_css_libraries
     log_user('admin', 'admin')
     get '/'
 
     assert_response :success
+    assert_select 'link[rel=stylesheet][href^=?]', '/plugin_assets/additionals/stylesheets/fontawesome-all.min.css'
+
+    return unless Redmine::Plugin.installed?('redmine_reporting')
+
+    assert_select 'link[rel=stylesheet][href^=?]', '/plugin_assets/additionals/stylesheets/Chart.min.css', count: 1
+  end
+
+  def test_not_loaded_css_libraries
+    log_user('admin', 'admin')
+    get '/'
+
+    assert_response :success
+
+    return if Redmine::Plugin.installed?('redmine_reporting')
+
     assert_select 'link[rel=stylesheet][href^=?]', '/plugin_assets/additionals/stylesheets/Chart.min.css', count: 0
   end
 
-  def test_not_loaded_chart_js_library
-    skip if Redmine::Plugin.installed?('redmine_reporting')
-
+  def test_loaded_javascript_libraries
     log_user('admin', 'admin')
     get '/'
 
+    return unless Redmine::Plugin.installed?('redmine_reporting')
+
     assert_response :success
-    assert_select 'script[src^=?]', '/plugin_assets/additionals/javascripts/Chart.bundle.min.js', count: 0
+    assert_select 'script[src^=?]', '/plugin_assets/additionals/javascripts/Chart.bundle.min.js', count: 1
   end
 
   def test_not_loaded_javascript_libraries

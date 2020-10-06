@@ -104,7 +104,7 @@
         let kidanhgia_from = $('#kidanhgia_from').find(":selected").val();
         let kidanhgia_to = $('#kidanhgia_to').find(":selected").val();
         let url = 'http://' + $(location).attr('host') + '/issues.json?key=25304089a591cf457f3a6d1073e405d980133d94'
-            + '&project_id=1072' + '&assigned_to_id=' + user + '&fixed_version_id=' + kidanhgia_from;
+            + '&project_id=1072' + '&assigned_to_id=' + user + '&fixed_version_id=' + kidanhgia_from+'&status_id=*';
         $.ajax({
             type: 'GET',
             url: url,

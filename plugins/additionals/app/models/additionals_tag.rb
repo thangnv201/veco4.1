@@ -31,8 +31,12 @@ class AdditionalsTag
     end
 
     def remove_unused_tags
-      RedmineCrm::Tag.where.not(id: RedmineCrm::Tagging.select(:tag_id).distinct)
-                     .each(&:destroy)
+      unused = RedmineCrm::Tag.find_by_sql(<<-SQL)
+        SELECT * FROM tags WHERE id NOT IN (
+          SELECT DISTINCT tag_id FROM taggings
+        )
+      SQL
+      unused.each(&:destroy)
     end
 
     def sql_for_tags_field(klass, operator, value)
@@ -45,13 +49,13 @@ class AdditionalsTag
 
     def tag_access(permission)
       projects_allowed = if permission.nil?
-                           Project.visible.ids
+                           Project.visible.pluck(:id)
                          else
-                           Project.where(Project.allowed_to_condition(User.current, permission)).ids
+                           Project.where(Project.allowed_to_condition(User.current, permission)).pluck(:id)
                          end
 
       if projects_allowed.present?
-        "#{PROJECT_TABLE_NAME}.id IN (#{projects_allowed.join ','})" unless projects_allowed.empty?
+        "#{PROJECT_TABLE_NAME}.id IN (#{projects_allowed.join(',')})" unless projects_allowed.empty?
       else
         '1=0'
       end

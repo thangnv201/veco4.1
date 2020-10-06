@@ -1,4 +1,4 @@
-require File.expand_path '../../test_helper', __FILE__
+require File.expand_path('../../test_helper', __FILE__)
 
 class ProjectTest < Additionals::TestCase
   fixtures :projects, :trackers, :issue_statuses, :issues,
@@ -34,51 +34,12 @@ class ProjectTest < Additionals::TestCase
   end
 
   def test_visible_users
-    project = projects :projects_005
+    project = projects(:projects_005)
     assert_equal 3, project.visible_users.count
   end
 
   def test_visible_principals
-    project = projects :projects_005
+    project = projects(:projects_005)
     assert_equal 4, project.visible_principals.count
-  end
-
-  def test_destroy_project
-    User.current = users :users_001
-
-    @ecookbook = projects :projects_001
-    # dashboards
-    assert @ecookbook.dashboards.any?
-
-    @ecookbook.destroy
-    # make sure that the project non longer exists
-    assert_raise(ActiveRecord::RecordNotFound) { Project.find(@ecookbook.id) }
-    # make sure related data was removed
-    assert_nil Dashboard.where(project_id: @ecookbook.id).first
-  end
-
-  def test_users_by_role
-    users_by_role = Project.find(1).users_by_role
-    assert_kind_of Hash, users_by_role
-    role = Role.find(1)
-    assert_kind_of Array, users_by_role[role]
-    assert users_by_role[role].include?(User.find(2))
-  end
-
-  def test_users_by_role_with_hidden_role
-    Role.update_all users_visibility: 'members_of_visible_projects'
-
-    role = Role.find 2
-    role.hide = 1
-    role.save!
-
-    assert_equal 0, Role.where.not(users_visibility: 'members_of_visible_projects').count
-    assert role.hide
-
-    # User.current = User.find 2
-    assert_equal 1, Project.find(1).users_by_role.count
-
-    User.current = User.find 1
-    assert_equal 2, Project.find(1).users_by_role.count
   end
 end

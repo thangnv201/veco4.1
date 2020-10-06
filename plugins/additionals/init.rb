@@ -4,32 +4,20 @@ Redmine::Plugin.register :additionals do
   name 'Additionals'
   author 'AlphaNodes GmbH'
   description 'Customizing Redmine, providing wiki macros and act as a library/function provider for other Redmine plugins'
-  version '3.0.0-master'
+  version '2.0.25-master'
   author_url 'https://alphanodes.com/'
   url 'https://github.com/alphanodes/additionals'
 
   default_settings = Additionals.load_settings
   5.times do |i|
-    default_settings["custom_menu#{i}_name"] = ''
-    default_settings["custom_menu#{i}_url"] = ''
-    default_settings["custom_menu#{i}_title"] = ''
+    default_settings['custom_menu' + i.to_s + '_name'] = ''
+    default_settings['custom_menu' + i.to_s + '_url'] = ''
+    default_settings['custom_menu' + i.to_s + '_title'] = ''
   end
 
   settings(default: default_settings, partial: 'additionals/settings/additionals')
 
   permission :show_hidden_roles_in_memberbox, {}
-  permission :set_system_dashboards,
-             {},
-             require: :loggedin,
-             read: true
-  permission :share_dashboards,
-             { dashboards: %i[index new create edit update destroy] },
-             require: :member,
-             read: true
-  permission :save_dashboards,
-             { dashboards: %i[index new create edit update destroy] },
-             require: :loggedin,
-             read: true
 
   project_module :issue_tracking do
     permission :edit_closed_issues, {}
@@ -43,9 +31,11 @@ Redmine::Plugin.register :additionals do
   end
 
   # required redmine version
-  requires_redmine version_or_higher: '4.1'
+  requires_redmine version_or_higher: '4.0.0'
 
   menu :admin_menu, :additionals, { controller: 'settings', action: 'plugin', id: 'additionals' }, caption: :label_additionals
+
+  RedCloth3::ALLOWED_TAGS << 'div'
 end
 
 Rails.configuration.to_prepare do

@@ -83,9 +83,9 @@ module AdditionalsQueriesHelper
     scope = scope.visible unless options[:all_visible]
     scope = scope.where.not(id: exclude_id) if exclude_id.positive?
     scope = scope.where(options[:where_filter], options[:where_params]) if options[:where_filter]
-    q.split(' ').map { |search_string| scope = scope.like(search_string) } if q.present?
+    scope = scope.like(q) if q.present?
     scope = scope.order(last_login_on: :desc)
-                 .limit(Additionals::SELECT2_INIT_ENTRIES)
+                 .limit(params[:limit] || Additionals::SELECT2_INIT_ENTRIES)
     @users = scope.to_a.sort! { |x, y| x.name <=> y.name }
     render layout: false, partial: 'auto_completes/additionals_users'
   end
@@ -269,12 +269,5 @@ module AdditionalsQueriesHelper
     tags << hidden_field_tag('sort', query.sort_criteria.to_param, id: nil) if query.sort_criteria.present?
 
     tags
-  end
-
-  def render_query_group_view(query, locals = {})
-    return if locals[:group_name].blank?
-
-    render partial: 'queries/additionals_group_view',
-           locals: { query: query }.merge(locals)
   end
 end
