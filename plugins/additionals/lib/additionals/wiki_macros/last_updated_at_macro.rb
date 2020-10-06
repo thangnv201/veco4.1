@@ -32,8 +32,9 @@ module Additionals
         return unless page
 
         # TODO: find solution for time_tag without to use html_safe
-        tag.span(l(:label_updated_time, time_tag(page.updated_on)).html_safe, # rubocop:disable Rails/OutputSafety
-                 class: 'last-updated-at')
+        content_tag(:span,
+                    l(:label_updated_time, time_tag(page.updated_on)).html_safe, # rubocop:disable Rails/OutputSafety
+                    class: 'last-updated-at')
       end
     end
   end

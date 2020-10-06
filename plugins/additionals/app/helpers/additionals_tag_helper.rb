@@ -21,7 +21,7 @@ module AdditionalsTagHelper
             ' '
           end
 
-    tag.div safe_join(s, sep), class: 'tags'
+    content_tag(:div, safe_join(s, sep), class: 'tags')
   end
 
   # plain list of tags
@@ -44,31 +44,33 @@ module AdditionalsTagHelper
           end
 
     safe_join(tag_list.map do |tag|
-      additionals_tag_link tag, options
+      additionals_tag_link(tag, options)
     end, sep)
   end
 
-  def additionals_tag_link(tag_object, options = {})
+  def additionals_tag_link(tag, options = {})
     tag_name = []
-    tag_name << tag_object.name
+    tag_name << tag.name
 
     unless options[:tags_without_color]
-      tag_bg_color = additionals_tag_color tag_object.name
-      tag_fg_color = additionals_tag_fg_color tag_bg_color
+      tag_bg_color = additionals_tag_color(tag.name)
+      tag_fg_color = additionals_tag_fg_color(tag_bg_color)
       tag_style = "background-color: #{tag_bg_color}; color: #{tag_fg_color}"
     end
 
-    tag_name << tag.span("(#{tag_object.count})", class: 'tag-count') if options[:show_count]
+    tag_name << content_tag('span', "(#{tag.count})", class: 'tag-count') if options[:show_count]
 
     if options[:tags_without_color]
-      tag.span link_to(safe_join(tag_name), additionals_tag_url(tag_object.name, options)),
-               class: 'tag-label'
+      content_tag('span',
+                  link_to(safe_join(tag_name), additionals_tag_url(tag.name, options)),
+                  class: 'tag-label')
     else
-      tag.span link_to(safe_join(tag_name),
-                       additionals_tag_url(tag_object.name, options),
-                       style: tag_style),
-               class: 'additionals-tag-label-color',
-               style: tag_style
+      content_tag('span',
+                  link_to(safe_join(tag_name),
+                          additionals_tag_url(tag.name, options),
+                          style: tag_style),
+                  class: 'additionals-tag-label-color',
+                  style: tag_style)
     end
   end
 

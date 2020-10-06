@@ -1,20 +1,18 @@
 module Additionals
   MAX_CUSTOM_MENU_ITEMS = 5
   SELECT2_INIT_ENTRIES = 20
-  DEFAULT_MODAL_WIDTH = '350px'.freeze
-  GOTO_LIST = " \xc2\xbb".freeze
-  LIST_SEPARATOR = "#{GOTO_LIST} ".freeze
 
-  RenderAsync.configuration.jquery = true
+  GOTO_LIST = " \xc2\xbb".freeze
+  LIST_SEPARATOR = GOTO_LIST + ' '
 
   class << self
     def setup
-      incompatible_plugins %w[redmine_issue_control_panel
+      incompatible_plugins(%w[redmine_issue_control_panel
                               redmine_editauthor
                               redmine_changeauthor
-                              redmine_auto_watch]
+                              redmine_auto_watch])
 
-      patch %w[AccountController
+      patch(%w[AccountController
                ApplicationController
                AutoCompletesController
                Issue
@@ -22,14 +20,13 @@ module Additionals
                TimeEntry
                Project
                Wiki
-               ProjectsController
-               WelcomeController
+               WikiController
                ReportsController
                Principal
                QueryFilter
                Role
                User
-               UserPreference]
+               UserPreference])
 
       Redmine::WikiFormatting.format_names.each do |format|
         case format
@@ -42,10 +39,10 @@ module Additionals
         end
       end
 
-      IssuesController.send :helper, AdditionalsIssuesHelper
-      SettingsController.send :helper, AdditionalsSettingsHelper
-      WikiController.send :helper, AdditionalsWikiPdfHelper
-      CustomFieldsController.send :helper, AdditionalsCustomFieldsHelper
+      IssuesController.send(:helper, AdditionalsIssuesHelper)
+      SettingsController.send(:helper, AdditionalsSettingsHelper)
+      WikiController.send(:helper, AdditionalsWikiPdfHelper)
+      CustomFieldsController.send(:helper, AdditionalsCustomFieldsHelper)
 
       # Static class patches
       Redmine::AccessControl.include Additionals::Patches::AccessControlPatch
@@ -60,10 +57,10 @@ module Additionals
       require_dependency 'additionals/hooks'
 
       # Macros
-      load_macros %w[cryptocompare date fa gist gmap google_docs group_users iframe
+      load_macros(%w[cryptocompare date fa gist gmap google_docs group_users iframe
                      issue redmine_issue redmine_wiki
                      last_updated_at last_updated_by meteoblue member new_issue project
-                     recently_updated reddit slideshare tradingview twitter user vimeo youtube asciinema]
+                     recently_updated reddit slideshare tradingview twitter user vimeo youtube asciinema])
     end
 
     def settings_compatible(plugin_name)
@@ -88,7 +85,7 @@ module Additionals
     end
 
     def setting?(value)
-      true? setting(value)
+      true?(setting(value))
     end
 
     def true?(value)
@@ -132,11 +129,11 @@ module Additionals
     end
 
     def load_settings(plugin_id = 'additionals')
-      cached_settings_name = "@load_settings_#{plugin_id}"
-      cached_settings = instance_variable_get cached_settings_name
+      cached_settings_name = '@load_settings_' + plugin_id
+      cached_settings = instance_variable_get(cached_settings_name)
       if cached_settings.nil?
         data = YAML.safe_load(ERB.new(IO.read(Rails.root.join("plugins/#{plugin_id}/config/settings.yml"))).result) || {}
-        instance_variable_set cached_settings_name, data.symbolize_keys
+        instance_variable_set(cached_settings_name, data.symbolize_keys)
       else
         cached_settings
       end
@@ -146,7 +143,7 @@ module Additionals
       value = nil
       if options.key? field
         value = options[field]
-        options.delete field
+        options.delete(field)
       elsif !default.nil?
         value = default
       end
@@ -156,7 +153,7 @@ module Additionals
     private
 
     def settings
-      settings_compatible :plugin_additionals
+      settings_compatible(:plugin_additionals)
     end
   end
 end

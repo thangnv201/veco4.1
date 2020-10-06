@@ -1,17 +1,6 @@
 Changelog
 =========
 
-3.0.0
-+++++
-
-- Introduce dashboards
-- Redmine 4.1 or newer is required
-- FontAwesome 5.14.0 support
-- D3 6.1.1 support
-- Mermaid 8.8.0 support
-- d3plus to v2.0.0-alpha.29 support
-- drop wiki header and footer settings
-
 2.0.24
 ++++++
 

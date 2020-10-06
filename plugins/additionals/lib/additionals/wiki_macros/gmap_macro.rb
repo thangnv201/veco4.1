@@ -72,9 +72,9 @@ module Additionals
 
         src = "https://www.google.com/maps/embed/v1/#{mode}?key=" + Additionals.setting(:google_maps_api_key)
         if options[:q].present?
-          src << "&q=#{ERB::Util.url_encode(options[:q])}"
+          src << '&q=' + ERB::Util.url_encode(options[:q])
         elsif mode == 'search'
-          src << "&q=#{ERB::Util.url_encode(args[0])}"
+          src << '&q=' + ERB::Util.url_encode(args[0])
         end
 
         src_options.each do |key|
@@ -82,7 +82,7 @@ module Additionals
         end
         src << "&#{mode}=" + ERB::Util.url_encode(options[:way_mode]) if options[:way_mode].present?
 
-        tag.iframe width: width, height: height, src: src, frameborder: 0, allowfullscreen: 'true'
+        content_tag(:iframe, '', width: width, height: height, src: src, frameborder: 0, allowfullscreen: 'true')
       end
     end
   end

@@ -35,7 +35,7 @@ Requirements
 ------------
 
 +--------------------+----------------------+
-| `Redmine`_ version | >= 4.1.0             |
+| `Redmine`_ version | >= 4.0.0             |
 +--------------------+----------------------+
 | `Ruby`_ version    | >= 2.4.0             |
 +--------------------+----------------------+
@@ -99,14 +99,13 @@ Uninstall ``additionals`` plugin for `Redmine`_.
 Features
 --------
 
-* Dashboard (Drag&Drop) Support
-* Text for login page
-* Global footer for all projects
-* Welcome text for login page
-* Global sidebar content support
-* Note for new issues above issue content (e.g. for guidelines)
-* PDF for wiki pages
-* Wiki macros for:
+* use "Project guide" on project overview page
+* global header for all projects
+* global footer for all projects
+* welcome text for login page
+* global sidebar content support
+* set info message above new ticket (e.g. for guidelines)
+* wiki macros for:
 
   * asciinema
   * cryptocompare
@@ -170,10 +169,10 @@ It provides :
 * `Chart.js Plugin colorschemes 0.4.0 <https://github.com/nagix/chartjs-plugin-colorschemes>`_
 * `Chart.js Plugin datalabels 0.7.0 <https://github.com/chartjs/chartjs-plugin-datalabels>`_
 * `clipboardJS 2.0.6 <https://clipboardjs.com/>`_
-* `d3 6.1.1 <https://d3js.org/>`_
-* `d3plus v2.0.0-alpha.29 <https://d3plus.org/>`_
-* `FontAwesome 5.14.0 <https://fontawesome.com/>`_
-* `mermaid 8.8.0 <https://github.com/knsv/mermaid/>`_
+* `d3 5.16.0 <https://d3js.org/>`_
+* `d3plus v2.0.0-alpha.25 <https://d3plus.org/>`_
+* `FontAwesome 5.13.0 <https://fontawesome.com/>`_
+* `mermaid 8.4.8 <https://github.com/knsv/mermaid/>`_
 * `Select2 4.0.13 <https://select2.org/>`_
 
 And a set of various Rails helper methods (see below).
@@ -205,7 +204,6 @@ The following modules are available :
 Redmine Plugins, which are using ``additionals``
 ------------------------------------------------
 
-* `redmine_automation <https://alphanodes.com/redmine-automation>`_
 * `redmine_codimd <https://github.com/AlphaNodes/redmine_codimd>`_
 * `redmine_db <https://alphanodes.com/redmine-db>`_
 * `redmine_git_hosting <http://redmine-git-hosting.io/>`_
@@ -215,7 +213,6 @@ Redmine Plugins, which are using ``additionals``
 * `redmine_postgresql_search <https://github.com/AlphaNodes/redmine_postgresql_search>`_
 * `redmine_privacy_terms <https://github.com/AlphaNodes/redmine_privacy_terms>`_
 * `redmine_reporting <https://alphanodes.com/redmine-reporting>`_
-* `redmine_sudo <https://github.com/AlphaNodes/redmine_sudo>`_
 
 If you know other plugins, which are using ``additionals``, please let us know or create a `PR <https://github.com/alphanodes/additionals/pulls>`_.
 
@@ -229,7 +226,6 @@ I am glad about your feedback on the plugin, `pull requests <https://github.com/
     :maxdepth: 2
 
     manual
-    dashboards
     macros
     tasks
     new_feature

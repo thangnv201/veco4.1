@@ -246,4 +246,8 @@ group by issues.author_id)   as y"
     end
     render json: data
   end
+
+  def kimodule
+
+  end
 end

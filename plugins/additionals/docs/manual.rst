@@ -17,15 +17,9 @@ Contents
 
 The following plugin options are available to be edited by users with administration rights in the area **Contents**:
 
-Text for login page
-  This section is for a short information on the login page below the login mask. For example who to contact in order to get Redmine access.
-
-Global sidebar
-  Place your global information here, if needed. Use wiki links or available macros that can be seen by every one.
-
-Project wide footer
-  In case you want to put some information about your company or for your imprint. Here you can also use wiki syntax for structuring your text.
-
+* Text for login page. This section is for a short information on the login page below the login mask. For example who to contact in order to get Redmine access.
+* Global sidebar. Place your global information here, if needed. Use wiki links or available macros that can be seen by every one.
+* Project wide footer. In case you want to put some information about your company or for your imprint. Here you can also use wiki syntax for structuring your text.
 
 Settings
 ++++++++
@@ -35,12 +29,35 @@ And the following options can be edited by users with administratios rights in t
 * Activate the option ``Open external URLs`` in order to open those URLs in a new window or browser tab if someone wants to visit them.
 * Add "Go to top" link. If you have a lot of long pages, it is enabling users to easily return to the top of a page.
 * Activate the ``Legacy smileys support`` if you want to use the manual smiley code in your text (e.g. ``:)``). If you already use a plugin that supports Smileys this option should stay deactivated. For more info on Emoji-Browser support read http://caniemoji.com/. Have a look at the Emoji cheat sheet at https://www.webpagefx.com/tools/emoji-cheat-sheet for available Emoji-Codes.
-* ``Disable modules``, this feature will hide the selected modules in the project settings. Even if the module is enabled for use in the admin area it can not be selected by the project manager within the projects. Please note, if these modules already activated in existing projects, you will have to change and re-save the respective project settings first.
-
 
 .. note:: Please restart the application server, if you make changes to the external urls settings as well as if you activate the Smileys support.
 
 .. note:: You can use the following manual smiley codes: :), =), :D, =D, :'(, :(, ;), :P, :O, :/, :S, :|, :X, :*, O:), >:), B), (!), (?), (v), (x), (/) and @}->-
+
+Overview page section
+---------------------
+
+If you click on this tab you get to the area, where you can customize contents and settings for your overview page in Redmine.
+These settings allows you to define some special behaviours for your Redmine installation.
+It is divided into two areas called ``Contents`` and ``Settings``.
+
+Contents
+++++++++
+
+The following plugin options are available to be edited by users with administration rights in the area **Contents**:
+
+* Overview page, right. Place information here you want to display at the right side of your overview page.
+* Overview page, top. Place information here you want to display at the top of your overview page.
+* Overview page, bottom. Place information here you want to display on the bottom of your overview page.
+
+All text input fields allow wiki syntax. Keep your text information as short as possible. In case you want to write prosa, you may also link to a wiki page with further information.
+
+Settings
+++++++++
+
+Changes you can make in the area **Settings** are:
+
+* Remove **Latest news** from overview page in case you do not use the **News** function very often. *Remember:* Old news is bad news.
 
 Wiki section
 ------------
@@ -58,8 +75,8 @@ Field                      Description
 =========================  ===========================================================================================
 Global wiki sidebar        Here you can implement useful macros like a display of your page hierarchy.
                            But remember - only people with the correspondent rights will get a display of the content.
-                           You can also implement useful macros in this section.
-                           For example to implement some date or author macros (e.g. last_updated_at, last_updated_by)
+Project wide wiki header   You can also implement useful macros in this section.
+Project wide wiki footer   For example to implement some date or author macros (e.g. last_updated_at, last_updated_by)
 =========================  ===========================================================================================
 
 .. note:: Use simple text, macros and wiki syntax for your content.
@@ -72,7 +89,7 @@ Changes you can make in the area **PDF Wiki settings** are:
 =================================  =====================================================================================================
 Field                              Description
 =================================  =====================================================================================================
-Remove Wiki title from PDF view    When activated the general Wiki title info in the page header of the PDF view will not be displayed.
+Remove Wiki title from PDF view    When activated the general Wiki title info in the page header of the PDF viewl will not be displayed.
 Remove attachments from PDF view   When activated the attachments will not be displayed in the PDF view of a Wiki page.
 =================================  =====================================================================================================
 
@@ -126,24 +143,32 @@ A list of all available macros provided by the Additionals plugin is also availa
 Issues section
 --------------
 
-Here you can define issue rules, which are used in issues of all projects.
+Here you can define issue rules, which are used in issues of all projects as well as special issue content and other settings.
 
+Contents
+++++++++
 
-Note for new issues
-  Use this section if you want to place important issue notes above every new issue (edit mode). Keep it short and use a link to a common wiki page with further information.
+The following plugin options are available to be edited by users with administration rights in the area **Content**:
 
-.. note:: You can use wiki syntax for your text, but use it wisely. And make sure the wiki page you link to is accessible for every user.
+* Note for new issues. Use this section if you want to place important issue notes above every new issue. Keep it short and use a link to a common wiki page with further information.
 
-New issue on user profile
+.. note:: You can use wiki syntax for your text, but use it wisely.
+
+Settings
+++++++++
+
+The following options are available at the moment in the area **Settings** where you can define rules which will be used in all projects:
+
+New issue on user profile.
   Activate this option in case you want to display the symbol link ''New issue'' on a user's profile page in the top right corner in order to add a new issue for this user directly from it's user profile page.
 
-Show ''Assign to me'' on issue
+Show ''Assign to me'' on issue.
   Activate this option if you want to display the symbol link ''Assign to me'' in the issue overview page of an issue that you are able to assign it directly to yourself without *editing* the issue. The link is only shown to users who are also members in the correspondent project.
 
-Issue status on sidebar
+Issue status on sidebar.
   Activate this option in case you want to display a list of available issue status options in the right sidebar of the issue view page. One click on the option changes the issue status directly without opening the *edit* mode.
 
-.. note:: All options above only work for users with appropriate issue tracking rights in the administration area "Roles and permissions" (view, create, edit).
+.. note:: All three options above only work for users with appropriate issue tracking rights in the administration area "Roles and permissions" (view, add, edit).
 
 
 Add involved users as watcher automatically
@@ -178,6 +203,16 @@ Time log for issues required.
 Please note, that a user with administration rights will always be able to do all those things a normal user is not allowed to.
 
 
+Projects section
+----------------
+
+The projects section offers several options for the user with admin rights to define texts, which will be displayed in the project areas of Redmine as well as disable special modules which should not be available for projects.
+
+* Project guide. The project guide box will provide every user information that is necessary for your Redmine projects. Here you can link to a wiki page or leave a text message.
+* ``Disable modules``, this feature will hide the selected modules in the project settings. Even if the module is enabled for use in the admin area it can not be selected by the project manager within the projects. Please note, if these modules already activated in existing projects, you will have to change and re-save the respective project settings first.
+
+.. note:: Use simple text, macros and wiki syntax for your content of the project guide. Make sure every one has access to the displayed information in case you link to a wiki page.
+
 Menu section
 ------------
 
@@ -208,7 +243,7 @@ In the **Settings** area of the menu tab there are the following functions avail
 * Remove ``My Page`` from top menu in order you don't want your users to use this page.
 
 Users section
--------------
+------------
 
 In case you want to use a SPAM protection for the user registration page you can activate a spam protection function in this area which is based on the honeypot strategy to provide a better user experience.
 We use the simple and flexible SPAM protection solution for Rails applications called ``invisible_captcha`` for it.
@@ -216,7 +251,6 @@ We use the simple and flexible SPAM protection solution for Rails applications c
 In order to activate the checkbox ``SPAM protection for registration`` you must have enabled the registration process in your Redmine settings (Authentication - Self-registration). Otherwise it is not possible to use this function.
 
 .. note:: CAPTCHA is short for ``Completely Automated Public Turing test to tell Computers and Humans Apart``. It is a type of test to determine whether or not the user is human. The honeypot strategy is an alternative and fairly simple. It puts a field onto your form that humans won't fill out because they don't see it. Most spam bots search for forms, fill out every field and submit it. If the honeypot captcha field is filled out you know for sure it is a spam submission.
-
 
 Web APIs section
 ----------------
@@ -246,7 +280,6 @@ The following menu items are currently implemented if a plugin is installed, tha
 Known external plugins that have a user manual and support this feature are currently:
 
 * additionals
-* redmine_automation
 * redmine_privacy_terms
 * redmine_db
 * redmine_passwords
@@ -255,41 +288,26 @@ Known external plugins that have a user manual and support this feature are curr
 
 
 
-Additionals permissions
------------------------
+Additional permissions
+----------------------
 
 The following role permissions are provided by the plugin and must be configured in the administration area ``Roles and permissions`` for the plugin functions to make sure it's working properly.
 
 **According to the selected Role you can activate / deactivate the following option:**
 
-Hide
-  This option hides ``members`` of the selected role in the member box of each project overview page. Project members of other roles will still be listed. For example: You don't want others to catch a glimpse of your development team (Role: Development). So activate the role "Developer" to hide the list of your team members assigned to this role in this box. This function is also useful if your member box is too crowded.
+* **Hide**. This option hides ``members`` of the selected role in the member box of each project overview page. Project members of other roles will still be listed. For example: You don't want others to catch a glimpse of your development team (Role: Development). So activate the role "Developer" to hide the list of your team members assigned to this role in this box. This function is also useful if your member box is too crowded.
 
 .. note:: This setting is also taken into account in all related query lists (e.g. issues, spent time etc.). So that the members with this role are also hidden there. **Important:** If the user has in one project a role, that allows him / her to view a specific "hidden role" this rule is not taken into account anymore.
 
 
 **According to the selected Role you can activate / deactivate the following permissions:**
 
-Show hidden roles
-  Section Project. In case you have hidden roles in a project that should not be displayed in the member box for example you can give to some special user roles the permission to display the members however. *Important:* If someone in a project has a role that has this right, then this user sees all users everywhere even if he or she is user of another project with different roles.
+* **Show hidden roles in member box**. In case you have hidden roles in a project that should not be displayed you can give to some special user roles the permission to display the members however. *Important:* If someone in a project has a role that has this right, then this user sees all users everywhere.
 
-Save dashboards
-  Section Project. Allow this user role to add, edit or delete dashboards of their own. So this users can add dashboards for every purpose they want and switch between them.
+* **Edit issue author**. This permission will always record any changes made to the issue author. You can change the author only in the issue edit mode. This function replaces the use of external plugins (e.g. change_author)
 
-Set system dashboards
-  Section Project. This permission requires *Save dashboards* permission. If you activate it, you allow users with this permission to change the system wide dashboard. Those user may create dashboards and make them system default. They get additional options: *Visible*, *System default* and *Always expose*.
+* **Edit closed issues**. Set this option to those roles you don't want to edit closed issues. Normally a closed issue should not be edited anymore.
 
-Share dashboards
-  Section Project. Allow user roles with this permission to share dashboards with other users. This means if someone else assigns you a dashboard via *Author* selection, you are allowed to edit those dashboards as long as you are the assigned *Author* and also have the permission to *Save dashboards*.
+* **Set author of new issues**. This permission should be set carefully, because in case you allow this, there is no history entry set for this. You will never know if the author has been originally someone else. Normally you don't want this.
 
-Edit issue author
-  Section Issue tracking. This permission will always record any changes made to the issue author. You can change the author only in the issue edit mode. This function replaces the use of external plugins (e.g. change_author)
-
-Edit closed issues
-  Section Issue tracking. Set this option to those roles you do not want to edit closed issues. Normally a closed issue should not be edited anymore.
-
-Set author of new issues
-  Section Issue tracking. This permission should be set carefully, because in case you allow this, there is no history entry set for this. You will never know if the author has been originally someone else. Normally you don't want this.
-
-Log time to closed issues
-  Section Time tracking. Our plugin does not allow time logs to closed issues. In case you still want to allow your members to log time to closed issues, you need to change the permission here.
+* **Log time to closed issues**. Our plugin does not allow time logs to closed issues. In case you still want to allow your members to log time to closed issues, you need to change the permission here.

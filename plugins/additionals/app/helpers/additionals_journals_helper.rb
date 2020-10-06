@@ -3,11 +3,11 @@ module AdditionalsJournalsHelper
 
   # Returns the textual representation of a journal details
   # as an array of strings
-  def entity_details_to_strings(entity, details, options = {})
+  def entity_details_to_strings(entity, details, no_html = false, options = {})
+    Rails.logger.debug "debug entity_details_to_strings: #{details.inspect}"
     entity_type = entity.model_name.param_key
     show_detail_method = "#{entity_type}_show_detail"
     options[:only_path] = options[:only_path] != false
-    no_html = options.delete(:no_html)
     strings = []
     values_by_field = {}
 
@@ -48,7 +48,7 @@ module AdditionalsJournalsHelper
 
     entity_type = entity.model_name.param_key
 
-    safe_join [link_to(l(:button_edit),
+    safe_join([link_to(l(:button_edit),
                        send("edit_#{entity_type}_journal_path", journal),
                        remote: true,
                        method: 'get',
@@ -59,6 +59,6 @@ module AdditionalsJournalsHelper
                        remote: true,
                        method: 'put', data: { confirm: l(:text_are_you_sure) },
                        title: l(:button_delete),
-                       class: 'icon-only icon-del')], ' '
+                       class: 'icon-only icon-del')], ' ')
   end
 end

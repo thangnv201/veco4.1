@@ -1,4 +1,4 @@
-require File.expand_path '../../test_helper', __FILE__
+require File.expand_path('../../test_helper', __FILE__)
 
 class RoleTest < Additionals::TestCase
   fixtures :projects, :users, :members, :member_roles, :roles,
@@ -10,7 +10,7 @@ class RoleTest < Additionals::TestCase
     prepare_tests
   end
 
-  def test_with_permission
+  def test_create
     role = Role.new(name: 'role without hide')
     assert role.save
 

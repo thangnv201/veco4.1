@@ -6,40 +6,11 @@ module Additionals
       included do
         prepend InstanceOverwriteMethods
         include InstanceMethods
-
-        has_many :dashboards, dependent: :destroy
       end
 
       module InstanceOverwriteMethods
-        # this change take care of hidden roles and performance issues (includes for hrm, if installed)
         def users_by_role
-          if Redmine::VERSION.to_s >= '4.2'
-            includes = Redmine::Plugin.installed?('redmine_hrm') ? [:roles, { principal: :hrm_user_type }] : %i[roles principal]
-            memberships.includes(includes).each_with_object({}) do |m, h|
-              m.roles.each do |r|
-                next if r.hide && !User.current.allowed_to?(:show_hidden_roles_in_memberbox, project)
-
-                h[r] ||= []
-                h[r] << m.principal
-              end
-              h
-            end
-          else
-            includes = Redmine::Plugin.installed?('redmine_hrm') ? [:roles, { user: :hrm_user_type }] : %i[roles user]
-            members.includes(includes).each_with_object({}) do |m, h|
-              m.roles.each do |r|
-                next if r.hide && !User.current.allowed_to?(:show_hidden_roles_in_memberbox, project)
-
-                h[r] ||= []
-                h[r] << m.user
-              end
-              h
-            end
-          end
-        end
-
-        def users_by_role_old
-          roles_with_users = if Redmine::VERSION.to_s >= '4.2'
+          roles_with_users = if Redmine::VERSION::BRANCH == 'devel'
                                principals_by_role
                              else
                                super

@@ -194,10 +194,10 @@
             </td>
             <% if kpi.status.id == 29 %>
               <td>
-                <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button title="Save" style="width: 100px;margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
+                <button title="Save" style="width: 100px;margin-top: 10px" onclick="reset_row(this)" disabled type="button" class="reset-row btn btn-secondary">
                   <i class="glyphicon glyphicon-remove"></i>
                 </button>
                 <button title="Cancel" style="width: 100px;margin-top: 10px" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
@@ -207,10 +207,10 @@
             <% elsif kpi.status.id == 32 %>
               <td>
 
-                <button title="Save" style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
+                <button title="Save" style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-secondary">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button title="Cancel" onclick="reset_row(this)" style="width: 100px;margin-top: 10px" type="button" class="btn btn-default">
+                <button title="Cancel" onclick="reset_row(this)" disabled style="width: 100px;margin-top: 10px" type="button" class="reset-row btn btn-secondary">
                   <i class="glyphicon glyphicon-remove"></i>
                 </button>
                 <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
@@ -224,10 +224,10 @@
               </td>
             <% else %>
               <td>
-                <button title="Save" style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                <button title="Save" style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button title="Cancel" onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="btn btn-default">
+                <button title="Cancel" onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="reset-row btn btn-secondary">
                   <i class="glyphicon glyphicon-remove"></i>
                 </button>
               </td>
@@ -836,7 +836,9 @@
             }).done(function () {
                 $(btn).hide()
                 $($(cells[0]).find('a').eq(2)).text('2. Tự đánh giá (Done!)')
-                $($(btn).parent().find('.thaydoi')).prop("disabled", true)
+                let btn_save = $($(btn).parent().find('.thaydoi'))
+                let btn_reset = $($(btn).parent().find('.reset-row'))
+                disable_btn(btn_save,btn_reset)
             }).fail(function (msg) {
             }).always(function (msg) {
                 console.log('ALWAYS');
@@ -857,6 +859,10 @@
             data: JSON.stringify(data),
         }).done(function () {
             $(btn).prop("disabled", true)
+            $(btn).removeClass("btn-primary").addClass("btn-secondary")
+            let btn_reset = $(btn).parent().find('.reset-row');
+            $(btn_reset).prop("disabled", true)
+            $(btn_reset).removeClass("btn-danger").addClass("btn-secondary")
         }).fail(function (msg) {
         }).always(function (msg) {
             console.log('ALWAYS');
@@ -886,6 +892,7 @@
             type: 'GET',
             success: function (response) {
                 let btn_save = $(cells[col_qltt_action]).find('.thaydoi');
+                let btn_reset = $(cells[col_qltt_action]).find('.reset-row');
                 //status
                 status_selected = response.status.find(e => e.selected).value
                 status_source = response.status.map(x => ({value: x.value, text: x.name}))
@@ -909,7 +916,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["author_id"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             $(this).editable('setValue', author_selected);
@@ -921,7 +928,7 @@
                                 value: tracker_selected,
                                 source: tracker_source,
                                 success: function (response, newValue) {
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                     buildData(id)
                                     data_kpis[id]["tracker_id"] = newValue
                                     cells = $(this).parent().parent().parent()[0].cells
@@ -938,7 +945,7 @@
                                                 success: function (response, newValue) {
                                                     buildData(id)
                                                     data_kpis[id]["custom_field_values"]["138"] = newValue
-                                                    $(btn_save).prop("disabled", false)
+                                                    enable_btn(btn_save,btn_reset)
                                                 }
                                             })
                                             $(cells[col_s]).find('a').editable({
@@ -1000,7 +1007,7 @@
                                                     success: function (response, newValue) {
                                                         buildData(id)
                                                         data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
-                                                        $(btn_save).prop("disabled", false)
+                                                        enable_btn(btn_save,btn_reset)
                                                     }
                                                 })
 
@@ -1025,7 +1032,7 @@
                                                     success: function (response, newValue) {
                                                         buildData(id)
                                                         data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
-                                                        $(btn_save).prop("disabled", false)
+                                                        enable_btn(btn_save,btn_reset)
                                                     }
                                                 })
                                             } catch (e) {
@@ -1049,7 +1056,7 @@
                                                     success: function (response, newValue) {
                                                         buildData(id)
                                                         data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                                        $(btn_save).prop("disabled", false)
+                                                        enable_btn(btn_save,btn_reset)
                                                     }
                                                 })
                                             } catch (e) {
@@ -1066,7 +1073,7 @@
                                                 success: function (response, newValue) {
                                                     buildData(id)
                                                     data_kpis[id]["custom_field_values"]["158"] = newValue
-                                                    $(btn_save).prop("disabled", false)
+                                                    enable_btn(btn_save,btn_reset)
                                                 }
                                             })
                                             $(cells[col_b]).find('a').editable({
@@ -1077,7 +1084,7 @@
                                                 success: function (response, newValue) {
                                                     buildData(id)
                                                     data_kpis[id]["custom_field_values"]["159"] = newValue
-                                                    $(btn_save).prop("disabled", false)
+                                                    enable_btn(btn_save,btn_reset)
                                                 }
                                             })
                                             $(cells[col_t]).find('a').editable({
@@ -1088,7 +1095,7 @@
                                                 success: function (response, newValue) {
                                                     buildData(id)
                                                     data_kpis[id]["custom_field_values"]["160"] = newValue
-                                                    $(btn_save).prop("disabled", false)
+                                                    enable_btn(btn_save,btn_reset)
                                                 }
                                             })
                                             break;
@@ -1107,7 +1114,7 @@
                         success: function (response, newValue) {
                             buildData(id)
                             data_kpis[id]["custom_field_values"]["1"] = newValue
-                            $(btn_save).prop("disabled", false)
+                            enable_btn(btn_save,btn_reset)
                         }
                     })
                     $(cells[col_muctieu]).find('a').editable('setValue', response.muc_tieu);
@@ -1120,7 +1127,7 @@
                         success: function (response, newValue) {
                             buildData(id)
                             data_kpis[id]["subject"] = newValue
-                            $(btn_save).prop("disabled", false)
+                            enable_btn(btn_save,btn_reset)
                         }
                     })
                     $(cells[col_subject]).find('a').editable('setValue', response.subject);
@@ -1135,7 +1142,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["138"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             $(cells[col_donvido]).find('a').editable('setValue', donvido_selected);
@@ -1148,7 +1155,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["142"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             // $(cells[col_s]).find('a').editable('setValue', response.toithieu);
@@ -1162,7 +1169,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["143"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             // $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
@@ -1176,7 +1183,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["144"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             // $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
@@ -1200,7 +1207,7 @@
                                     success: function (response, newValue) {
                                         buildData(id)
                                         data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                        $(btn_save).prop("disabled", false)
+                                        enable_btn(btn_save,btn_reset)
                                     }
                                 })
                                 $(cells[col_b]).find('a').editable({
@@ -1220,7 +1227,7 @@
                                     success: function (response, newValue) {
                                         buildData(id)
                                         data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                        $(btn_save).prop("disabled", false)
+                                        enable_btn(btn_save,btn_reset)
                                     }
                                 })
                                 $(cells[col_t]).find('a').editable({
@@ -1240,7 +1247,7 @@
                                     success: function (response, newValue) {
                                         buildData(id)
                                         data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
-                                        $(btn_save).prop("disabled", false)
+                                        enable_btn(btn_save,btn_reset)
                                     }
                                 })
 
@@ -1258,7 +1265,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["158"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             $(cells[col_s]).find('a').editable('setValue', response.toithieu);
@@ -1270,7 +1277,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["159"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
@@ -1282,7 +1289,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["160"] = newValue
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
@@ -1298,7 +1305,7 @@
                         success: function (response, newValue) {
                             buildData(id)
                             data_kpis[id]["custom_field_values"]["139"] = newValue
-                            $(btn_save).prop("disabled", false)
+                            enable_btn(btn_save,btn_reset)
                         }
                     })
                     $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
@@ -1316,7 +1323,7 @@
                             success: function (response, newValue) {
                                 buildData(id)
                                 data_kpis[id]["custom_field_values"]["145"] = newValue
-                                $(btn_save).prop("disabled", false)
+                                enable_btn(btn_save,btn_reset)
                             }
                         })
                         $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
@@ -1339,7 +1346,7 @@
                                 success: function (response, newValue) {
                                     buildData(id)
                                     data_kpis[id]["custom_field_values"]["149"] = newValue.toISOString().split("T")[0];
-                                    $(btn_save).prop("disabled", false)
+                                    enable_btn(btn_save,btn_reset)
                                 }
                             })
                             $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
@@ -1356,7 +1363,7 @@
                             success: function (response, newValue) {
                                 buildData(id)
                                 data_kpis[id]["custom_field_values"]["151"] = newValue
-                                $(btn_save).prop("disabled", false)
+                                enable_btn(btn_save,btn_reset)
                             }
                         })
                         $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
@@ -1375,7 +1382,7 @@
                         success: function (response, newValue) {
                             buildData(id)
                             data_kpis[id]["custom_field_values"]["140"] = newValue
-                            $(btn_save).prop("disabled", false)
+                            enable_btn(btn_save,btn_reset)
                         }
                     })
                     $(cells[col_cbnv_point]).find('a').editable('setValue', cbnv_point_selected);
@@ -1391,9 +1398,26 @@
 
     function reset_row(btn) {
         edittable($(btn).parent().parent())
-        $($(btn).parent().find('.thaydoi')).prop("disabled", true)
+        let btn_save = $($(btn).parent().find('.thaydoi'))
+        let btn_reset = $($(btn).parent().find('.reset-row'))
+        disable_btn(btn_save,btn_reset)
     }
-
+     function enable_btn(btn_save,btn_reset) {
+         $(btn_save).prop("disabled", false)
+         $(btn_reset).prop("disabled", false)
+         $(btn_save).removeClass("btn-secondary")
+         $(btn_reset).removeClass("btn-secondary")
+         $(btn_save).addClass("btn-primary")
+         $(btn_reset).addClass("btn-danger")
+     }
+     function disable_btn(btn_save,btn_reset) {
+         $(btn_save).prop("disabled", true)
+         $(btn_reset).prop("disabled", true)
+         $(btn_save).addClass("btn-secondary")
+         $(btn_reset).addClass("btn-secondary")
+         $(btn_save).removeClass("btn-primary")
+         $(btn_reset).removeClass("btn-danger")
+     }
     function savetable(btn) {
 
         $(btn).parent().parent()[0].cells.forEach(element => {
@@ -1437,77 +1461,7 @@
             }
         });
     })
-    $('#tudanhgiaModal').on('show.bs.modal', function (event) {
-        let button = $(event.relatedTarget) // Button that triggered the modal
-        let id = button.data('whatever') // Extract info from data-* attributes
-        let tracker_id = button.data('tracker') // Extract info from data-* attributes
-        let modal = $(this)
-        if (tracker_id == 40) {
-            $('#ketqua').prop('type', 'date');
-        } else if (tracker_id == 39) {
-            $('#ketqua').prop('type', 'number');
-            $('#ketqua').prop('step', 'any');
-        }
-        let btn_tudanhgia = modal.find('.modal-footer #btn-tudanhgia')
-        btn_tudanhgia.click(function () {
-            $('#tudanhgia-form').validate();
-            if ($('#tudanhgia-form').valid() && $('#tudanhgia-diem').val() !== "") {
-                let url = 'http://' + $(location).attr('host') + '/issues/' + id + '.json?key=<%=User.current.api_key%>';
-                let data
-                if (tracker_id == 40) {
-                    data = {
-                        "issue": {
-                            "status_id": 33,
-                            "custom_field_values": {
-                                "149": $('#ketqua').val(),
-                                "140": $('#tudanhgia-diem').val()
-                            }
-                        }
-                    }
-                } else if (tracker_id == 39) {
-                    data = {
-                        "issue": {
-                            "status_id": 33,
-                            "custom_field_values": {
-                                "145": $('#ketqua').val(),
-                                "140": $('#tudanhgia-diem').val()
-                            }
-                        }
-                    }
-                } else {
-                    data = {
-                        "issue": {
-                            "status_id": 33,
-                            "custom_field_values": {
-                                "151": $('#ketqua').val(),
-                                "140": $('#tudanhgia-diem').val()
-                            }
-                        }
-                    }
-                }
-                console.log(data)
-                $.ajax({
-                    type: 'PUT',
-                    url: url,
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                }).done(function () {
-                    $('#close-tudanhgia').click();
-                    $($('#' + id + ' td').first()).find('a').text('2. Tự đánh giá (Done!)')
-                    $($('#' + id + ' td').eq(11)).find('a').text($("#tudanhgia-diem option:selected").text())
-                    let kq = tracker_id == 40 ? getFormattedDate(new Date($('#ketqua').val())) : $('#ketqua').val()
-                    $($('#' + id + ' td').eq(10)).find('a').text(kq)
-                    $($('#' + id + ' td').last()).empty();
-                }).fail(function (msg) {
 
-                }).always(function (msg) {
-                    console.log('ALWAYS');
-                });
-
-            }
-        });
-
-    })
 
     function your_onchange_handler() {
         this.form.submit()

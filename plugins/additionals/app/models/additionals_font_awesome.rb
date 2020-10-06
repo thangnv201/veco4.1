@@ -1,7 +1,7 @@
 class AdditionalsFontAwesome
   include Redmine::I18n
 
-  FORMAT_REGEXP = /\Afa[rsb]_[a-zA-Z0-9]+[a-zA-Z0-9\-]*\z/.freeze
+  FORMAT_REGEXP = /\Afa[rsb]\_[a-zA-Z0-9]+[a-zA-Z0-9\-]*\z/.freeze
   SEARCH_LIMIT = 50
 
   class << self
@@ -134,7 +134,7 @@ class AdditionalsFontAwesome
         break if SEARCH_LIMIT == cnt
 
         id = key2value(fa_symbol, type[-1])
-        next if selected_store.exclude?(id) &&
+        next if !selected_store.include?(id) &&
                 search.present? &&
                 (first_letter_search.present? && !values[:label].downcase.start_with?(first_letter_search) ||
                  first_letter_search.blank? && values[:label] !~ /#{search}/i)

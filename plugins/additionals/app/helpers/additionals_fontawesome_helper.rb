@@ -8,13 +8,13 @@ module AdditionalsFontawesomeHelper
   #           post_text
   #           title
   def font_awesome_icon(name, options = {})
-    info = AdditionalsFontAwesome.value_info name
+    info = AdditionalsFontAwesome.value_info(name)
     return '' if info.blank?
 
     post_text = ''
-    options[:'aria-hidden'] = 'true'
+    options['aria-hidden'] = 'true'
     options[:class] = if options[:class].present?
-                        "#{info[:classes]} #{options[:class]}"
+                        info[:classes] + ' ' + options[:class]
                       else
                         info[:classes]
                       end
@@ -23,25 +23,25 @@ module AdditionalsFontawesomeHelper
     if options[:pre_text].present?
       s << options[:pre_text]
       s << ' '
-      options.delete :pre_text
+      options.delete(:pre_text)
     end
     if options[:post_text].present?
       post_text = options[:post_text]
-      options.delete :post_text
+      options.delete(:post_text)
     end
-    s << tag.span(options)
+    s << content_tag('span', '', options)
     if post_text.present?
       s << ' '
       s << post_text
     end
-    safe_join s
+    safe_join(s)
   end
 
   def additionals_fontawesome_select(form, selected, options = {})
     options[:include_blank] ||= true unless options[:required]
     html_options = {}
 
-    additionals_fontawesome_add_selected selected
+    additionals_fontawesome_add_selected(selected)
 
     name, options = Additionals.hash_remove_with_default(:name, options, :icon)
     loader, options = Additionals.hash_remove_with_default(:loader, options, true)
@@ -56,7 +56,7 @@ module AdditionalsFontawesomeHelper
 
     s << additionals_fontawesome_loader(options, html_options) if loader
 
-    safe_join s
+    safe_join(s)
   end
 
   def additionals_fontawesome_add_selected(selected)
@@ -71,6 +71,8 @@ module AdditionalsFontawesomeHelper
   end
 
   def additionals_fontawesome_loader(options, html_options = {})
+    # Rails.logger.warn "debug selected_store: #{@selected_store.inspect}"
+
     html_options[:class] ||= 'select2-fontawesome-field'
     options[:template_selection] = 'formatFontawesomeText'
     options[:template_result] = 'formatFontawesomeText'
