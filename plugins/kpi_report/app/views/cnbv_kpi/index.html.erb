@@ -1567,7 +1567,10 @@
         }
     }
 
-    function submitKI() {
+
+
+    function submitKI()
+    {
         let check = true;
         let message = "";
         $('td[name ="validateCapa"]').each(function () {
@@ -1595,9 +1598,44 @@
                 dataType: "json",
                 data: empObj,
                 success: function (result) {
+                    let promisesArray = [];
+                    let successCounter = 0;
+                    let promise;
+
+                    $.each(result, function(k, valu)
+                    {
+                        let count = result.length;
+                        let checkloop = k+1;
+                        let url = 'http://' + $(location).attr('host') + '/issues/' + valu.id + '.json?key=<%=User.current.api_key%>';
+                        let data = {
+                            "issue": {'status_id': 36}
+                        }
+
+                        promise =
+                            $.ajax({
+                                type: 'PUT',
+                                url: url,
+                                contentType: 'application/json',
+                                data: JSON.stringify(data)
+                            });
+
+                        promise.done(function(msg)
+                        {
+                            console.log("successfully updated");
+                            successCounter++;
+                        });
+
+                        promise.fail(function(jqXHR) { /* error out... */ });
+
+                        promisesArray.push(promise);
+                    });
+
+                    $.when.apply($, promisesArray).done(function()
+                    {
+                        if (alert('đã chốt, đợi phản hồi từ phòng TCLD')) {
+                             } else window.location.reload();
+                    });
                     $('#btndefault').hide();
-                    if (alert('đã chốt, đợi phản hồi từ phòng TCLD')) {
-                    } else window.location.reload();
                 },
                 error: function () {
                 }
@@ -1605,6 +1643,7 @@
         } else {
             alert(message);
         }
+
     }
 
     function detailKPI(uid, vid) {

@@ -247,16 +247,13 @@ class CnbvKpiController < ApplicationController
       users_id.push(kpi.user_id)
     end
     @issues = Issue.where(assigned_to_id:users_id, fixed_version_id:params[:version_id]).where.not(status_id: 35)
-    @issues.each do |obj|
-      obj.status_id = 36
-      obj.save
-    end
     check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
     if check_create > 0
       PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
     else
       PeopleKiLock.create(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
     end
+    render json: @issues
   end
 
   def get_user_kpi
