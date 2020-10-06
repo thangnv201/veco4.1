@@ -196,10 +196,8 @@ group by issues.author_id)   as y"
   def update_people_ki
     location_compliance = 1
     labor_rules_compliance = 1
-    cbnv = params[:cbnv].to_i
-    kidanhgia = params[:kidanhgia].to_i
-    people_ki = PeopleKi.where(:user_id => cbnv).where(:version_id => kidanhgia).first
-    people_ki_note = PeopleKiNote.where(:user_id => cbnv).where(:version_id => kidanhgia).where(:lead_id => params[:user]).first
+    people_ki = PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).first
+    people_ki_note = PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => params[:user]).first
     if params.key?("location_compliance")
       location_compliance = params[:location_compliance].to_i
       people_ki.location_compliance = location_compliance
@@ -213,7 +211,7 @@ group by issues.author_id)   as y"
       people_ki_note.comment = note
     end
     if people_ki.save && people_ki_note.save
-      render json: people_ki
+      render json: "ok"
     else
       render json: "error"
     end

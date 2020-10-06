@@ -18,8 +18,7 @@
   .danger {
     background-color: #e74c3c;
   }
-
-  .danger:hover {
+  .danger:hover{
     background-color: green;
   }
 
@@ -187,51 +186,52 @@
               </td>
               <% if kpi.status.id == 29 %>
                 <td>
-                  <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="thongnhatKPI(this)" data-tracker="<%= kpi.tracker_id %>">
+                  <button type="button" class="btn btn-primary" onclick="thongnhatKPI(this)" data-tracker="<%= kpi.tracker_id %>">
                     Thống Nhất
                   </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
+                  <button style="width: 100%;margin-top: 10px" type="button" class="btn btn-danger" data-toggle="modal" data-target="#huyModal"
                           data-whatever="<%= kpi.id %>">Hủy KPI
+                  </button>
+
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-remove"></i>
                   </button>
                 </td>
               <% elsif kpi.status.id == 32 %>
                 <td>
-                  <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-primary">
                     <i class="glyphicon glyphicon-ok"></i>
                   </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" type="button" class="btn btn-default">
+                  <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
                     <i class="glyphicon glyphicon-remove"></i>
                   </button>
                 </td>
               <% elsif kpi.status.id == 35 %>
                 <td>
-                  <button style="width: 100px" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
+                  <button style="width: 100%" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
                   </button>
                 </td>
               <% elsif kpi.status.id == 33 %>
                 <td>
-                  <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <button type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
+                    Đánh giá
+                  </button>
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
                     <i class="glyphicon glyphicon-ok"></i>
                   </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" type="button" class="btn btn-default">
+                  <button onclick="reset_row(this)" style="margin-top: 10px" type="button" class="btn btn-default">
                     <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
-                    Đánh giá
                   </button>
                 </td>
               <% else %>
                 <td>
-                  <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
+                  <button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">
                     <i class="glyphicon glyphicon-ok"></i>
                   </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="btn btn-default">
+                  <button onclick="reset_row(this)" style="margin-top: 10px" disabled type="button" class="btn btn-default">
                     <i class="glyphicon glyphicon-remove"></i>
                   </button>
                 </td>
@@ -349,14 +349,12 @@
         data = {}
         data[$(ki).attr("name")] = $(ki).val();
         data['user'] = <%=User.current.id %>
-            data['cbnv'] = $('#cbnv').val()
-        data['kidanhgia'] = $('#kidanhgia').val()
-        console.log(data)
+            console.log(data)
         $.ajax({
             type: 'PUT',
             url: '/update_ki' + '.json?key=<%=User.current.api_key%>',
             contentType: 'application/json',
-            data: JSON.stringify(data),
+            data: JSON.stringify(data), //
         }).done(function () {
             console.log('SUCESS')
         }).fail(function (msg) {
@@ -441,7 +439,6 @@
                         }
                         $('#notes-issue').val(response.note)
                         $('#add-notes').prop('disabled', false)
-                        $('#add-notes').off()
                         $('#add-notes').keyup(function (event) {
                             if (event.keyCode == 13) {
                                 note = $('#add-notes').val();
@@ -908,7 +905,6 @@
             data: JSON.stringify(data),
         }).done(function () {
             $(btn).prop("disabled", true)
-            updatekpi(id)
         }).fail(function (msg) {
         }).always(function (msg) {
             console.log('ALWAYS');
@@ -1195,7 +1191,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            // $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
                             $(cells[col_b]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1209,7 +1205,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            // $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
+                            $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
                             $(cells[col_t]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
@@ -1223,7 +1219,7 @@
                                     $(btn_save).prop("disabled", false)
                                 }
                             })
-                            // $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
                             break;
                         case 40:
                             try {
@@ -1346,7 +1342,7 @@
                     })
                     $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
 
-                } else if (status_selected === 33 || status_selected === 34) {
+                } else if (status_selected === 33 ||status_selected === 34 ) {
                     qltt_point_selected = typeof response.qltt_point.find(e => e.selected) !== 'undefined' ? response.qltt_point.find(e => e.selected).value : null
                     qltt_point_source = response.qltt_point.map(x => ({value: x.value, text: x.name}))
 
@@ -1413,7 +1409,7 @@
                     $($($('#' + id + ' td').first()).find('a').eq(2)).text('4. Hủy (Cancel!!)')
                     $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#b22222");
                     $($('#' + id + ' td').last()).empty();
-                    $($('#' + id + ' td').last()).append('<button style="width: 100px" type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
+                    $($('#' + id + ' td').last()).append('<button type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
                 }).fail(function (msg) {
                     let a = JSON.parse(msg.responseText)
                     console.log(a)
