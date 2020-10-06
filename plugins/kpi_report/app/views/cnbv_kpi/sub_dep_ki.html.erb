@@ -164,7 +164,7 @@
 <body>
 <div>
   <div>
-    <%= form_tag({:controller => 'cnbv_kpi', :action => 'index'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
+    <%= form_tag({:controller => 'cnbv_kpi', :action => 'sub_dep_ki'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
       <table style="margin: 0 auto;">
         <tr>
           <td>
@@ -172,6 +172,7 @@
               tại Cơ quan/ Đơn vị </h4>
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "depid", options_for_select(Department.where(id: $dids).map { |obj| [obj.name, obj.id, {:class => style_select(obj.id,$kidanhgia)}] }, $dpid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
@@ -356,9 +357,9 @@
           <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             Tự sinh KI theo điểm
           </button>
-<!--          <button onclick="rendKIByCapa()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">-->
-<!--            Tự sinh KI theo tỷ lệ-->
-<!--          </button>-->
+          <!--          <button onclick="rendKIByCapa()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">-->
+          <!--            Tự sinh KI theo tỷ lệ-->
+          <!--          </button>-->
           <button onclick="resetKI()" data-toggle="modal" class="btn btn-secondary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-times-circle"></i>
             Reset
@@ -1147,29 +1148,7 @@
     <% end %>
 
 
-    <% if $num != 0 %>
 
-      <!--  khởi tạo      a-->
-      <% if status == 0 %>
-        <div class="row" style="text-align: center">
-          <button id="btndefault" data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-check"></i>
-            Chốt KI gửi phòng TCLĐ
-          </button>
-        </div>
-        <!--  đợi duyệt      a-->
-      <% elsif status == 1 %>
-        <!--  từ chối      a-->
-      <% elsif status == 2 %>
-        <div class="row" style="text-align: center">
-          <button id="btn2" data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-check"></i>
-            Phòng TCLD từ chối KI yêu cầu rà soát lại
-          </button>
-        </div>
-      <% end %>
-
-    <% end %>
 
 
   </div>
@@ -1472,34 +1451,34 @@
         $('#otNumD').text(otNumD);
         $('#otNumK').text(otNumK);
         $('#totalother').text(totalother);
-        $('#otNumAPlusByCapa').text(Math.round((totalother - otNumK) * 0.1));
-        $('#otNumAByCapa').text(Math.round((totalother - otNumK) * 0.15));
-        $('#otNumBByCapa').text(Math.round((totalother - otNumK) * 0.6));
-        $('#otNumDByCapa').text(Math.round((totalother - otNumK) * 0.03));
-        $('#totalOtherCapa').text(totalother - otNumK);
-        $('#otNumCByCapa').text(totalother-otNumK-$('#otNumAPlusByCapa').val()-$('#otNumAByCapa').val()-$('#otNumBByCapa').val()-$('#otNumDByCapa').val()-$('#otNumDByCapa').val());
+        $('#otNumAPlusByCapa').text(Math.round((totalother - otNumK) * 0.1 * 100) / 100);
+        $('#otNumAByCapa').text(Math.round((totalother - otNumK) * 0.15 * 100) / 100);
+        $('#otNumBByCapa').text(Math.round((totalother - otNumK) * 0.6 * 100) / 100);
+        $('#otNumCByCapa').text(Math.round((totalother - otNumK) * 0.12 * 100) / 100);
+        $('#otNumDByCapa').text(Math.round((totalother - otNumK) * 0.03 * 100) / 100);
+        $('#totalOtherCapa').text((totalother - otNumK));
         if (totalother - otNumK != 0) {
             $('#otRealAPlusCapa').text(Math.round(otNumAPlus / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumAPlus > $('#otNumAPlusByCapa').val()) {
+            if (otNumAPlus / (totalother - otNumK) * 100 > 10) {
                 $('#otRealAPlusCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealAPlusCapa').css('background-color', "white");
             }
             $('#otRealACapa').text(Math.round(otNumA / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumA > $('#otNumAByCapa').val()) {
+            if ((otNumAPlus / (totalother - otNumK) * 100 + otNumA / (totalother - otNumK) * 100) > 25) {
                 $('#otRealACapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealACapa').css('background-color', "white");
             }
             $('#otRealBCapa').text(Math.round(otNumB / (totalother - otNumK) * 100 * 100) / 100 + "%");
             $('#otRealCCapa').text(Math.round(otNumC / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumC < $('#otNumCByCapa').val()) {
+            if ((otNumC / (totalother - otNumK) * 100 + otNumD / (totalother - otNumK) * 100) < 15) {
                 $('#otRealCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealCCapa').css('background-color', "white");
             }
             $('#otRealDCapa').text(Math.round(otNumD / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumD < $('#otNumDByCapa').val()) {
+            if (otNumD / (totalother - otNumK) * 100 < 3) {
                 $('#otRealDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealDCapa').css('background-color', "white");
@@ -1523,32 +1502,32 @@
         $('#numD').text(numD);
         $('#numK').text(numK);
         $('#totalprimary').text(totalprimary);
-        $('#numAByCapa').text(Math.round((totalprimary - numK) * 0.15));
-        $('#numBByCapa').text(Math.round((totalprimary - numK) * 0.7));
-        $('#totalPrimaryCapa').text(totalprimary - numK);
-        $('#numCByCapa').text(totalprimary - numK-$('#numAPlusByCapa').val()-$('#numAByCapa').val()-$('#numBByCapa').val()-$('#numCByCapa').val()-$('#numDByCapa').val());
+        $('#numAByCapa').text(Math.round((totalprimary - numK) * 0.15 * 100) / 100);
+        $('#numBByCapa').text(Math.round((totalprimary - numK) * 0.7 * 100) / 100);
+        $('#numCByCapa').text(Math.round((totalprimary - numK) * 0.15 * 100) / 100);
+        $('#totalPrimaryCapa').text((totalprimary - numK));
         if (totalprimary - numK != 0) {
             $('#realAPlusCapa').text(Math.round(numAPlus / (totalprimary - numK) * 100 * 100) / 100 + "%");
             $('#realACapa').text(Math.round(numA / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numA > $('#numAByCapa').val()) {
+            if ((numA / (totalprimary - numK) * 100) > 15) {
                 $('#realACapa').css('background-color', '#e74c3c');
             } else {
                 $('#realACapa').css('background-color', "white");
             }
             $('#realBCapa').text(Math.round(numB / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numB > $('#numBByCapa').val()) {
+            if ((numA / (totalprimary - numK) * 100 + numB / (totalprimary - numK) * 100) > 85) {
                 $('#realBCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realBCapa').css('background-color', "white");
             }
             $('#realCCapa').text(Math.round(numC / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numC  < $('#numCByCapa').val()) {
+            if ((numC / (totalprimary - numK) * 100 + numD / (totalprimary - numK) * 100) < 15) {
                 $('#realCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realCCapa').css('background-color', "white");
             }
             $('#realDCapa').text(Math.round(numD / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numD  < $('#numDByCapa').val()) {
+            if ((numC / (totalprimary - numK) * 100 + numD / (totalprimary - numK) * 100) < 15) {
                 $('#realDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realDCapa').css('background-color', "white");
@@ -1567,45 +1546,7 @@
         }
     }
 
-    function submitKI() {
-        let check = true;
-        let message = "";
-        $('td[name ="validateCapa"]').each(function () {
-            if ($(this)[0].style.backgroundColor == "rgb(231, 76, 60)") {
-                check = false;
-                message = "Vui lòng kiểm tra lại điều kiện về tỷ lệ KI";
-            }
-        });
-        $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
-                check = false;
-                message = "chưa chấm hết KI";
-            }
-        });
-        if (check == true) {
-            let version_id = $('#version_id1').val();
-            let empObj = {
-                version_id: version_id,
-                status: 1
-            };
-            let url = 'http://' + $(location).attr('host') + '/ki_ranking/saveAllKI';
-            $.ajax({
-                type: "GET",
-                url: url,
-                dataType: "json",
-                data: empObj,
-                success: function (result) {
-                    $('#btndefault').hide();
-                    if (alert('đã chốt, đợi phản hồi từ phòng TCLD')) {
-                    } else window.location.reload();
-                },
-                error: function () {
-                }
-            })
-        } else {
-            alert(message);
-        }
-    }
+
 
     function detailKPI(uid, vid) {
         let url = 'http://' + $(location).attr('host') + '/ki_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
