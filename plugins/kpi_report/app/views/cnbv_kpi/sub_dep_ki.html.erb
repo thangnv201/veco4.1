@@ -173,6 +173,7 @@
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
           <td><%= select_tag "depid", options_for_select(Department.where(id: $dids).map { |obj| [obj.name, obj.id, {:class => style_select(obj.id,$kidanhgia)}] }, $dpid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= check_box_tag "tieuchuan", value = "1", checked = false, options = {} %></td>
         </tr>
       </table>
     <% end %>

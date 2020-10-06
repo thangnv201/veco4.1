@@ -348,10 +348,10 @@
         II. Danh sách chi tiết
       </div>
       <% if status == 0 %>
-        <div class="col col-md-3">
+        <div class="col col-md-2">
           Trang thái: <span style="background-color:blue; color: white">Đang đánh giá KI</span>
         </div>
-        <div class="col col-md-3">
+        <div class="col col-md-4">
           Hành động:
           <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             Tự sinh KI theo điểm
@@ -1477,29 +1477,29 @@
         $('#otNumBByCapa').text(Math.round((totalother - otNumK) * 0.6));
         $('#otNumDByCapa').text(Math.round((totalother - otNumK) * 0.03));
         $('#totalOtherCapa').text(totalother - otNumK);
-        $('#otNumCByCapa').text(totalother-otNumK-$('#otNumAPlusByCapa').val()-$('#otNumAByCapa').val()-$('#otNumBByCapa').val()-$('#otNumDByCapa').val()-$('#otNumDByCapa').val());
+        $('#otNumCByCapa').text(totalother-otNumK-parseInt($('#otNumAPlusByCapa').text())-parseInt($('#otNumAByCapa').text())-parseInt($('#otNumBByCapa').text())-parseInt($('#otNumDByCapa').text()));
         if (totalother - otNumK != 0) {
             $('#otRealAPlusCapa').text(Math.round(otNumAPlus / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumAPlus > $('#otNumAPlusByCapa').val()) {
+            if (otNumAPlus > parseInt($('#otNumAPlusByCapa').text())) {
                 $('#otRealAPlusCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealAPlusCapa').css('background-color', "white");
             }
             $('#otRealACapa').text(Math.round(otNumA / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumA > $('#otNumAByCapa').val()) {
+            if (otNumA > parseInt($('#otNumAByCapa').text())) {
                 $('#otRealACapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealACapa').css('background-color', "white");
             }
             $('#otRealBCapa').text(Math.round(otNumB / (totalother - otNumK) * 100 * 100) / 100 + "%");
             $('#otRealCCapa').text(Math.round(otNumC / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumC < $('#otNumCByCapa').val()) {
+            if (otNumC < parseInt($('#otNumCByCapa').text())) {
                 $('#otRealCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealCCapa').css('background-color', "white");
             }
             $('#otRealDCapa').text(Math.round(otNumD / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumD < $('#otNumDByCapa').val()) {
+            if (otNumD < parseInt($('#otNumDByCapa').text())) {
                 $('#otRealDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealDCapa').css('background-color', "white");
@@ -1526,29 +1526,29 @@
         $('#numAByCapa').text(Math.round((totalprimary - numK) * 0.15));
         $('#numBByCapa').text(Math.round((totalprimary - numK) * 0.7));
         $('#totalPrimaryCapa').text(totalprimary - numK);
-        $('#numCByCapa').text(totalprimary - numK-$('#numAPlusByCapa').val()-$('#numAByCapa').val()-$('#numBByCapa').val()-$('#numCByCapa').val()-$('#numDByCapa').val());
+        $('#numCByCapa').text(totalprimary - numK-parseInt($('#numAByCapa').text())-parseInt($('#numBByCapa').text()));
         if (totalprimary - numK != 0) {
             $('#realAPlusCapa').text(Math.round(numAPlus / (totalprimary - numK) * 100 * 100) / 100 + "%");
             $('#realACapa').text(Math.round(numA / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numA > $('#numAByCapa').val()) {
+            if (numA > parseInt($('#numAByCapa').text())) {
                 $('#realACapa').css('background-color', '#e74c3c');
             } else {
                 $('#realACapa').css('background-color', "white");
             }
             $('#realBCapa').text(Math.round(numB / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numB > $('#numBByCapa').val()) {
+            if (numB > parseInt($('#numBByCapa').text())) {
                 $('#realBCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realBCapa').css('background-color', "white");
             }
             $('#realCCapa').text(Math.round(numC / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numC  < $('#numCByCapa').val()) {
+            if (numC  < parseInt($('#numCByCapa').text())) {
                 $('#realCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realCCapa').css('background-color', "white");
             }
             $('#realDCapa').text(Math.round(numD / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numD  < $('#numDByCapa').val()) {
+            if (numD  < parseInt($('#numDByCapa').text())) {
                 $('#realDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realDCapa').css('background-color', "white");
