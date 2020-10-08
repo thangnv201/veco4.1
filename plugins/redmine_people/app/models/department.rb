@@ -46,7 +46,8 @@ class Department < ActiveRecord::Base
   safe_attributes 'name',
                   'background',
                   'parent_id',
-                  'head_id'
+                  'head_id',
+                  'ki_confirm'
 
   def to_s
     name
