@@ -44,9 +44,8 @@ class MyKpiController < ApplicationController
   end
 
   def updatekpipoint
-    issue = Issue.find(params["issue_id"].to_i)
-    user_id = issue.assigned_to_id
-    version = issue.fixed_version_id
+    user_id = params["user"].to_i
+    version = params["vid"].to_i
     if PeopleKi.where(:user_id => user_id).where(:version_id => version).length == 0
       PeopleKi.create(:user_id => user_id, :version_id => version, :location_compliance => 1, :labor_rules_compliance => 1)
     end
@@ -220,8 +219,13 @@ group by issues.author_id)   as y"
   end
 
   def importkpi
-    @option = [['Cá nhân', User.current.id]]
-    manager = Person.find(User.current.id).manager
+    if params.key?("user")
+      user = params["user"].to_i
+    else
+      user = User.current.id
+    end
+    @option = [['Cá nhân: ' + User.find(user).firstname, user]]
+    manager = Person.find(user).manager
     @option.push(['Quản lí trực tiếp: ' + manager.login, manager.id]) unless manager.nil?
     @kidanhgia = Project.find(1072).versions.map { |obj| [obj.name, obj.id] }
   end
@@ -250,4 +254,83 @@ group by issues.author_id)   as y"
   def kimodule
 
   end
+
+  def pa_kpi
+    if params.key?("kidanhgia")
+      $kidanhgia = params["kidanhgia"].to_i
+    else
+      $kidanhgia = Project.find(1072).default_version_id
+    end
+    flash.delete(:notice)
+    @member = find_group_member(User.current.id)
+    return unless @member.length >0
+    @user_ql = User.find(@member.first)
+    @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
+    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => @user_ql.id)
+                               .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
+    result = total_ti_trong(@kpi_open_dinh_luong, nil)
+    @total_ti_trong = result[0]
+    @total_cbnv_point = result[1]
+    @total_qltt_point = result[2]
+    update_kpi_point(@kpi_open_dinh_luong, @user_ql.id)
+  end
+
+  def pa_cbnv_kpi
+    if params.key?("kidanhgia")
+      $kidanhgia = params["kidanhgia"].to_i
+    else
+      $kidanhgia = Project.find(1072).default_version_id
+    end
+    @member = find_group_member(User.current.id)
+    return unless @member.length >0
+    @user_ql = User.find(@member.first)
+    @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
+    @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => @user_ql.id)
+                               .where.not(:status_id => 35)
+                               .where(:fixed_version_id => $kidanhgia)
+    return unless @kpi_open_dinh_luong.length > 0
+    @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
+    if params.key?("cbnv")
+      id = params["cbnv"].to_i
+      tmp = @cbnv.find_by(:assigned_to_id => id)
+      if !tmp.nil?
+        $cbnv = id
+      else
+        $cbnv = @cbnv.first.assigned_to_id
+      end
+    else
+      $cbnv = @cbnv.first.assigned_to_id
+    end
+    @kpi = @kpi_open_dinh_luong.where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
+
+    @permission_danhgia = get_main_qltt($cbnv, $kidanhgia) == User.current.id ? true : false
+    if PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).length == 0
+      PeopleKi.create(:user_id => $cbnv, :version_id => $kidanhgia, :location_compliance => 1, :labor_rules_compliance => 1)
+    end
+    if PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => User.current.id).length == 0
+      PeopleKiNote.create(:user_id => $cbnv, :version_id => $kidanhgia, :lead_id => User.current.id, :comment => "")
+    end
+    @cbnv_ki = PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).first
+    @cbnv_ki_note = PeopleKiNote.where(:user_id => $cbnv).where(:version_id => $kidanhgia).where(:lead_id => User.current.id).first
+    result = total_ti_trong(@kpi, @cbnv_ki)
+    @total_ti_trong = result[0]
+    @total_cbnv_point = result[1]
+    @total_qltt_point = result[2]
+    flash.delete(:notice)
+    respond_to do |format|
+      format.html # show.html.erb
+    end
+  end
+
+  def find_group_member(user_id)
+    member = []
+    Gmanager.where(:id_owner => User.current.id).each do |group|
+      tmp = Group.find(group.id_group)
+      if tmp.projects.ids.include? 1072
+        member += tmp.users.map { |u| u.id }
+      end
+    end
+    return member.uniq
+  end
+
 end

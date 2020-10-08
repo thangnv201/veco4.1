@@ -1,0 +1,25 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag  'semantic', plugin: 'kpi_report' %>
+  <%= javascript_include_tag  'semantic.js', plugin: 'kpi_report' %>
+<% end %>
+<script>
+    $('#top-menu').css("height", "50px")
+</script>
+<style>
+    .center {
+        margin: auto;
+        width: 50%;
+        border: 1px solid #73AD21;
+        padding: 10px;
+    }
+</style>
+<div class="center">
+<button onclick="location.href='my_kpi/import';" class="ui massive red button">Dự thảo</button>
+<button onclick="location.href='my_kpi/';" class="ui massive yellow button">Thực hiện</button>
+<button onclick="location.href='cbnv_kpi';" class="ui massive yellow button">Đánh giá</button>
+<button onclick="location.href='ki_ranking/sub_dep_ki';" class="ui massive yellow button">Chấm KI</button>
+<button onclick="location.href='ki_ranking/dep_ki';" class="ui massive blue button">Chốt KI</button>
+</div>
+<script>
+    $('.ui.dropdown').dropdown();
+</script>

@@ -404,6 +404,7 @@
                         $('#description-issue').val(response.description)
                         if (response.status_id == 29) {
                             $('#description-issue').prop('disabled', false)
+                            $('#description-issue').off();
                             $('#description-issue').focusout(function () {
                                 data = {
                                     "issue": {
@@ -948,7 +949,7 @@
                                                     enable_btn(btn_save,btn_reset)
                                                 }
                                             })
-                                            $(cells[col_s]).find('a').editable({
+                                            $(cells[col_t]).find('a').editable({
                                                 type: 'number',
                                                 step: 'any',
                                                 title: 'Tối thiểu',
@@ -973,7 +974,7 @@
                                                     $(btn_save).prop("disabled", false)
                                                 }
                                             })
-                                            $(cells[col_t]).find('a').editable({
+                                            $(cells[col_s]).find('a').editable({
                                                 type: 'number',
                                                 step: 'any',
                                                 title: 'Thách thức',
@@ -990,7 +991,7 @@
                                         case '40':
                                             resetField(cells)
                                             try {
-                                                $(cells[col_s]).find('a').editable({
+                                                $(cells[col_t]).find('a').editable({
                                                     type: 'combodate',
                                                     mode: 'popup',
                                                     title: 'Tối thiểu',
@@ -1039,7 +1040,7 @@
                                                 console.log(e)
                                             }
                                             try {
-                                                $(cells[col_t]).find('a').editable({
+                                                $(cells[col_s]).find('a').editable({
                                                     type: 'combodate',
                                                     mode: 'popup',
                                                     title: 'Thách thức',
@@ -1065,7 +1066,7 @@
                                             break;
                                         case '41':
                                             resetField(cells)
-                                            $(cells[col_s]).find('a').editable({
+                                            $(cells[col_t]).find('a').editable({
                                                 type: 'text',
                                                 title: 'Tối thiểu',
                                                 placement: 'top',
@@ -1087,7 +1088,7 @@
                                                     enable_btn(btn_save,btn_reset)
                                                 }
                                             })
-                                            $(cells[col_t]).find('a').editable({
+                                            $(cells[col_s]).find('a').editable({
                                                 type: 'text',
                                                 title: 'Thách thức',
                                                 placement: 'top',
@@ -1146,7 +1147,7 @@
                                 }
                             })
                             $(cells[col_donvido]).find('a').editable('setValue', donvido_selected);
-                            $(cells[col_s]).find('a').editable({
+                            $(cells[col_t]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
                                 title: 'Tối thiểu',
@@ -1173,7 +1174,7 @@
                                 }
                             })
                             // $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
-                            $(cells[col_t]).find('a').editable({
+                            $(cells[col_s]).find('a').editable({
                                 type: 'number',
                                 step: 'any',
                                 title: 'Thách thức',
@@ -1190,10 +1191,10 @@
                             break;
                         case 40:
                             try {
-                                $(cells[col_s]).find('a').editable({
+                                $(cells[col_t]).find('a').editable({
                                     type: 'combodate',
                                     mode: 'popup',
-                                    title: 'Thách thức',
+                                    title: 'Tối thiểu',
                                     placement: 'top',
                                     unsavedclass: null,
                                     format: 'DD/MM/YYYY',
@@ -1206,14 +1207,14 @@
                                     },
                                     success: function (response, newValue) {
                                         buildData(id)
-                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                        data_kpis[id]["custom_field_values"]["146"] = newValue.toISOString().split("T")[0];
                                         enable_btn(btn_save,btn_reset)
                                     }
                                 })
                                 $(cells[col_b]).find('a').editable({
                                     type: 'combodate',
                                     mode: 'popup',
-                                    title: 'Thách thức',
+                                    title: 'Mong đợi',
                                     placement: 'top',
                                     unsavedclass: null,
                                     format: 'DD/MM/YYYY',
@@ -1226,11 +1227,11 @@
                                     },
                                     success: function (response, newValue) {
                                         buildData(id)
-                                        data_kpis[id]["custom_field_values"]["148"] = newValue.toISOString().split("T")[0];
+                                        data_kpis[id]["custom_field_values"]["147"] = newValue.toISOString().split("T")[0];
                                         enable_btn(btn_save,btn_reset)
                                     }
                                 })
-                                $(cells[col_t]).find('a').editable({
+                                $(cells[col_s]).find('a').editable({
                                     type: 'combodate',
                                     mode: 'popup',
                                     title: 'Thách thức',
@@ -1257,7 +1258,7 @@
 
                             break;
                         case 41 :
-                            $(cells[col_s]).find('a').editable({
+                            $(cells[col_t]).find('a').editable({
                                 type: 'text',
                                 title: 'Tối thiểu',
                                 placement: 'top',
@@ -1268,7 +1269,7 @@
                                     enable_btn(btn_save,btn_reset)
                                 }
                             })
-                            $(cells[col_s]).find('a').editable('setValue', response.toithieu);
+                            $(cells[col_t]).find('a').editable('setValue', response.toithieu);
                             $(cells[col_b]).find('a').editable({
                                 type: 'text',
                                 title: 'Mong đợi',
@@ -1281,7 +1282,7 @@
                                 }
                             })
                             $(cells[col_b]).find('a').editable('setValue', response.mongdoi);
-                            $(cells[col_t]).find('a').editable({
+                            $(cells[col_s]).find('a').editable({
                                 type: 'text',
                                 title: 'Thách thức',
                                 placement: 'top',
@@ -1292,7 +1293,7 @@
                                     enable_btn(btn_save,btn_reset)
                                 }
                             })
-                            $(cells[col_t]).find('a').editable('setValue', response.thachthuc);
+                            $(cells[col_s]).find('a').editable('setValue', response.thachthuc);
                             break;
                     }
                     //ty trong
