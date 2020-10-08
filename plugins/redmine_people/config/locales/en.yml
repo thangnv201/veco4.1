@@ -60,6 +60,7 @@ en:
   label_people_at_department: at
   field_department_parent: Subdepartment of
   people_permission_edit_departments: Edit departments
+  field_ki_confirm: Permission to submit KI
 
   #0.1.5
   people_permission_delete_departments: Delete departments

@@ -352,21 +352,20 @@
           Trang thái: <span style="background-color:blue; color: white">Đang đánh giá KI</span>
         </div>
         <div class="col col-md-4">
-          Hành động:
-          <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-            Tự sinh KI theo điểm
-          </button>
-<!--          <button onclick="rendKIByCapa()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">-->
-<!--            Tự sinh KI theo tỷ lệ-->
-<!--          </button>-->
-          <button onclick="resetKI()" data-toggle="modal" class="btn btn-secondary" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-times-circle"></i>
-            Reset
-          </button>
-          <button onclick="saveRendKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">
-            <i class="fa fa-check"></i>
-            Lưu toàn bộ KI
-          </button>
+          <div class="row">
+              Hành động:
+              <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+                Tự sinh KI theo điểm
+              </button>
+              <button onclick="resetKI()" data-toggle="modal" class="btn btn-secondary" style="padding:7px 10px!important; font-weight:bold;">
+                <i class="fa fa-times-circle"></i>
+                Reset
+              </button>
+              <button onclick="saveRendKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">
+                <i class="fa fa-check"></i>
+                Lưu toàn bộ KI
+              </button>
+          </div>
         </div>
       <% elsif status == 1 %>
         <div class="col col-md-3">
@@ -708,20 +707,65 @@
                 <input type="checkbox" name="chk_goods" class="chk_goods" checked disabled></td>
               <% end %>
               <td>
-                <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
-                <% elsif @ki_raking[$num][27] == "A+" %>
-                  A+
-                <% elsif @ki_raking[$num][27] == "A" %>
-                  A
-                <% elsif @ki_raking[$num][27] == "B" %>
-                  B
-                <% elsif @ki_raking[$num][27] == "C" %>
-                  C
-                <% elsif @ki_raking[$num][27] == "D" %>
-                  D
-                <% elsif @ki_raking[$num][27] == "K" %>
-                  K
-                <% end %>
+                <select id="<%= "select_ki" + $num.to_s %>" onchange="mySelectKI(<%= $num %>)">
+                  <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "A+" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" selected="selected" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "A" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A" selected="selected">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "B" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B" selected="selected">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "C" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C" selected="selected">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "D" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D" selected="selected">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "K" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K" selected="selected">K</option>
+                  <% end %>
+                </select>
               </td>
               <td id="<%= "text_ki" + $num.to_s %>">
                 <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
@@ -1089,20 +1133,65 @@
                 <input type="checkbox" name="chk_goods" class="chk_goods" checked disabled></td>
               <% end %>
               <td>
-                <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
-                <% elsif @ki_raking[$num][27] == "A+" %>
-                  A+
-                <% elsif @ki_raking[$num][27] == "A" %>
-                  A
-                <% elsif @ki_raking[$num][27] == "B" %>
-                  B
-                <% elsif @ki_raking[$num][27] == "C" %>
-                  C
-                <% elsif @ki_raking[$num][27] == "D" %>
-                  D
-                <% elsif @ki_raking[$num][27] == "K" %>
-                  K
-                <% end %>
+                <select id="<%= "select_ki" + $num.to_s %>" onchange="mySelectKI(<%= $num %>)">
+                  <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "A+" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" selected="selected" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "A" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A" selected="selected">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "B" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B" selected="selected">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "C" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C" selected="selected">C</option>
+                    <option value="D">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "D" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D" selected="selected">D</option>
+                    <option value="K">K</option>
+                  <% elsif @ki_raking[$num][27] == "K" %>
+                    <option value="" selected="selected"></option>
+                    <option value="A+" name="optionchange">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="K" selected="selected">K</option>
+                  <% end %>
+                </select>
               </td>
               <td id="<%= "text_ki" + $num.to_s %>">
                 <% if @ki_raking[$num][27].nil? or @ki_raking[$num][27] == "" %>
@@ -1477,7 +1566,7 @@
         $('#otNumBByCapa').text(Math.round((totalother - otNumK) * 0.6));
         $('#otNumDByCapa').text(Math.round((totalother - otNumK) * 0.03));
         $('#totalOtherCapa').text(totalother - otNumK);
-        $('#otNumCByCapa').text(totalother-otNumK-parseInt($('#otNumAPlusByCapa').text())-parseInt($('#otNumAByCapa').text())-parseInt($('#otNumBByCapa').text())-parseInt($('#otNumDByCapa').text()));
+        $('#otNumCByCapa').text(totalother - otNumK - parseInt($('#otNumAPlusByCapa').text()) - parseInt($('#otNumAByCapa').text()) - parseInt($('#otNumBByCapa').text()) - parseInt($('#otNumDByCapa').text()));
         if (totalother - otNumK != 0) {
             $('#otRealAPlusCapa').text(Math.round(otNumAPlus / (totalother - otNumK) * 100 * 100) / 100 + "%");
             if (otNumAPlus > parseInt($('#otNumAPlusByCapa').text())) {
@@ -1526,7 +1615,7 @@
         $('#numAByCapa').text(Math.round((totalprimary - numK) * 0.15));
         $('#numBByCapa').text(Math.round((totalprimary - numK) * 0.7));
         $('#totalPrimaryCapa').text(totalprimary - numK);
-        $('#numCByCapa').text(totalprimary - numK-parseInt($('#numAByCapa').text())-parseInt($('#numBByCapa').text()));
+        $('#numCByCapa').text(totalprimary - numK - parseInt($('#numAByCapa').text()) - parseInt($('#numBByCapa').text()));
         if (totalprimary - numK != 0) {
             $('#realAPlusCapa').text(Math.round(numAPlus / (totalprimary - numK) * 100 * 100) / 100 + "%");
             $('#realACapa').text(Math.round(numA / (totalprimary - numK) * 100 * 100) / 100 + "%");
@@ -1542,13 +1631,13 @@
                 $('#realBCapa').css('background-color', "white");
             }
             $('#realCCapa').text(Math.round(numC / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numC  < parseInt($('#numCByCapa').text())) {
+            if (numC < parseInt($('#numCByCapa').text())) {
                 $('#realCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realCCapa').css('background-color', "white");
             }
             $('#realDCapa').text(Math.round(numD / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if (numD  < parseInt($('#numDByCapa').text())) {
+            if (numD < parseInt($('#numDByCapa').text())) {
                 $('#realDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realDCapa').css('background-color', "white");
@@ -1568,9 +1657,7 @@
     }
 
 
-
-    function submitKI()
-    {
+    function submitKI() {
         let check = true;
         let message = "";
         $('td[name ="validateCapa"]').each(function () {
@@ -1602,10 +1689,9 @@
                     let successCounter = 0;
                     let promise;
 
-                    $.each(result, function(k, valu)
-                    {
+                    $.each(result, function (k, valu) {
                         let count = result.length;
-                        let checkloop = k+1;
+                        let checkloop = k + 1;
                         let url = 'http://' + $(location).attr('host') + '/issues/' + valu.id + '.json?key=<%=User.current.api_key%>';
                         let data = {
                             "issue": {'status_id': 36}
@@ -1619,21 +1705,20 @@
                                 data: JSON.stringify(data)
                             });
 
-                        promise.done(function(msg)
-                        {
+                        promise.done(function (msg) {
                             console.log("successfully updated");
                             successCounter++;
                         });
 
-                        promise.fail(function(jqXHR) { /* error out... */ });
+                        promise.fail(function (jqXHR) { /* error out... */
+                        });
 
                         promisesArray.push(promise);
                     });
 
-                    $.when.apply($, promisesArray).done(function()
-                    {
+                    $.when.apply($, promisesArray).done(function () {
                         if (alert('đã chốt, đợi phản hồi từ phòng TCLD')) {
-                             } else window.location.reload();
+                        } else window.location.reload();
                     });
                     $('#btndefault').hide();
                 },
@@ -1671,23 +1756,23 @@
         $('#kpi_table >tbody >tr').each(function (index, tr) {
             let a = $(tr.cells[3]).text().trim();
             if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
-                if(parseFloat(a)<2){
+                if (parseFloat(a) < 2) {
                     $(tr.cells[8]).find("select").val("D");
                     $(tr.cells[9]).text("Không hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
+                } else if (parseFloat(a) >= 2 && parseFloat(a) < 2.5) {
                     $(tr.cells[8]).find("select").val("C");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
+                } else if (parseFloat(a) >= 2.5 && parseFloat(a) < 3.5) {
                     $(tr.cells[8]).find("select").val("B");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
+                } else if (parseFloat(a) >= 3.5 && parseFloat(a) < 4.5) {
                     $(tr.cells[8]).find("select").val("A");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
+                } else if (parseFloat(a) >= 4.5 && parseFloat(a) <= 5) {
                     $(tr.cells[8]).find("select").val("A+");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
@@ -1708,7 +1793,7 @@
     function saveRendKI() {
         let objs = [];
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            let ki_type =1;
+            let ki_type = 1;
             if ($(tr.cells[7]).find("input").is(':checked') == true) {
                 ki_type = 2;
             } else {

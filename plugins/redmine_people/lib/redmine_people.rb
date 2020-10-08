@@ -56,9 +56,9 @@ end
 module RedminePeople
   def self.available_permissions
     permissions = [
-      :edit_people, :view_people, :add_people, :delete_people, :manage_departments,
-      :manage_tags, :manage_public_people_queries, :edit_subordinates, :edit_announcement,
-      :edit_work_experience, :edit_own_work_experience, :manage_calendar
+        :edit_people, :view_people, :add_people, :delete_people, :manage_departments,
+        :manage_tags, :manage_public_people_queries, :edit_subordinates, :edit_announcement,
+        :edit_work_experience, :edit_own_work_experience, :manage_calendar, :submit_ki, :manage_ki
     ]
     permissions += [:view_rates, :edit_rates, :view_own_rates] if budgets_plugin_installed?
     permissions += [:view_performance, :view_leave, :edit_leave]

@@ -1,5 +1,5 @@
 class CnbvKpiController < ApplicationController
-  include MyKpiHelper
+  include CnbvKpiHelper
 
   $kidanhgia = Project.find(1072).versions.first.id
 
@@ -33,46 +33,6 @@ class CnbvKpiController < ApplicationController
     else
       $kidanhgia = Project.find(1072).versions.first.id
     end
-    $dids = []
-    @department_id = Department.where(head_id: User.current.id)
-    @department_id.each do |dep|
-      $dids.push(dep.id)
-      lft = Department.find(dep.id).lft
-      rgt = Department.find(dep.id).rgt
-      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s)
-      @ids.each do |obj|
-        $dids.push(obj.id)
-      end
-    end
-    $dpid = $dids[0]
-    if params.key?("depid")
-      $dpid = params["depid"].to_i
-    else
-      $dpid = $dids[0]
-    end
-    $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
-    @kpi_raking = PeopleInformation.where(department_id: $dpid, user_id:$alluser).order(:user_id)
-    users_id = []
-    @kpi_raking.each do |kpi|
-      users_id.push(kpi.user_id)
-    end
-    if users_id.size == 0
-      @ki_raking = nil
-      @kpi_each = nil
-    else
-      sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
-      @records_array = ActiveRecord::Base.connection.execute(sql)
-      @ki_raking = @records_array.as_json
-      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
-    end
-  end
-
-  def dep_ki
-    if params.key?("kidanhgia")
-      $kidanhgia = params["kidanhgia"].to_i
-    else
-      $kidanhgia = Project.find(1072).versions.first.id
-    end
     $dpid = Department.where(head_id: User.current.id).select(:id).map(&:id).uniq
     $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
     @kpi_raking = PeopleInformation.where(department_id: $dpid, user_id:$alluser).order(:user_id)
@@ -89,34 +49,118 @@ class CnbvKpiController < ApplicationController
       @ki_raking = @records_array.as_json
       @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
     end
+
+  end
+
+  def dep_ki
+    if User.current.allowed_people_to?(:submit_ki,@person)
+      if params.key?("kidanhgia")
+        $kidanhgia = params["kidanhgia"].to_i
+      else
+        $kidanhgia = Project.find(1072).default_version_id
+      end
+      $dids = []
+      @department_id = Department.where(head_id: User.current.id)
+      @department_id.each do |dep|
+        $dids.push(dep.id)
+        lft = Department.find(dep.id).lft
+        rgt = Department.find(dep.id).rgt
+        @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+        @ids.each do |obj|
+          $dids.push(obj.id)
+        end
+      end
+      $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
+      @kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+      users_id = []
+      @kpi_raking.each do |kpi|
+        users_id.push(kpi.user_id)
+      end
+      if users_id.size == 0
+        @ki_raking = nil
+        @kpi_each = nil
+      else
+        sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
+        @records_array = ActiveRecord::Base.connection.execute(sql)
+        @ki_raking = @records_array.as_json
+        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      end
+    else
+      render_403 :message => :notice_not_authorized
+    end
   end
 
   def TCLD
-    if params.key?("kidanhgia")
-      $kidanhgia = params["kidanhgia"].to_i
-    else
-      $kidanhgia = Project.find(1072).versions.first.id
-    end
-    $pmid = PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq.first
-    if params.key?("manager")
-      $pmid = params["manager"].to_i
-    else
+    if User.current.allowed_people_to?(:manage_ki,@person)
+      if params.key?("kidanhgia")
+        $kidanhgia = params["kidanhgia"].to_i
+      else
+        $kidanhgia = Project.find(1072).default_version_id
+      end
       $pmid = PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq.first
-    end
-    $alluser = User.where(status:1).select(:id)
-    @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id:$alluser).order(:user_id)
-    users_id = []
-    @kpi_raking.each do |kpi|
-      users_id.push(kpi.user_id)
-    end
-    if users_id.size == 0
-      @ki_raking = nil
-      @kpi_each = nil
+      if params.key?("manager")
+        $pmid = params["manager"].to_i
+      else
+        $pmid = PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq.first
+      end
+      $alluser = User.where(status:1).select(:id)
+      @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id:$alluser).order(:user_id)
+      users_id = []
+      @kpi_raking.each do |kpi|
+        users_id.push(kpi.user_id)
+      end
+      if users_id.size == 0
+        @ki_raking = nil
+        @kpi_each = nil
+      else
+        sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
+        @records_array = ActiveRecord::Base.connection.execute(sql)
+        @ki_raking = @records_array.as_json
+        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      end
     else
-      sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
-      @records_array = ActiveRecord::Base.connection.execute(sql)
-      @ki_raking = @records_array.as_json
-      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      render_403 :message => :notice_not_authorized
+    end
+  end
+
+  def tcld2
+    if User.current.allowed_people_to?(:manage_ki,@person)
+      $dpmid = Department.where(ki_confirm: 1).first.id
+      if params.key?("dpmid")
+        $dpmid = params["dpmid"].to_i
+      else
+        $dpmid = Department.where(ki_confirm: 1).first.id
+      end
+      if params.key?("kidanhgia")
+        $kidanhgia = params["kidanhgia"].to_i
+      else
+        $kidanhgia = Project.find(1072).default_version_id
+      end
+      $dids = []
+      $dids.push($dpmid)
+      lft = Department.find($dpmid).lft
+      rgt = Department.find($dpmid).rgt
+      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+      @ids.each do |obj|
+        $dids.push(obj.id)
+      end
+      $alluser = User.where(status:1).select(:id)
+      @kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+      users_id = []
+      @kpi_raking.each do |kpi|
+        users_id.push(kpi.user_id)
+      end
+      if users_id.size == 0
+        @ki_raking = nil
+        @kpi_each = nil
+      else
+        sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
+        @records_array = ActiveRecord::Base.connection.execute(sql)
+        @ki_raking = @records_array.as_json
+        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      end
+    else
+      render_403 :message => :notice_not_authorized
     end
   end
 
@@ -124,7 +168,7 @@ class CnbvKpiController < ApplicationController
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
     if params.key?("headid")
@@ -164,7 +208,7 @@ class CnbvKpiController < ApplicationController
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
     if params.key?("headid")
@@ -202,18 +246,18 @@ class CnbvKpiController < ApplicationController
   end
 
   def save
-      uid = PeopleInformation.where(employee_id: params[:user_code]).take.user_id
-      check_create = PeopleKi.where(user_id: uid, version_id: params[:version_id]).size
-      if check_create > 0
-        pkid=PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
-        PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
-                        :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
-                        :manager_note => params[:manage_note], :note => params[:note]);
-      else
-        PeopleKi.create(:user_id => uid, :version_id => params[:version_id],:kpi_type =>params[:ki_type], :location_compliance => params[:location],
-                        :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
-                        :manager_note => params[:manage_note], :note => params[:note]);
-      end
+    uid = PeopleInformation.where(employee_id: params[:user_code]).take.user_id
+    check_create = PeopleKi.where(user_id: uid, version_id: params[:version_id]).size
+    if check_create > 0
+      pkid=PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
+      PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
+                      :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
+                      :manager_note => params[:manage_note], :note => params[:note]);
+    else
+      PeopleKi.create(:user_id => uid, :version_id => params[:version_id],:kpi_type =>params[:ki_type], :location_compliance => params[:location],
+                      :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
+                      :manager_note => params[:manage_note], :note => params[:note]);
+    end
   end
 
   def saveRendKI
@@ -236,18 +280,53 @@ class CnbvKpiController < ApplicationController
   end
 
   def tcldsave
+    users_id = getallusers(params[:pmid])
+    PeopleKi.where(version_id: params[:version_id],user_id:users_id ).update_all(:submit_ki => params[:status])
     PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id],:status =>params[:status]);
   end
 
-  def saveAllKI
-    $alluser = User.where(status:1).select(:id)
-    @people_in = PeopleInformation.where(manager_id: User.current.id, user_id:$alluser).order(:user_id)
+  def getallusers(uid)
+    $dids = []
+    department_id = Department.where(head_id: uid)
+    department_id.each do |dep|
+      $dids.push(dep.id)
+      lft = Department.find(dep.id).lft
+      rgt = Department.find(dep.id).rgt
+      ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+      ids.each do |obj|
+        $dids.push(obj.id)
+      end
+    end
+    $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
+    kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
     users_id = []
-    @people_in.each do |kpi|
+    kpi_raking.each do |kpi|
+      users_id.push(kpi.user_id)
+    end
+    return users_id
+  end
+
+  def saveAllKI
+    $dids = []
+    @department_id = Department.where(head_id: User.current.id)
+    @department_id.each do |dep|
+      $dids.push(dep.id)
+      lft = Department.find(dep.id).lft
+      rgt = Department.find(dep.id).rgt
+      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+      @ids.each do |obj|
+        $dids.push(obj.id)
+      end
+    end
+    $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
+    @kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+    users_id = []
+    @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
     end
     @issues = Issue.where(assigned_to_id:users_id, fixed_version_id:params[:version_id]).where.not(status_id: 35)
     check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
+    PeopleKi.where(version_id: params[:version_id] ,user_id: users_id).update_all(:submit_ki => 1)
     if check_create > 0
       PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
     else
@@ -260,7 +339,7 @@ class CnbvKpiController < ApplicationController
     if params.key?("vid")
       $kidanhgia = params[:vid]
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     flash.delete(:notice)
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => params[:uid]).where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")

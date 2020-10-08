@@ -670,34 +670,34 @@
         $('#otNumD').text(otNumD);
         $('#otNumK').text(otNumK);
         $('#totalother').text(totalother);
-        $('#otNumAPlusByCapa').text(Math.round((totalother - otNumK) * 0.1 * 100) / 100);
-        $('#otNumAByCapa').text(Math.round((totalother - otNumK) * 0.15 * 100) / 100);
-        $('#otNumBByCapa').text(Math.round((totalother - otNumK) * 0.6 * 100) / 100);
-        $('#otNumCByCapa').text(Math.round((totalother - otNumK) * 0.12 * 100) / 100);
-        $('#otNumDByCapa').text(Math.round((totalother - otNumK) * 0.03 * 100) / 100);
-        $('#totalOtherCapa').text((totalother - otNumK));
+        $('#otNumAPlusByCapa').text(Math.round((totalother - otNumK) * 0.1));
+        $('#otNumAByCapa').text(Math.round((totalother - otNumK) * 0.15));
+        $('#otNumBByCapa').text(Math.round((totalother - otNumK) * 0.6));
+        $('#otNumDByCapa').text(Math.round((totalother - otNumK) * 0.03));
+        $('#totalOtherCapa').text(totalother - otNumK);
+        $('#otNumCByCapa').text(totalother - otNumK - parseInt($('#otNumAPlusByCapa').text()) - parseInt($('#otNumAByCapa').text()) - parseInt($('#otNumBByCapa').text()) - parseInt($('#otNumDByCapa').text()));
         if (totalother - otNumK != 0) {
             $('#otRealAPlusCapa').text(Math.round(otNumAPlus / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumAPlus / (totalother - otNumK) * 100 > 10) {
+            if (otNumAPlus > parseInt($('#otNumAPlusByCapa').text())) {
                 $('#otRealAPlusCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealAPlusCapa').css('background-color', "white");
             }
             $('#otRealACapa').text(Math.round(otNumA / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if ((otNumAPlus / (totalother - otNumK) * 100 + otNumA / (totalother - otNumK) * 100) > 25) {
+            if (otNumA > parseInt($('#otNumAByCapa').text())) {
                 $('#otRealACapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealACapa').css('background-color', "white");
             }
             $('#otRealBCapa').text(Math.round(otNumB / (totalother - otNumK) * 100 * 100) / 100 + "%");
             $('#otRealCCapa').text(Math.round(otNumC / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if ((otNumC / (totalother - otNumK) * 100 + otNumD / (totalother - otNumK) * 100) < 15) {
+            if (otNumC < parseInt($('#otNumCByCapa').text())) {
                 $('#otRealCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealCCapa').css('background-color', "white");
             }
             $('#otRealDCapa').text(Math.round(otNumD / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumD / (totalother - otNumK) * 100 < 3) {
+            if (otNumD < parseInt($('#otNumDByCapa').text())) {
                 $('#otRealDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealDCapa').css('background-color', "white");
@@ -721,32 +721,32 @@
         $('#numD').text(numD);
         $('#numK').text(numK);
         $('#totalprimary').text(totalprimary);
-        $('#numAByCapa').text(Math.round((totalprimary - numK) * 0.15 * 100) / 100);
-        $('#numBByCapa').text(Math.round((totalprimary - numK) * 0.7 * 100) / 100);
-        $('#numCByCapa').text(Math.round((totalprimary - numK) * 0.15 * 100) / 100);
-        $('#totalPrimaryCapa').text((totalprimary - numK));
+        $('#numAByCapa').text(Math.round((totalprimary - numK) * 0.15));
+        $('#numBByCapa').text(Math.round((totalprimary - numK) * 0.7));
+        $('#totalPrimaryCapa').text(totalprimary - numK);
+        $('#numCByCapa').text(totalprimary - numK - parseInt($('#numAByCapa').text()) - parseInt($('#numBByCapa').text()));
         if (totalprimary - numK != 0) {
             $('#realAPlusCapa').text(Math.round(numAPlus / (totalprimary - numK) * 100 * 100) / 100 + "%");
             $('#realACapa').text(Math.round(numA / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if ((numA / (totalprimary - numK) * 100) > 15) {
+            if (numA > parseInt($('#numAByCapa').text())) {
                 $('#realACapa').css('background-color', '#e74c3c');
             } else {
                 $('#realACapa').css('background-color', "white");
             }
             $('#realBCapa').text(Math.round(numB / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if ((numA / (totalprimary - numK) * 100 + numB / (totalprimary - numK) * 100) > 85) {
+            if (numB > parseInt($('#numBByCapa').text())) {
                 $('#realBCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realBCapa').css('background-color', "white");
             }
             $('#realCCapa').text(Math.round(numC / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if ((numC / (totalprimary - numK) * 100 + numD / (totalprimary - numK) * 100) < 15) {
+            if (numC < parseInt($('#numCByCapa').text())) {
                 $('#realCCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realCCapa').css('background-color', "white");
             }
             $('#realDCapa').text(Math.round(numD / (totalprimary - numK) * 100 * 100) / 100 + "%");
-            if ((numC / (totalprimary - numK) * 100 + numD / (totalprimary - numK) * 100) < 15) {
+            if (numD < parseInt($('#numDByCapa').text())) {
                 $('#realDCapa').css('background-color', '#e74c3c');
             } else {
                 $('#realDCapa').css('background-color', "white");

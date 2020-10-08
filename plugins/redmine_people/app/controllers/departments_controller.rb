@@ -59,6 +59,34 @@ class DepartmentsController < ApplicationController
         format.api  { render_validation_errors(@department) }
       end
     end
+    if params[:department][:ki_confirm]=="1"
+      if Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].nil?
+        PeopleAcl.create(params[:department][:head_id],['submit_ki'])
+      else
+        unless Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].include?(:submit_ki)
+          a = Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].push(:submit_ki)
+          users_acls = Setting.plugin_redmine_people[:users_acl]
+          users_acls = {} unless users_acls && users_acls.is_a?(Hash)
+          users_acls.merge!(params[:department][:head_id] => a)
+          Setting.plugin_redmine_people = Setting.plugin_redmine_people.merge(:users_acl => users_acls)
+        end
+      end
+    else
+      unless Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].nil?
+        if Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].include?(:submit_ki)
+          if Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].length == 1
+            PeopleAcl.delete(params[:department][:head_id])
+          else
+            Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].delete(:submit_ki)
+            a = Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]]
+            users_acls = Setting.plugin_redmine_people[:users_acl]
+            users_acls = {} unless users_acls && users_acls.is_a?(Hash)
+            users_acls.merge!(params[:department][:head_id] => a)
+            Setting.plugin_redmine_people = Setting.plugin_redmine_people.merge(:users_acl => users_acls)
+          end
+        end
+      end
+    end
   end
 
   def destroy
@@ -93,6 +121,19 @@ class DepartmentsController < ApplicationController
       respond_to do |format|
         format.html { render :action => 'new' }
         format.api  { render_validation_errors(@department) }
+      end
+    end
+    if params[:department][:ki_confirm]=="1"
+      if Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].nil?
+        PeopleAcl.create(params[:department][:head_id],['submit_ki'])
+      else
+        unless Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].include?(:submit_ki)
+          a = Setting.plugin_redmine_people[:users_acl][params[:department][:head_id]].push(:submit_ki)
+          users_acls = Setting.plugin_redmine_people[:users_acl]
+          users_acls = {} unless users_acls && users_acls.is_a?(Hash)
+          users_acls.merge!(params[:department][:head_id] => a)
+          Setting.plugin_redmine_people = Setting.plugin_redmine_people.merge(:users_acl => users_acls)
+        end
       end
     end
   end
