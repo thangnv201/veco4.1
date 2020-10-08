@@ -409,7 +409,7 @@
         <% (1..@kpi_raking.size).each do |i| %>
           <tr ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
-            <td><%= @kpi_raking[$num].employee_id %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
