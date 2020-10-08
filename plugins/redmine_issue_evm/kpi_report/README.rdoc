@@ -1,3 +1,0 @@
-= kpi_report
-
-Description goes here

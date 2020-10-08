@@ -263,7 +263,7 @@ group by issues.author_id)   as y"
     end
     flash.delete(:notice)
     @member = find_group_member(User.current.id)
-    return unless @member.length >0
+    return unless @member.length > 0
     @user_ql = User.find(@member.first)
     @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => @user_ql.id)
@@ -282,7 +282,7 @@ group by issues.author_id)   as y"
       $kidanhgia = Project.find(1072).default_version_id
     end
     @member = find_group_member(User.current.id)
-    return unless @member.length >0
+    return unless @member.length > 0
     @user_ql = User.find(@member.first)
     @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => @user_ql.id)
@@ -325,11 +325,16 @@ group by issues.author_id)   as y"
   def find_group_member(user_id)
     member = []
     Gmanager.where(:id_owner => User.current.id).each do |group|
-      tmp = Group.find(group.id_group)
+      begin
+        tmp = Group.find(group.id_group)
+      rescue ActiveRecord::RecordNotFound => e
+        next
+      end
       if tmp.projects.ids.include? 1072
         member += tmp.users.map { |u| u.id }
       end
     end
+
     return member.uniq
   end
 
