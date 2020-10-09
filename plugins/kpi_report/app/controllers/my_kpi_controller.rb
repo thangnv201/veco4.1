@@ -150,6 +150,7 @@ class MyKpiController < ApplicationController
         'status': @status,
         'assignee': @assinee,
         'version': @version,
+        'description': @issue.description,
         'don_vi_do': @donvido,
         'cbnv_point': @cbnv_point,
         'qltt_point': @qltt_point,
@@ -238,10 +239,21 @@ group by issues.author_id)   as y"
       org_issue = Issue.find(id)
       issue = org_issue.copy
       issue.status_id = 29
+      if issue.fixed_version_id != params["fixed_version_id"]
+        issue.start_date=""
+        issue.due_date =""
+      end
       issue.fixed_version_id = params["fixed_version_id"]
       issue.author_id = params["author"].nil? ? org_issue.author_id : params["author"].to_i
       issue.assigned_to_id = params["assignee"].to_i unless params["assignee"].nil?
-      kq = IssueCustomField.find_by_name('Chỉ tiêu Thực hiện (KQ)')
+      case issue.tracker_id
+      when 39
+        kq = IssueCustomField.find_by_name('Chỉ tiêu Thực hiện (KQ)')
+      when 40
+        kq = IssueCustomField.find_by_name('Hoàn thành Thực tế (KQ)')
+      when 41
+        kq = IssueCustomField.find_by_name('Mức chỉ tiêu Thực hiện (KQ)')
+      end
       cbnv_point = IssueCustomField.find_by_name('Điểm CBNV tự đánh giá')
       qltt_point = IssueCustomField.find_by_name('Điểm QLTT đánh giá')
       issue.custom_field_values = {kq.id => '', cbnv_point.id => '', qltt_point.id => ''}
