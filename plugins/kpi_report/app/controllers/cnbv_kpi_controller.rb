@@ -1,13 +1,13 @@
 class CnbvKpiController < ApplicationController
   include CnbvKpiHelper
 
-  $kidanhgia = Project.find(1072).versions.first.id
+  $kidanhgia = Project.find(1072).default_version_id
 
   def index
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     $pmid = User.current.id
     $alluser = User.where(status:1).select(:id)
@@ -31,7 +31,7 @@ class CnbvKpiController < ApplicationController
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version_id
     end
     $dpid = Department.where(head_id: User.current.id).select(:id).map(&:id).uniq
     $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)

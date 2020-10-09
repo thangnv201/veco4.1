@@ -20,6 +20,9 @@
   a {
     color: inherit !important;
   }
+  #kpi_table a{
+    text-decoration: underline !important;
+  }
 
   #content {
     z-index: unset;
@@ -1522,8 +1525,8 @@
             dataType: "json",
             data: empObj,
             success: function (result) {
-                rentCapacity();
                 $(btn).prop("disabled", true);
+                rentCapacity();
             },
             error: function () {
             }
