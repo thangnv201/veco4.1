@@ -353,18 +353,18 @@
         </div>
         <div class="col col-md-4">
           <div class="row">
-              Hành động:
-              <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
-                Tự sinh KI theo điểm
-              </button>
-              <button onclick="resetKI()" data-toggle="modal" class="btn btn-secondary" style="padding:7px 10px!important; font-weight:bold;">
-                <i class="fa fa-times-circle"></i>
-                Reset
-              </button>
-              <button onclick="saveRendKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">
-                <i class="fa fa-check"></i>
-                Lưu toàn bộ KI
-              </button>
+            Hành động:
+            <button onclick="rendKIByPoint()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+              Tự sinh KI theo điểm
+            </button>
+            <button onclick="resetKI()" data-toggle="modal" class="btn btn-secondary" style="padding:7px 10px!important; font-weight:bold;">
+              <i class="fa fa-times-circle"></i>
+              Reset
+            </button>
+            <button onclick="saveRendKI()" data-toggle="modal" class="btn btn-success" style="padding:7px 10px!important; font-weight:bold;">
+              <i class="fa fa-check"></i>
+              Lưu toàn bộ KI
+            </button>
           </div>
         </div>
       <% elsif status == 1 %>
@@ -407,7 +407,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -630,7 +630,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -833,7 +833,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -1056,7 +1056,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -1836,5 +1836,27 @@
 
     }
 
+    reloadKPIPoint()
 
+    function reloadKPIPoint() {
+        $('#kpi_table > tbody  > tr').each(function (index, tr) {
+            let id = $(tr).attr("id")
+            let url = 'http://' + $(location).attr('host') + '/my_kpi/update_kpi_point.json'
+            let data = {
+                "user": id,
+                "vid": $('#kidanhgia').val()
+            }
+            $.ajax({
+                type: 'POST',
+                url: url,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+            }).done(function (response) {
+                $($(tr).find('td').eq(3)).find('a').text(response.kpi)
+                console.log($(tr).find('td').eq(3))
+            }).fail(function (msg) {
+            }).always(function (msg) {
+            });
+        });
+    }
 </script>

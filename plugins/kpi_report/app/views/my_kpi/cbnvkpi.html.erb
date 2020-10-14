@@ -1353,6 +1353,61 @@
                         }
                     })
                     $(cells[col_tytrong]).find('a').editable('setValue', response.ti_trong);
+                    if (tracker_selected == 39) {
+                        $(cells[col_kq]).find('a').editable({
+                            type: 'number',
+                            step: 'any',
+                            title: 'Kết quả thực hiện',
+                            placement: 'right',
+                            unsavedclass: null,
+                            success: function (response, newValue) {
+                                buildData(id)
+                                data_kpis[id]["custom_field_values"]["145"] = newValue
+                                enable_btn(btn_save, btn_reset)
+                            }
+                        })
+                        $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                    } else if (tracker_selected == 40) {
+                        try {
+                            $(cells[col_kq]).find('a').editable({
+                                type: 'combodate',
+                                mode: 'popup',
+                                title: 'Kết quả thực hiện',
+                                placement: 'top',
+                                unsavedclass: null,
+                                format: 'DD/MM/YYYY',
+                                viewformat: 'DD/MM/YYYY',
+                                template: 'DD/MM/YYYY',
+                                combodate: {
+                                    minYear: 2000,
+                                    maxYear: 2030,
+                                    minuteStep: 1
+                                },
+                                success: function (response, newValue) {
+                                    buildData(id)
+                                    data_kpis[id]["custom_field_values"]["149"] = newValue.toISOString().split("T")[0];
+                                    enable_btn(btn_save, btn_reset)
+                                }
+                            })
+                            $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                        } catch (err) {
+                            console.log(err)
+                        }
+
+                    } else {
+                        $(cells[col_kq]).find('a').editable({
+                            type: 'text',
+                            title: 'Kết quả thực hiện',
+                            placement: 'right',
+                            unsavedclass: null,
+                            success: function (response, newValue) {
+                                buildData(id)
+                                data_kpis[id]["custom_field_values"]["151"] = newValue
+                                enable_btn(btn_save, btn_reset)
+                            }
+                        })
+                        $(cells[col_kq]).find('a').editable('setValue', response.ketqua);
+                    }
 
                 } else if (status_selected === 33 || status_selected === 34) {
                     qltt_point_selected = typeof response.qltt_point.find(e => e.selected) !== 'undefined' ? response.qltt_point.find(e => e.selected).value : null
@@ -1443,6 +1498,7 @@
                     $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#b22222");
                     $($('#' + id + ' td').last()).empty();
                     $($('#' + id + ' td').last()).append('<button style="width: 100px" type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
+                    savetable($('#'+id).find('button'))
                 }).fail(function (msg) {
                     let a = JSON.parse(msg.responseText)
                     console.log(a)
@@ -1546,14 +1602,10 @@
             $($($('#' + id + ' td').first()).find('a').eq(2)).text('0. Dự thảo (Draft)')
             $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#f1c40f");
             $($('#' + id + ' td').last()).empty();
+            $($('#' + id + ' td').last()).append('<button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary"> <i class="glyphicon glyphicon-ok"></i> </button>')
+            $($('#' + id + ' td').last()).append('<button title="Save" style="width: 100px;margin-top: 10px" onclick="reset_row(this)" disabled type="button" class="reset-row btn btn-secondary"><i class="glyphicon glyphicon-remove"></i></button>')
             $($('#' + id + ' td').last()).append('<button type="button" style="width: 100%;" class="btn btn-primary" onclick="thongnhatKPI(this)" >Thống Nhất</button>')
-            $($('#' + id + ' td').last()).append('<button type="button" style="width: 100%;margin-top: 10px" class="huykpi btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
-            $($('#' + id + ' td').last()).append('<button style="margin-top: 10px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-primary">' +
-                '                    <i class="glyphicon glyphicon-ok"></i></button>' +
-                '                  <button style="margin-top: 10px" onclick="reset_row(this)" type="button" class="btn btn-default">' +
-                '                    <i class="glyphicon glyphicon-remove"></i> </button>')
-
-
+            $($('#' + id + ' td').last()).append('<button style="width: 100px;margin-top: 10px" type="button" class=" btn btn-danger" data-toggle="modal" data-target="#huyModal" data-whatever="' + id + '">Hủy KPI </button>')
         }).fail(function (msg) {
         }).always(function (msg) {
             console.log('ALWAYS');

@@ -60,7 +60,7 @@ class MyKpiController < ApplicationController
         qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
       end
     end
-    cbnv_ki.kpi = qltt_point_total
+    cbnv_ki.kpi = qltt_point_total.round(2)
     cbnv_ki.save
     render json: cbnv_ki
   end
@@ -240,8 +240,8 @@ group by issues.author_id)   as y"
       issue = org_issue.copy
       issue.status_id = 29
       if issue.fixed_version_id != params["fixed_version_id"]
-        issue.start_date=""
-        issue.due_date =""
+        issue.start_date = ""
+        issue.due_date = ""
       end
       issue.fixed_version_id = params["fixed_version_id"]
       issue.author_id = params["author"].nil? ? org_issue.author_id : params["author"].to_i
@@ -264,7 +264,52 @@ group by issues.author_id)   as y"
   end
 
   def kimodule
+    @kidanhgia = Project.find(1072).versions.map { |obj| [obj.name, obj.id] }
+    @kidanhgia_defalt = Project.find(1072).default_version_id
+  end
 
+  def kimoduledata
+    user = params["user"].to_i
+    version = params["vid"].to_i
+    issues = Project.find(1072).issues.where(:assigned_to => user)
+                 .where(:fixed_version_id => version).where.not(:status_id => 35)
+    total_kpi = issues.count
+    total_ti_trong = 0
+    issues.each do |issue|
+      total_ti_trong += issue_customfield_value(issue, 139).to_i
+    end
+    thongnhat = issues.where.not(:status_id => 29).count
+    tudanhgia = issues.where.not(:status_id => [29, 32]).count
+    qlttdanhgia = issues.where.not(:status_id => [29, 32, 33]).count
+    chamki = PeopleKi.where(:user_id=> user).where(:version_id=>version).first.ki
+    chotki = PeopleKi.where(:user_id=> user).where(:version_id=>version).first.submit_ki
+    data = {
+        'duthao':
+            {'titrong': total_ti_trong,
+             'count': total_kpi,
+             'status': (total_ti_trong == 0 || total_ti_trong > 100) ? 'not' : total_ti_trong == 100 ? 'done' : 'process'
+            },
+        'thongnhat':
+            {'count': thongnhat,
+             'status': thongnhat == 0 ? 'not' : thongnhat < total_kpi ? 'process': 'done'
+            },
+        'tudanhgia':
+            {'count': tudanhgia,
+             'status': tudanhgia == 0 ? 'not' : tudanhgia < total_kpi ? 'process': 'done'
+            },
+        'qlttdanhgia':
+            {'count': qlttdanhgia,
+             'status': qlttdanhgia == 0 ? 'not' : qlttdanhgia < total_kpi ? 'process': 'done'
+            },
+        'chamki': {
+            'status': chamki.nil? ? 'not':'done'
+        },
+        'chotki': {
+            'status': chotki ==0 ? 'not':'done'
+        }
+
+    }
+    render json: data
   end
 
   def pa_kpi

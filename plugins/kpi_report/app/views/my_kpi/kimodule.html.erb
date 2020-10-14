@@ -1,25 +1,84 @@
 <% content_for :header_tags do %>
-  <%= stylesheet_link_tag  'semantic', plugin: 'kpi_report' %>
-  <%= javascript_include_tag  'semantic.js', plugin: 'kpi_report' %>
+  <%= stylesheet_link_tag 'semantic', plugin: 'kpi_report' %>
+  <%= javascript_include_tag 'semantic.js', plugin: 'kpi_report' %>
 <% end %>
 <script>
     $('#top-menu').css("height", "50px")
 </script>
 <style>
-    .center {
-        margin: auto;
-        width: 50%;
-        border: 1px solid #73AD21;
-        padding: 10px;
-    }
+  .box {
+    height: 100px;
+    width: 200px;
+    margin: 20px;
+    cursor: pointer;
+    text-align: center;
+    padding-top: 35px;
+    font-weight: bold;
+  }
+
+  .done {
+    background-color: #3498db;
+  }
+
+  .not {
+    background-color: #e74c3c;
+  }
+
+  .process {
+    background-color: #f1c40f;
+  }
 </style>
-<div class="center">
-<button onclick="location.href='my_kpi/import';" class="ui massive red button">Dự thảo</button>
-<button onclick="location.href='my_kpi/';" class="ui massive yellow button">Thực hiện</button>
-<button onclick="location.href='cbnv_kpi';" class="ui massive yellow button">Đánh giá</button>
-<button onclick="location.href='ki_ranking/sub_dep_ki';" class="ui massive yellow button">Chấm KI</button>
-<button onclick="location.href='ki_ranking/dep_ki';" class="ui massive blue button">Chốt KI</button>
+<%= select_tag "kidanhgia_to", options_for_select(@kidanhgia, $kidanhgia), :style => 'font-weight: bold;border: 1px #2980b9 solid',:onchange => 'onchageKidanhgia()' %>
+<div style="display: flex">
+  <div id="duthao" class="box">Dự thảo</div>
+  <div id="thongnhat" class="box"> Thống nhất</div>
+  <div class="box">Thực hiện</div>
+  <div id="tudanhgia" class="box">Tự đánh giá</div>
+  <div id="qlttdanhgia" class="box">QLTT đánh giá</div>
+  <div id="chamki" class="box">Chấm KI</div>
+  <div id="chotki" class="box">Chốt KI</div>
 </div>
 <script>
     $('.ui.dropdown').dropdown();
+    onchageKidanhgia();
+    function onchageKidanhgia() {
+        let url = 'http://' + $(location).attr('host') + '/ki_module_data.json?key=<%=User.current.api_key%>&user=<%=User.current.id %>&vid=' + $('#kidanhgia_to').val();
+        $.ajax({
+            type: 'GET',
+            url: url,
+            contentType: 'application/json',
+        }).done(function (response) {
+            $('#duthao').text('Dự thảo: ' + response.duthao.count + ' KPI(s) (' + response.duthao.titrong + '%)')
+            $('#duthao').removeClass('not done process').addClass(response.duthao.status)
+            $('#duthao').click(function() {
+                window.open('/my_kpi/import', '_blank');
+            });
+            $('#thongnhat').text('Thống nhất: ' + response.thongnhat.count + '/' + response.duthao.count + ' KPI(s)')
+            $('#thongnhat').removeClass('not done process').addClass(response.thongnhat.status)
+            $('#thongnhat').click(function() {
+                window.open('/cbnv_kpi', '_blank');
+            });
+            $('#tudanhgia').text('Tự đánh giá: ' + response.tudanhgia.count + '/' + response.duthao.count + ' KPI(s)')
+            $('#tudanhgia').removeClass('not done process').addClass(response.tudanhgia.status)
+            $('#tudanhgia').click(function() {
+                window.open('/my_kpi', '_blank');
+            });
+            $('#qlttdanhgia').text('QLTT đánh giá: ' + response.qlttdanhgia.count + '/' + response.duthao.count + ' KPI(s)')
+            $('#qlttdanhgia').removeClass('not done process').addClass(response.qlttdanhgia.status)
+            $('#tudanhgia').click(function() {
+                window.open('/cbnv_kpi', '_blank');
+            });
+            $('#chamki').removeClass('not done process').addClass(response.chamki.status)
+            $('#chotki').removeClass('not done process').addClass(response.chotki.status)
+            $('#chamki').click(function() {
+                window.open('/ki_ranking/dep_ki', '_blank');
+            });
+            $('#chotki').click(function() {
+                window.open('/ki_ranking/sub_dep_ki', '_blank');
+            });
+        }).fail(function (msg) {
+        }).always(function (msg) {
+            console.log('ALWAYS');
+        });
+    }
 </script>

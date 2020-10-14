@@ -15,7 +15,8 @@
   a {
     color: inherit !important;
   }
-  #kpi_table a{
+
+  #kpi_table a {
     text-decoration: underline !important;
   }
 
@@ -177,6 +178,8 @@
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
+      <%= check_box_tag 'sub_dep', '1', @sub_dep, :onchange => 'change_option_sub_dep(this)' %>
+      <div style="margin-left: 30px "> Hiển thị Sub Department</div>
     <% end %>
   </div>
   <div>
@@ -410,7 +413,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -633,7 +636,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -791,7 +794,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -1014,7 +1017,7 @@
         <tbody>
         <% $num = 0 %>
         <% (1..@kpi_raking.size).each do |i| %>
-          <tr ki_id="<%= @ki_raking[$num][20] %>">
+          <tr id="<%= @ki_raking[$num][0] %>" ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
             <td><%= @kpi_raking[$num].employee_id %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
@@ -1147,9 +1150,6 @@
         </tfoot>
       </table>
     <% end %>
-
-
-
 
 
   </div>
@@ -1568,23 +1568,23 @@
         $('#kpi_table >tbody >tr').each(function (index, tr) {
             let a = $(tr.cells[3]).text().trim();
             if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
-                if(parseFloat(a)<2){
+                if (parseFloat(a) < 2) {
                     $(tr.cells[8]).find("select").val("D");
                     $(tr.cells[9]).text("Không hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
+                } else if (parseFloat(a) >= 2 && parseFloat(a) < 2.5) {
                     $(tr.cells[8]).find("select").val("C");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
+                } else if (parseFloat(a) >= 2.5 && parseFloat(a) < 3.5) {
                     $(tr.cells[8]).find("select").val("B");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
+                } else if (parseFloat(a) >= 3.5 && parseFloat(a) < 4.5) {
                     $(tr.cells[8]).find("select").val("A");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
+                } else if (parseFloat(a) >= 4.5 && parseFloat(a) <= 5) {
                     $(tr.cells[8]).find("select").val("A+");
                     $(tr.cells[9]).text("Hoàn thành NV/CV");
                     $(tr.cells[13]).find("button").prop("disabled", false);
@@ -1605,7 +1605,7 @@
     function saveRendKI() {
         let objs = [];
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            let ki_type =1;
+            let ki_type = 1;
             if ($(tr.cells[7]).find("input").is(':checked') == true) {
                 ki_type = 2;
             } else {
@@ -1648,5 +1648,45 @@
 
     }
 
+    function change_option_sub_dep(checkbox) {
+       if($(checkbox).is(':checked')){
+           window.open(updateQueryStringParameter(window.location.href,"sub_dep",1),"_self")
+       }else {
+           window.open(updateQueryStringParameter(window.location.href,"sub_dep",0),"_self")
+       }
+    }
+    function updateQueryStringParameter(uri, key, value) {
+        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        else {
+            return uri + separator + key + "=" + value;
+        }
+    }
+    reloadKPIPoint()
+
+    function reloadKPIPoint() {
+        $('#kpi_table > tbody  > tr').each(function (index, tr) {
+            let id = $(tr).attr("id")
+            let url = 'http://' + $(location).attr('host') + '/my_kpi/update_kpi_point.json'
+            let data = {
+                "user": id,
+                "vid": $('#kidanhgia').val()
+            }
+            $.ajax({
+                type: 'POST',
+                url: url,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+            }).done(function (response) {
+                $($(tr).find('td').eq(3)).find('a').text(response.kpi)
+                console.log($(tr).find('td').eq(3))
+            }).fail(function (msg) {
+            }).always(function (msg) {
+            });
+        });
+    }
 
 </script>

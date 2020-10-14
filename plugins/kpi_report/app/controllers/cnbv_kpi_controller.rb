@@ -10,8 +10,8 @@ class CnbvKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     $pmid = User.current.id
-    $alluser = User.where(status:1).select(:id)
-    @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id:$alluser).order(:user_id)
+    $alluser = User.where(status: 1).select(:id)
+    @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id: $alluser).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
@@ -33,9 +33,20 @@ class CnbvKpiController < ApplicationController
     else
       $kidanhgia = Project.find(1072).default_version_id
     end
+    if params.key?("sub_dep")
+      @sub_dep = params["sub_dep"].to_i == 1 ? true : false
+    else
+      @sub_dep = false
+    end
     $dpid = Department.where(head_id: User.current.id).select(:id).map(&:id).uniq
-    $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
-    @kpi_raking = PeopleInformation.where(department_id: $dpid, user_id:$alluser).order(:user_id)
+    if @sub_dep
+      Department.where(:id => $dpid).each do |dep|
+        $dpid += Department.where('lft >? and rgt <?', dep.lft, dep.rgt).select(:id).map(&:id).uniq
+      end
+    end
+
+    $alluser = User.where(status: 1).where.not(login: User.current.login).select(:id)
+    @kpi_raking = PeopleInformation.where(department_id: $dpid, user_id: $alluser).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
@@ -53,7 +64,7 @@ class CnbvKpiController < ApplicationController
   end
 
   def dep_ki
-    if User.current.allowed_people_to?(:submit_ki,@person)
+    if User.current.allowed_people_to?(:submit_ki, @person)
       if params.key?("kidanhgia")
         $kidanhgia = params["kidanhgia"].to_i
       else
@@ -65,13 +76,13 @@ class CnbvKpiController < ApplicationController
         $dids.push(dep.id)
         lft = Department.find(dep.id).lft
         rgt = Department.find(dep.id).rgt
-        @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+        @ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s).where.not(ki_confirm: 1)
         @ids.each do |obj|
           $dids.push(obj.id)
         end
       end
-      $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
-      @kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+      $alluser = User.where(status: 1).where.not(login: User.current.login).select(:id)
+      @kpi_raking = PeopleInformation.where(department_id: $dids, user_id: $alluser).order(:user_id)
       users_id = []
       @kpi_raking.each do |kpi|
         users_id.push(kpi.user_id)
@@ -91,7 +102,7 @@ class CnbvKpiController < ApplicationController
   end
 
   def TCLD
-    if User.current.allowed_people_to?(:manage_ki,@person)
+    if User.current.allowed_people_to?(:manage_ki, @person)
       if params.key?("kidanhgia")
         $kidanhgia = params["kidanhgia"].to_i
       else
@@ -103,8 +114,8 @@ class CnbvKpiController < ApplicationController
       else
         $pmid = PeopleInformation.where.not(manager_id: nil).select(:manager_id).map(&:manager_id).uniq.first
       end
-      $alluser = User.where(status:1).select(:id)
-      @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id:$alluser).order(:user_id)
+      $alluser = User.where(status: 1).select(:id)
+      @kpi_raking = PeopleInformation.where(manager_id: $pmid, user_id: $alluser).order(:user_id)
       users_id = []
       @kpi_raking.each do |kpi|
         users_id.push(kpi.user_id)
@@ -124,7 +135,7 @@ class CnbvKpiController < ApplicationController
   end
 
   def tcld2
-    if User.current.allowed_people_to?(:manage_ki,@person)
+    if User.current.allowed_people_to?(:manage_ki, @person)
       $dpmid = Department.where(ki_confirm: 1).first.id
       if params.key?("dpmid")
         $dpmid = params["dpmid"].to_i
@@ -140,12 +151,12 @@ class CnbvKpiController < ApplicationController
       $dids.push($dpmid)
       lft = Department.find($dpmid).lft
       rgt = Department.find($dpmid).rgt
-      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+      @ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s).where.not(ki_confirm: 1)
       @ids.each do |obj|
         $dids.push(obj.id)
       end
-      $alluser = User.where(status:1).select(:id)
-      @kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+      $alluser = User.where(status: 1).select(:id)
+      @kpi_raking = PeopleInformation.where(department_id: $dids, user_id: $alluser).order(:user_id)
       users_id = []
       @kpi_raking.each do |kpi|
         users_id.push(kpi.user_id)
@@ -176,19 +187,19 @@ class CnbvKpiController < ApplicationController
     else
       $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
     end
-    $alluser = User.where(status:1).select(:id)
+    $alluser = User.where(status: 1).select(:id)
     dids = []
     @department_id = Department.where(head_id: $pmid)
     @department_id.each do |dep|
       dids.push(dep.id)
       lft = Department.find(dep.id).lft
       rgt = Department.find(dep.id).rgt
-      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s)
+      @ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s)
       @ids.each do |obj|
         dids.push(obj.id)
       end
     end
-    @kpi_raking = PeopleInformation.where(department_id: dids, user_id:$alluser).order(:user_id)
+    @kpi_raking = PeopleInformation.where(department_id: dids, user_id: $alluser).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
@@ -216,7 +227,7 @@ class CnbvKpiController < ApplicationController
     else
       $pmid = DepartmentHead.where.not(head_id: nil).select(:head_id).map(&:head_id).uniq.first
     end
-    $alluser = User.where(status:1).select(:id)
+    $alluser = User.where(status: 1).select(:id)
     dids = []
     did = DepartmentHead.where(head_id: $pmid).select(:department_id)
     @department_id = Department.where(id: did)
@@ -224,12 +235,12 @@ class CnbvKpiController < ApplicationController
       dids.push(dep.id)
       lft = Department.find(dep.id).lft
       rgt = Department.find(dep.id).rgt
-      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s)
+      @ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s)
       @ids.each do |obj|
         dids.push(obj.id)
       end
     end
-    @kpi_raking = PeopleInformation.where(department_id: dids, user_id:$alluser).order(:user_id)
+    @kpi_raking = PeopleInformation.where(department_id: dids, user_id: $alluser).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
@@ -246,15 +257,16 @@ class CnbvKpiController < ApplicationController
   end
 
   def save
-    uid = PeopleInformation.where(employee_id: params[:user_code]).take.user_id
+    # PeopleInformation.where(employee_id: params[:user_code]).take.user_id
+    uid = CustomValue.where(:custom_field_id => 55).where(:customized_type => 'Principal').where(:value => params[:user_code]).first.customized_id
     check_create = PeopleKi.where(user_id: uid, version_id: params[:version_id]).size
     if check_create > 0
-      pkid=PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
+      pkid = PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
       PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
                       :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                       :manager_note => params[:manage_note], :note => params[:note]);
     else
-      PeopleKi.create(:user_id => uid, :version_id => params[:version_id],:kpi_type =>params[:ki_type], :location_compliance => params[:location],
+      PeopleKi.create(:user_id => uid, :version_id => params[:version_id], :kpi_type => params[:ki_type], :location_compliance => params[:location],
                       :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                       :manager_note => params[:manage_note], :note => params[:note]);
     end
@@ -267,12 +279,12 @@ class CnbvKpiController < ApplicationController
       uid = PeopleInformation.where(employee_id: value["user_code"]).take.user_id
       check_create = PeopleKi.where(user_id: uid, version_id: value["version_id"]).size
       if check_create > 0
-        pkid=PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.id
+        pkid = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.id
         PeopleKi.update(pkid, :location_compliance => value["location"], :kpi_type => value["ki_type"],
                         :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
                         :manager_note => value["manage_note"], :note => value["note"]);
       else
-        PeopleKi.create(:user_id => uid, :version_id => value["version_id"],:kpi_type =>value["ki_type"], :location_compliance => value["location"],
+        PeopleKi.create(:user_id => uid, :version_id => value["version_id"], :kpi_type => value["ki_type"], :location_compliance => value["location"],
                         :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
                         :manager_note => value["manage_note"], :note => value["note"]);
       end
@@ -281,8 +293,8 @@ class CnbvKpiController < ApplicationController
 
   def tcldsave
     users_id = getallusers(params[:pmid])
-    PeopleKi.where(version_id: params[:version_id],user_id:users_id ).update_all(:submit_ki => params[:status])
-    PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id],:status =>params[:status]);
+    PeopleKi.where(version_id: params[:version_id], user_id: users_id).update_all(:submit_ki => params[:status])
+    PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id], :status => params[:status]);
   end
 
   def getallusers(uid)
@@ -292,13 +304,13 @@ class CnbvKpiController < ApplicationController
       $dids.push(dep.id)
       lft = Department.find(dep.id).lft
       rgt = Department.find(dep.id).rgt
-      ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+      ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s).where.not(ki_confirm: 1)
       ids.each do |obj|
         $dids.push(obj.id)
       end
     end
-    $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
-    kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+    $alluser = User.where(status: 1).where.not(login: User.current.login).select(:id)
+    kpi_raking = PeopleInformation.where(department_id: $dids, user_id: $alluser).order(:user_id)
     users_id = []
     kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
@@ -313,24 +325,24 @@ class CnbvKpiController < ApplicationController
       $dids.push(dep.id)
       lft = Department.find(dep.id).lft
       rgt = Department.find(dep.id).rgt
-      @ids = Department.where("lft > "+lft.to_s+" and rgt < "+rgt.to_s).where.not(ki_confirm:1)
+      @ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s).where.not(ki_confirm: 1)
       @ids.each do |obj|
         $dids.push(obj.id)
       end
     end
-    $alluser = User.where(status:1).where.not(login: User.current.login).select(:id)
-    @kpi_raking = PeopleInformation.where(department_id: $dids, user_id:$alluser).order(:user_id)
+    $alluser = User.where(status: 1).where.not(login: User.current.login).select(:id)
+    @kpi_raking = PeopleInformation.where(department_id: $dids, user_id: $alluser).order(:user_id)
     users_id = []
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
     end
-    @issues = Issue.where(assigned_to_id:users_id, fixed_version_id:params[:version_id]).where.not(status_id: 35)
+    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35)
     check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
-    PeopleKi.where(version_id: params[:version_id] ,user_id: users_id).update_all(:submit_ki => 1)
+    PeopleKi.where(version_id: params[:version_id], user_id: users_id).update_all(:submit_ki => 1)
     if check_create > 0
-      PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
+      PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id], :status => params[:status]);
     else
-      PeopleKiLock.create(:lead_id => User.current.id, :version_id => params[:version_id],:status =>params[:status]);
+      PeopleKiLock.create(:lead_id => User.current.id, :version_id => params[:version_id], :status => params[:status]);
     end
     render json: @issues
   end

@@ -26,7 +26,7 @@ class ReportpeopleController < ApplicationController
 
   def ki_danh_gia(user_id, version_id)
     data = {}
-    project = Project.find(1072);
+    project = Project.find(1072)
     count = project.issues.where(:assigned_to_id => user_id).where.not(:status_id => 35)
                 .where(:fixed_version_id => version_id).count
     sum = 0
