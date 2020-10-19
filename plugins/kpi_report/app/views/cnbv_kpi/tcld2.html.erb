@@ -411,6 +411,7 @@
         <th rowspan="4">TT</th>
         <th rowspan="4">Mã nhân viên</th>
         <th rowspan="4">Họ và tên</th>
+        <th rowspan="4">Đơn vị</th>
         <th rowspan="4">Điểm đánh giá</th>
         <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
         <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -434,6 +435,7 @@
           <td><%= $num + 1 %></td>
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
+          <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
           <td>
             <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
               <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -495,9 +497,9 @@
             <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
               Tuân thủ
             <% elsif @ki_raking[$num][26] == 2 %>
-              Vi phạm nhưng chưa đến mức bị xử lý kỷ luật
+              Vi phạm
             <% elsif @ki_raking[$num][26] == 3 %>
-              Bị xử lý kỷ luật lao động
+              Kỷ luật
             <% end %>
           </td>
           <td>
@@ -608,33 +610,33 @@
         let numK = 0;
         let totalprimary = 0;
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI") {
-                $(tr.cells[3]).css('background-color', '#e74c3c');
-                $(tr.cells[8]).find("select").val("K")
-                $(tr.cells[9]).text("Không đánh giá");
-                $(tr.cells[8]).find("select").prop('disabled', 'disabled');
-            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
-                $(tr.cells[3]).css('background-color', '#f1c40f');
-            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
-                $(tr.cells[3]).css('background-color', '#3498db');
+            if ($(tr.cells[4]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI") {
+                $(tr.cells[4]).css('background-color', '#e74c3c');
+                $(tr.cells[9]).find("select").val("K")
+                $(tr.cells[10]).text("Không đánh giá");
+                $(tr.cells[9]).find("select").prop('disabled', 'disabled');
+            } else if ($(tr.cells[4]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+                $(tr.cells[4]).css('background-color', '#f1c40f');
+            } else if ($(tr.cells[4]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
+                $(tr.cells[4]).css('background-color', '#3498db');
             }
-            if ($(tr.cells[7]).find("input").is(':checked') == true) {
-                if ($(tr.cells[8]).text().trim() == "A+") {
+            if ($(tr.cells[8]).find("input").is(':checked') == true) {
+                if ($(tr.cells[9]).text().trim() == "A+") {
                     numAPlus += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).text().trim() == "A") {
+                } else if ($(tr.cells[9]).text().trim() == "A") {
                     numA += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).text().trim() == "B") {
+                } else if ($(tr.cells[9]).text().trim() == "B") {
                     numB += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).text().trim() == "C") {
+                } else if ($(tr.cells[9]).text().trim() == "C") {
                     numC += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).text().trim() == "D") {
+                } else if ($(tr.cells[9]).text().trim() == "D") {
                     numD += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).text().trim() == "K") {
+                } else if ($(tr.cells[9]).text().trim() == "K") {
                     numK += 1;
                     totalprimary += 1;
                 } else {
@@ -642,22 +644,22 @@
                     totalprimary += 1;
                 }
             } else {
-                if ($(tr.cells[8]).text().trim() == "A+") {
+                if ($(tr.cells[9]).text().trim() == "A+") {
                     otNumAPlus += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).text().trim() == "A") {
+                } else if ($(tr.cells[9]).text().trim() == "A") {
                     otNumA += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).text().trim() == "B") {
+                } else if ($(tr.cells[9]).text().trim() == "B") {
                     otNumB += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).text().trim() == "C") {
+                } else if ($(tr.cells[9]).text().trim() == "C") {
                     otNumC += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).text().trim() == "D") {
+                } else if ($(tr.cells[9]).text().trim() == "D") {
                     otNumD += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).text().trim() == "K") {
+                } else if ($(tr.cells[9]).text().trim() == "K") {
                     otNumK += 1;
                     totalother += 1;
                 } else {
