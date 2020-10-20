@@ -396,6 +396,7 @@
           <th rowspan="4">TT</th>
           <th rowspan="4">Mã nhân viên</th>
           <th rowspan="4">Họ và tên</th>
+          <th rowspan="4">Đơn vị</th>
           <th rowspan="4">Điểm đánh giá</th>
           <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
           <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -419,6 +420,7 @@
             <td><%= $num + 1 %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
                 <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -484,16 +486,16 @@
               <select onchange="selectRightLaw(<%= $num %>)">
                 <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
                   <option value="1" selected="selected">Tuân thủ</option>
-                  <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                  <option value="3">Bị xử lý kỷ luật lao động</option>
+                  <option value="2">Vi phạm</option>
+                  <option value="3">Kỷ luật</option>
                 <% elsif @ki_raking[$num][26] == 2 %>
                   <option value="1">Tuân thủ</option>
-                  <option value="2" selected="selected">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                  <option value="3">Bị xử lý kỷ luật lao động</option>
+                  <option value="2" selected="selected">Vi phạm</option>
+                  <option value="3">Kỷ luật</option>
                 <% elsif @ki_raking[$num][26] == 3 %>
                   <option value="1">Tuân thủ</option>
-                  <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                  <option value="3" selected="selected">Bị xử lý kỷ luật lao động</option>
+                  <option value="2">Vi phạm</option>
+                  <option value="3" selected="selected">Kỷ luật</option>
                 <% end %>
               </select>
             </td>
@@ -619,6 +621,7 @@
           <th rowspan="4">TT</th>
           <th rowspan="4">Mã nhân viên</th>
           <th rowspan="4">Họ và tên</th>
+          <th rowspan="4">Đơn vị</th>
           <th rowspan="4">Điểm đánh giá</th>
           <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
           <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -640,8 +643,9 @@
         <% (1..@kpi_raking.size).each do |i| %>
           <tr ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
-            <td><%= @kpi_raking[$num].employee_id %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
                 <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -703,9 +707,9 @@
               <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
                 Tuân thủ
               <% elsif @ki_raking[$num][26] == 2 %>
-                Vi phạm nhưng chưa đến mức bị xử lý kỷ luật
+                Vi phạm
               <% elsif @ki_raking[$num][26] == 3 %>
-                Bị xử lý kỷ luật lao động
+                Kỷ luật
               <% end %>
             </td>
             <td>
@@ -822,6 +826,7 @@
           <th rowspan="4">TT</th>
           <th rowspan="4">Mã nhân viên</th>
           <th rowspan="4">Họ và tên</th>
+          <th rowspan="4">Đơn vị</th>
           <th rowspan="4">Điểm đánh giá</th>
           <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
           <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -843,8 +848,9 @@
         <% (1..@kpi_raking.size).each do |i| %>
           <tr ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
-            <td><%= @kpi_raking[$num].employee_id %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
                 <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -910,16 +916,16 @@
               <select onchange="selectRightLaw(<%= $num %>)">
                 <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
                   <option value="1" selected="selected">Tuân thủ</option>
-                  <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                  <option value="3">Bị xử lý kỷ luật lao động</option>
+                  <option value="2">Vi phạm</option>
+                  <option value="3">Kỷ luật</option>
                 <% elsif @ki_raking[$num][26] == 2 %>
                   <option value="1">Tuân thủ</option>
-                  <option value="2" selected="selected">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                  <option value="3">Bị xử lý kỷ luật lao động</option>
+                  <option value="2" selected="selected">Vi phạm</option>
+                  <option value="3">Kỷ luật</option>
                 <% elsif @ki_raking[$num][26] == 3 %>
                   <option value="1">Tuân thủ</option>
-                  <option value="2">Vi phạm nhưng chưa đến mức bị xử lý kỷ luật</option>
-                  <option value="3" selected="selected">Bị xử lý kỷ luật lao động</option>
+                  <option value="2">Vi phạm</option>
+                  <option value="3" selected="selected">Kỷ luật</option>
                 <% end %>
               </select>
             </td>
@@ -1045,6 +1051,7 @@
           <th rowspan="4">TT</th>
           <th rowspan="4">Mã nhân viên</th>
           <th rowspan="4">Họ và tên</th>
+          <th rowspan="4">Đơn vị</th>
           <th rowspan="4">Điểm đánh giá</th>
           <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
           <th rowspan="4">Tuân thủ địa điểm làm việc</th>
@@ -1066,8 +1073,9 @@
         <% (1..@kpi_raking.size).each do |i| %>
           <tr ki_id="<%= @ki_raking[$num][20] %>">
             <td><%= $num + 1 %></td>
-            <td><%= @kpi_raking[$num].employee_id %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 55).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
+            <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
             <td>
               <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
                 <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
@@ -1129,9 +1137,9 @@
               <% if @ki_raking[$num][26].nil? || @ki_raking[$num][26] == 1 %>
                 Tuân thủ
               <% elsif @ki_raking[$num][26] == 2 %>
-                Vi phạm nhưng chưa đến mức bị xử lý kỷ luật
+                Vi phạm
               <% elsif @ki_raking[$num][26] == 3 %>
-                Bị xử lý kỷ luật lao động
+                Kỷ luật
               <% end %>
             </td>
             <td>
@@ -1390,14 +1398,14 @@
             sortList: [[0, 0], [1, 0]],
             widgets: ['zebra', 'stickyHeaders'],
             headers: {
-                5: {sorter: 'select'},
                 6: {sorter: 'select'},
-                7: {
+                7: {sorter: 'select'},
+                8: {
                     sorter: 'checkbox'
                 },
-                8: {sorter: 'select'},
-                11: {sorter: 'textarea'},
-                12: {sorter: 'textarea'}
+                9: {sorter: 'select'},
+                12: {sorter: 'textarea'},
+                13: {sorter: 'textarea'}
             }
         });
     });
@@ -1412,7 +1420,7 @@
             }
         });
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+            if ($(tr.cells[4]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[4]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 check = false;
                 message = "chưa chấm hết KI";
             }
@@ -1548,7 +1556,7 @@
             $(".chk_goods").prop("checked", false);
         }
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            $(tr.cells[13]).find("button").prop("disabled", false);
+            $(tr.cells[14]).find("button").prop("disabled", false);
         });
     }
 
@@ -1568,40 +1576,40 @@
         let numK = 0;
         let totalprimary = 0;
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI") {
-                $(tr.cells[3]).css('background-color', '#e74c3c');
-                $(tr.cells[8]).find("select").val("K")
-                $(tr.cells[9]).text("Không đánh giá");
-                $(tr.cells[8]).find("select").prop('disabled', 'disabled');
-            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "không có KPI nào") {
-                $(tr.cells[8]).find("select").val("K")
-                $(tr.cells[9]).text("Không đánh giá");
-                $(tr.cells[8]).find("select").prop('disabled', 'disabled');
-            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
-                $(tr.cells[3]).css('background-color', '#f1c40f');
-                $(tr.cells[8]).find("select").val("K")
-                $(tr.cells[9]).text("Không đánh giá");
-                $(tr.cells[8]).find("select").prop('disabled', 'disabled');
-            } else if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
-                $(tr.cells[3]).css('background-color', '#3498db');
+            if ($(tr.cells[4]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI") {
+                $(tr.cells[4]).css('background-color', '#e74c3c');
+                $(tr.cells[9]).find("select").val("K")
+                $(tr.cells[10]).text("Không đánh giá");
+                $(tr.cells[9]).find("select").prop('disabled', 'disabled');
+            } else if ($(tr.cells[4]).find("a").attr("data-original-title") == "không có KPI nào") {
+                $(tr.cells[9]).find("select").val("K")
+                $(tr.cells[10]).text("Không đánh giá");
+                $(tr.cells[9]).find("select").prop('disabled', 'disabled');
+            } else if ($(tr.cells[4]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+                $(tr.cells[4]).css('background-color', '#f1c40f');
+                $(tr.cells[9]).find("select").val("K")
+                $(tr.cells[10]).text("Không đánh giá");
+                $(tr.cells[9]).find("select").prop('disabled', 'disabled');
+            } else if ($(tr.cells[4]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
+                $(tr.cells[4]).css('background-color', '#3498db');
             }
-            if ($(tr.cells[7]).find("input").is(':checked') == true) {
-                if ($(tr.cells[8]).find("select").val() == "A+") {
+            if ($(tr.cells[8]).find("input").is(':checked') == true) {
+                if ($(tr.cells[9]).find("select").val() == "A+") {
                     numAPlus += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "A") {
+                } else if ($(tr.cells[9]).find("select").val() == "A") {
                     numA += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "B") {
+                } else if ($(tr.cells[9]).find("select").val() == "B") {
                     numB += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "C") {
+                } else if ($(tr.cells[9]).find("select").val() == "C") {
                     numC += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "D") {
+                } else if ($(tr.cells[9]).find("select").val() == "D") {
                     numD += 1;
                     totalprimary += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "K") {
+                } else if ($(tr.cells[9]).find("select").val() == "K") {
                     numK += 1;
                     totalprimary += 1;
                 } else {
@@ -1609,22 +1617,22 @@
                     totalprimary += 1;
                 }
             } else {
-                if ($(tr.cells[8]).find("select").val() == "A+") {
+                if ($(tr.cells[9]).find("select").val() == "A+") {
                     otNumAPlus += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "A") {
+                } else if ($(tr.cells[9]).find("select").val() == "A") {
                     otNumA += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "B") {
+                } else if ($(tr.cells[9]).find("select").val() == "B") {
                     otNumB += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "C") {
+                } else if ($(tr.cells[9]).find("select").val() == "C") {
                     otNumC += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "D") {
+                } else if ($(tr.cells[9]).find("select").val() == "D") {
                     otNumD += 1;
                     totalother += 1;
-                } else if ($(tr.cells[8]).find("select").val() == "K") {
+                } else if ($(tr.cells[9]).find("select").val() == "K") {
                     otNumK += 1;
                     totalother += 1;
                 } else {
@@ -1760,28 +1768,28 @@
 
     function rendKIByPoint() {
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            let a = $(tr.cells[3]).text().trim();
-            if ($(tr.cells[3]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
+            let a = $(tr.cells[4]).text().trim();
+            if ($(tr.cells[4]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
                 if(parseFloat(a)<2){
-                    $(tr.cells[8]).find("select").val("D");
-                    $(tr.cells[9]).text("Không hoàn thành NV/CV");
-                    $(tr.cells[13]).find("button").prop("disabled", false);
+                    $(tr.cells[9]).find("select").val("D");
+                    $(tr.cells[10]).text("Không hoàn thành NV/CV");
+                    $(tr.cells[14]).find("button").prop("disabled", false);
                 }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
-                    $(tr.cells[8]).find("select").val("C");
-                    $(tr.cells[9]).text("Hoàn thành NV/CV");
-                    $(tr.cells[13]).find("button").prop("disabled", false);
+                    $(tr.cells[9]).find("select").val("C");
+                    $(tr.cells[10]).text("Hoàn thành NV/CV");
+                    $(tr.cells[14]).find("button").prop("disabled", false);
                 }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
-                    $(tr.cells[8]).find("select").val("B");
-                    $(tr.cells[9]).text("Hoàn thành NV/CV");
-                    $(tr.cells[13]).find("button").prop("disabled", false);
+                    $(tr.cells[9]).find("select").val("B");
+                    $(tr.cells[10]).text("Hoàn thành NV/CV");
+                    $(tr.cells[14]).find("button").prop("disabled", false);
                 }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
-                    $(tr.cells[8]).find("select").val("A");
-                    $(tr.cells[9]).text("Hoàn thành NV/CV");
-                    $(tr.cells[13]).find("button").prop("disabled", false);
+                    $(tr.cells[9]).find("select").val("A");
+                    $(tr.cells[10]).text("Hoàn thành NV/CV");
+                    $(tr.cells[14]).find("button").prop("disabled", false);
                 }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
-                    $(tr.cells[8]).find("select").val("A+");
-                    $(tr.cells[9]).text("Hoàn thành NV/CV");
-                    $(tr.cells[13]).find("button").prop("disabled", false);
+                    $(tr.cells[9]).find("select").val("A+");
+                    $(tr.cells[10]).text("Hoàn thành NV/CV");
+                    $(tr.cells[14]).find("button").prop("disabled", false);
                 }
             }
 
@@ -1800,7 +1808,7 @@
         let objs = [];
         $('#kpi_table >tbody >tr').each(function (index, tr) {
             let ki_type =1;
-            if ($(tr.cells[7]).find("input").is(':checked') == true) {
+            if ($(tr.cells[8]).find("input").is(':checked') == true) {
                 ki_type = 2;
             } else {
                 ki_type = 1;
@@ -1810,11 +1818,11 @@
                 user_code: $(tr.cells[1]).text(),
                 version_id: $('#version_id1').val(),
                 ki_type: ki_type,
-                location: $(tr.cells[5]).find("select").val(),
-                labor_rules: $(tr.cells[6]).find("select").val(),
-                ki: $(tr.cells[8]).find("select").val(),
-                manage_note: $(tr.cells[11]).find("textarea").val(),
-                note: $(tr.cells[12]).find("textarea").val()
+                location: $(tr.cells[6]).find("select").val(),
+                labor_rules: $(tr.cells[7]).find("select").val(),
+                ki: $(tr.cells[9]).find("select").val(),
+                manage_note: $(tr.cells[12]).find("textarea").val(),
+                note: $(tr.cells[13]).find("textarea").val()
             };
             objs.push(empObj);
 
@@ -1837,7 +1845,7 @@
             }
         })
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            $(tr.cells[13]).find("button").prop("disabled", true);
+            $(tr.cells[14]).find("button").prop("disabled", true);
         });
 
     }
