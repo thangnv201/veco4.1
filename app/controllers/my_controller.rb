@@ -42,17 +42,16 @@ class MyController < ApplicationController
 
   # Show user's page
   def page
-    Rails.logger.silence do
       @user = User.current
       @user = Person.find(User.current.id)
       @check_permission = User.current.roles.any? { |a| a.id == 17 || a.id == 12 || a.id == 4 }
       if @check_permission
-        @issue_open_new = @user.assigned_issues.open.where(:status_id => 14).count
-        @issue_open_doing = @user.assigned_issues.open.where(:status_id => 8).count
-        @issue_open_review = @user.assigned_issues.open.where(:status_id => 15).count
+        @issue_open_new = @user.assigned_issues.open.where(:status_id => 14).where.not(:project_id=>1072).count
+        @issue_open_doing = @user.assigned_issues.open.where(:status_id => 8).where.not(:project_id=>1072).count
+        @issue_open_review = @user.assigned_issues.open.where(:status_id => 15).where.not(:project_id=>1072).count
         @total_issue_assigned = @issue_open_new + @issue_open_doing + @issue_open_review
-        @task_overdate = @user.assigned_issues.open.where('due_date < ?', User.current.today).count
-        @task_high_priority = @user.assigned_issues.open.where('priority_id = ?', 3).count
+        @task_overdate = @user.assigned_issues.open.where('due_date < ?', User.current.today).where.not(:project_id=>1072).count
+        @task_high_priority = @user.assigned_issues.open.where('priority_id = ?', 3).where.not(:project_id=>1072).count
         @task_complete_in_month = @user.assigned_issues.where(:status_id => 11)
                                       .where(:closed_on => User.current.today.at_beginning_of_month..User.current.today.at_end_of_month).count
         @task_complete_in_month_before_one = @user.assigned_issues
@@ -69,7 +68,6 @@ class MyController < ApplicationController
       @kpi_cbnv_open = Project.find(1072).issues.where(:author_id =>User.current.id).open.where.not(:status_id => 35).count
       @groups = @user.pref.my_page_groups
       @blocks = @user.pref.my_page_layout
-    end
 
   end
 

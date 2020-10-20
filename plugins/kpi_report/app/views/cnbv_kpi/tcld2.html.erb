@@ -15,7 +15,8 @@
   a {
     color: inherit !important;
   }
-  #kpi_table a{
+
+  #kpi_table a {
     text-decoration: underline !important;
   }
 
@@ -163,6 +164,7 @@
   .doing {
     background-color: #f1c40f;
   }
+
   .complete {
     background-color: #3498db;
   }
@@ -186,7 +188,7 @@
               tại Cơ quan/ Đơn vị </h4>
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
-          <td><%= select_tag "dpmid", options_for_select(Department.where(ki_confirm: 1).map { |obj| [obj.name, obj.id] }, $dpmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "dpmid", options_for_select(Department.where(ki_confirm: 1).order('name').map { |obj| [obj.name, obj.id,:class => class_by_status(check_ki_lock_status(Department.where(:id => obj.id).pluck(:head_id).first, $kidanhgia)) ]}, $dpmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
@@ -364,7 +366,7 @@
       <div class="col col-md-6">
         II. Danh sách chi tiết
       </div>
-      <% status = check_ki_lock_status_by_dep(User.current.id,$kidanhgia) %>
+      <% status = check_ki_lock_status(Department.where(:id => $dpmid).pluck(:head_id).first, $kidanhgia) %>
       <% if status == 0 %>
         <div class="col col-md-3">
           Trang thái: <span style="background-color:blue; color: white">Chỉ huy đang đánh giá KI</span>
@@ -389,7 +391,8 @@
         </div>
       <% elsif status == 2 %>
         <div class="col col-md-3">
-          Trang thái: <span style="background-color:red; color: white">Không chốt KI, Chỉ huy đang đánh giá lại KI</span>
+          Trang thái:
+          <span style="background-color:red; color: white">Không chốt KI, Chỉ huy đang đánh giá lại KI</span>
         </div>
         <div class="col col-md-3">
           Hành động:
@@ -773,6 +776,7 @@
         window.open(url, "_blank");
 
     }
+
     function submitFinalKI() {
         let version_id = $('#version_id1').val();
         let pmid = $('#pmid').val();
@@ -794,6 +798,7 @@
             }
         })
     }
+
     function rejectKI() {
         let version_id = $('#version_id1').val();
         let pmid = $('#pmid').val();

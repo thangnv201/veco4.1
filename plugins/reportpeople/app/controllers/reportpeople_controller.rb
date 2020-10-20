@@ -17,6 +17,8 @@ class ReportpeopleController < ApplicationController
                               'have_kpi': check_have_kpi(a.id) ? 1 : 0} }
                   .sort_by { |a| [a[:donvi], a[:phongban], a[:have_kpi]] }
     @data = {}
+
+    @member.group_by { |a| a[:donvi]}.map{ |k,v| [k,v.group_by{|b| b[:phongban]}]}
     @member.each do |user|
       @data[user[:donvi]] = {} unless @data.key?(user[:donvi])
       @data[user[:donvi]][user[:phongban]] = [] unless @data[user[:donvi]].key?(user[:phongban])
@@ -25,14 +27,15 @@ class ReportpeopleController < ApplicationController
   end
 
   def ki_danh_gia(user_id, version_id)
+    byebug
     data = {}
     project = Project.find(1072)
-    count = project.issues.where(:assigned_to_id => user_id).where.not(:status_id => 35)
-                .where(:fixed_version_id => version_id).count
+    count = 0
     sum = 0
     project.issues.where(:assigned_to_id => user_id).where.not(:status_id => 35)
         .where(:fixed_version_id => version_id).each do |issue|
       sum += issue_customfield_value(issue, 139).to_i
+      count +=1
     end
     data[version_id] = {'count': count, 'sum': sum}
     return data
