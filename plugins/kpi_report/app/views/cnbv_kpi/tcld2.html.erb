@@ -200,7 +200,7 @@
   </div>
   <br>
   <input type="hidden" id="version_id1" value="<%= $kidanhgia %>">
-  <input type="hidden" id="pmid" value="<%= User.current.id %>">
+  <input type="hidden" id="dpmid" value="<%= $dpmid %>">
   <input type="hidden" id="totalemployee" value="<%= @kpi_raking.size %>">
   <div style="margin-bottom: 20px">
     <div style="font-weight: bold;margin-bottom: 10px">I. Tổng hợp kết quả đánh giá, xếp loại</div>
@@ -366,7 +366,7 @@
       <div class="col col-md-6">
         II. Danh sách chi tiết
       </div>
-      <% status = check_ki_lock_status(Department.where(:id => $dpmid).pluck(:head_id).first, $kidanhgia) %>
+      <% status = check_ki_lock_status_by_dep(Department.where(:id => $dpmid).pluck(:head_id).first, $kidanhgia) %>
       <% if status == 0 %>
         <div class="col col-md-3">
           Trang thái: <span style="background-color:blue; color: white">Chỉ huy đang đánh giá KI</span>
@@ -781,7 +781,7 @@
 
     function submitFinalKI() {
         let version_id = $('#version_id1').val();
-        let pmid = $('#pmid').val();
+        let pmid = $('#dpmid').val();
         let empObj = {
             version_id: version_id,
             pmid: pmid,
@@ -793,7 +793,7 @@
             url: url,
             dataType: "json",
             data: empObj,
-            success: function (result) {
+            success: function () {
                 location.reload();
             },
             error: function () {
@@ -803,7 +803,7 @@
 
     function rejectKI() {
         let version_id = $('#version_id1').val();
-        let pmid = $('#pmid').val();
+        let pmid = $('#dpmid').val();
         let empObj = {
             version_id: version_id,
             status: 2,

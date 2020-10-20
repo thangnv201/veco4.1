@@ -292,7 +292,8 @@ class CnbvKpiController < ApplicationController
   end
 
   def tcldsave
-    users_id = getallusers(params[:pmid])
+    uid = Department.where(id: params[:pmid]).first.head_id
+    users_id = getallusers(uid)
     PeopleKi.where(version_id: params[:version_id], user_id: users_id).update_all(:submit_ki => params[:status])
     # PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id], :status => params[:status]);
   end
