@@ -34,6 +34,20 @@ module CnbvKpiHelper
     return 0
   end
 
+  def permission_cham_ki(uid)
+    if Department.where(head_id: uid).count > 0
+      return true
+    end
+    return false
+  end
+
+  def permission_chot_ki(uid)
+    if Department.where(head_id: uid).where(:ki_confirm => 1).count > 0
+      return true
+    end
+    return false
+  end
+
   def check_ki_lock_status_by_dep(uid, version)
     dids = []
     department_id = Department.where(head_id: uid)

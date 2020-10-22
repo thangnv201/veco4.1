@@ -1430,7 +1430,7 @@
                 $('#otRealAPlusCapa').css('background-color', "white");
             }
             $('#otRealACapa').text(Math.round(otNumA / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumA > parseInt($('#otNumAByCapa').text())) {
+            if (otNumA + otNumAPlus > parseInt($('#otNumAByCapa').text()) + parseInt($('#otNumAPlusByCapa').text())) {
                 $('#otRealACapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealACapa').css('background-color', "white");

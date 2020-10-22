@@ -35,7 +35,7 @@ module GmanagersHelper
     users = User.all
     ret = []
     for u in users
-      ret.append([u['login'].to_s, u['id']])
+      ret.append([u['firstname'].to_s + " " + u['lastname'].to_s, u['id']])
     end
     return ret
   end

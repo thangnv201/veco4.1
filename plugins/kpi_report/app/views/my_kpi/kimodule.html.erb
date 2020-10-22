@@ -16,6 +16,16 @@
     font-weight: bold;
   }
 
+  .box-deactive {
+    height: 100px;
+    width: 200px;
+    margin: 20px;
+    cursor: not-allowed;
+    text-align: center;
+    padding-top: 35px;
+    font-weight: bold;
+  }
+
   .done {
     background-color: #3498db;
   }
@@ -27,20 +37,85 @@
   .process {
     background-color: #f1c40f;
   }
+
+  .waiting {
+    background-color: #CCE2FF;
+  }
 </style>
-<%= select_tag "kidanhgia_to", options_for_select(@kidanhgia, $kidanhgia), :style => 'font-weight: bold;border: 1px #2980b9 solid',:onchange => 'onchageKidanhgia()' %>
+<%= select_tag "kidanhgia_to", options_for_select(@kidanhgia, $kidanhgia), :style => 'font-weight: bold;border: 1px #2980b9 solid', :onchange => 'onchageKidanhgia()' %>
+<h4>Vai trò: CBNV</h4>
 <div style="display: flex">
-  <div id="duthao" class="box">Dự thảo</div>
-  <div id="thongnhat" class="box"> Thống nhất</div>
-  <div class="box">Thực hiện</div>
-  <div id="tudanhgia" class="box">Tự đánh giá</div>
-  <div id="qlttdanhgia" class="box">QLTT đánh giá</div>
-  <div id="chamki" class="box">Chấm KI</div>
-  <div id="chotki" class="box">Chốt KI</div>
+  <a href="my_kpi" target="_blank">
+    <div id="duthao" class="box waiting">Dự thảo</div>
+  </a>
+  <div id="thongnhat" class="box-deactive waiting"> Thống nhất</div>
+  <a href="/users/<%= User.current.id %>" target="_blank">
+    <div id="thuchien" class="box waiting">Thực hiện</div>
+  </a>
+  <div id="tudanhgia" class="box waiting">Tự đánh giá</div>
+  <div id="qlttdanhgia" class="box-deactive waiting">QLTT đánh giá</div>
+  <div id="chamki" class="box-deactive waiting">Chấm KI</div>
+  <div id="chotki" class="box-deactive waiting">Chốt KI</div>
 </div>
+<div id="quanly">
+  <h4>Vai trò: Quản lý</h4>
+  <div style="display: flex">
+    <div style="visibility: hidden" class="box">Dự thảo</div>
+    <a href="/cbnv_kpi" target="_blank">
+      <div id="ql_thongnhat" class="box"> Thống nhất</div>
+    </a>
+    <div style="visibility: hidden" class="box">Thực hiện</div>
+    <div style="visibility: hidden" class="box">Tự đánh giá</div>
+    <a href="/cbnv_kpi" target="_blank">
+      <div id="ql_qlttdanhgia" class="box">QLTT đánh giá</div>
+    </a>
+    <a href="/ki_ranking/sub_dep_ki" target="_blank">
+      <div id="ql_chamki" class="box">Chấm KI</div>
+    </a>
+    <a href="/ki_ranking/dep_ki" target="_blank">
+      <div id="ql_chotki" class="box">Chốt KI</div>
+    </a>
+  </div>
+</div>
+<% if @permission_troly %>
+  <h4>Vai trò: Trợ lý</h4>
+  <div style="display: flex">
+    <div id="duthao" class="box">Dự thảo</div>
+    <div id="thongnhat" class="box"> Thống nhất</div>
+    <div class="box">Thực hiện</div>
+    <div id="tudanhgia" class="box">Tự đánh giá</div>
+    <div id="qlttdanhgia" class="box">QLTT đánh giá</div>
+    <div id="chamki" class="box">Chấm KI</div>
+    <div id="chotki" class="box">Chốt KI</div>
+  </div>
+<% end %>
+<% if @permission_tcld %>
+  <h4>Vai trò: Quản trị KPI</h4>
+  <div style="display: flex">
+    <a href="/ki_ranking/tcld2" target="_blank">
+      <div class="box"> Duyệt KI</div>
+    </a>
+  </div>
+<% end %>
 <script>
     $('.ui.dropdown').dropdown();
     onchageKidanhgia();
+
+    function resetcolor() {
+        $('#duthao').removeClass('not done process').addClass('waiting')
+        $('#thongnhat').removeClass('not done process').addClass('waiting')
+        $('#thuchien').removeClass('not done process').addClass('waiting')
+        $('#tudanhgia').removeClass('not done process').addClass('waiting')
+        $('#qlttdanhgia').removeClass('not done process').addClass('waiting')
+        $('#chamki').removeClass('not done process').addClass('waiting')
+        $('#chot').removeClass('not done process').addClass('waiting')
+        $('#ql_thongnhat').removeClass('not done process').addClass('waiting')
+        $('#ql_qlttdanhgia').removeClass('not done process').addClass('waiting')
+        $('#ql_thongnhat').removeClass('not done process').addClass('waiting')
+        $('#ql_chotki').removeClass('not done process').addClass('waiting')
+        $('#ql_chamki').removeClass('not done process').addClass('waiting')
+    }
+
     function onchageKidanhgia() {
         let url = 'http://' + $(location).attr('host') + '/ki_module_data.json?key=<%=User.current.api_key%>&user=<%=User.current.id %>&vid=' + $('#kidanhgia_to').val();
         $.ajax({
@@ -48,34 +123,66 @@
             url: url,
             contentType: 'application/json',
         }).done(function (response) {
+
+
             $('#duthao').text('Dự thảo: ' + response.duthao.count + ' KPI(s) (' + response.duthao.titrong + '%)')
-            $('#duthao').removeClass('not done process').addClass(response.duthao.status)
-            $('#duthao').click(function() {
-                window.open('/my_kpi/import', '_blank');
-            });
             $('#thongnhat').text('Thống nhất: ' + response.thongnhat.count + '/' + response.duthao.count + ' KPI(s)')
-            $('#thongnhat').removeClass('not done process').addClass(response.thongnhat.status)
-            $('#thongnhat').click(function() {
-                window.open('/cbnv_kpi', '_blank');
-            });
+            $('#thuchien').text('Thực hiện: ' + response.thuchien.count)
             $('#tudanhgia').text('Tự đánh giá: ' + response.tudanhgia.count + '/' + response.duthao.count + ' KPI(s)')
-            $('#tudanhgia').removeClass('not done process').addClass(response.tudanhgia.status)
-            $('#tudanhgia').click(function() {
-                window.open('/my_kpi', '_blank');
-            });
             $('#qlttdanhgia').text('QLTT đánh giá: ' + response.qlttdanhgia.count + '/' + response.duthao.count + ' KPI(s)')
-            $('#qlttdanhgia').removeClass('not done process').addClass(response.qlttdanhgia.status)
-            $('#tudanhgia').click(function() {
-                window.open('/cbnv_kpi', '_blank');
-            });
-            $('#chamki').removeClass('not done process').addClass(response.chamki.status)
-            $('#chotki').removeClass('not done process').addClass(response.chotki.status)
-            $('#chamki').click(function() {
-                window.open('/ki_ranking/dep_ki', '_blank');
-            });
-            $('#chotki').click(function() {
-                window.open('/ki_ranking/sub_dep_ki', '_blank');
-            });
+            resetcolor()
+            $('#duthao').removeClass('not done process waiting').addClass(response.duthao.status)
+            if (response.duthao.status === 'done') {
+                $('#thongnhat').removeClass('not done process waiting').addClass(response.thongnhat.status)
+                if (response.thongnhat.status === 'done') {
+                    $('#thuchien').removeClass('not done process waiting').addClass(response.thuchien.status)
+                    if (response.thuchien.status === 'done') {
+                        $('#tudanhgia').removeClass('not done process waiting').addClass(response.tudanhgia.status)
+                        if (response.tudanhgia.status === 'done') {
+                            $('#qlttdanhgia').removeClass('not done process waiting').addClass(response.qlttdanhgia.status)
+                            if (response.qlttdanhgia.status === 'done') {
+                                $('#chamki').removeClass('not done process waiting').addClass(response.chamki.status)
+                                if (response.chamki.status === 'done') {
+                                    $('#chotki').removeClass('not done process waiting').addClass(response.chotki.status)
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            if (response.ql_thongnhat.total == 0) {
+                $('#quanly').hide();
+            } else {
+                $('#quanly').show();
+                $('#ql_thongnhat').text('Thống nhất: ' + response.ql_thongnhat.count + ' KPI(s)')
+                $('#ql_qlttdanhgia').text('Đánh giá: ' + response.ql_danhgia.count + ' KPI(s)')
+                $('#ql_thongnhat').removeClass('not done process waiting').addClass(response.ql_thongnhat.status)
+                if (response.ql_thongnhat.status === 'done') {
+                    $('#ql_qlttdanhgia').removeClass('not done process waiting').addClass(response.ql_danhgia.status)
+                    if (response.ql_danhgia.status === 'done') {
+                        $('#ql_chamki').removeClass('not done process waiting').addClass(response.ql_chamki.status)
+                        if (response.ql_chamki.status === 'done') {
+                            $('#ql_chotki').removeClass('not done process waiting').addClass(response.ql_chotki.status)
+                        }
+                    }
+                }
+                if (!response.ql_chamki.permission) {
+                    $('#ql_chamki').parent().removeAttr("href");
+                    $('#ql_chamki').hide()
+                } else {
+                    $('#ql_chamki').show()
+                }
+
+                if (!response.ql_chotki.permission) {
+                    $('#ql_chotki').parent().removeAttr("href");
+                    $('#ql_chotki').hide()
+                } else {
+                    $('#ql_chamki').show()
+                }
+
+            }
         }).fail(function (msg) {
         }).always(function (msg) {
             console.log('ALWAYS');

@@ -188,7 +188,7 @@
               tại Cơ quan/ Đơn vị </h4>
           </td>
           <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
-          <td><%= select_tag "dpmid", options_for_select(Department.where(ki_confirm: 1).order('name').map { |obj| [obj.name, obj.id,:class => class_by_status(check_ki_lock_status(Department.where(:id => obj.id).pluck(:head_id).first, $kidanhgia)) ]}, $dpmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "dpmid", options_for_select(Department.where(ki_confirm: 1).order('name').map { |obj| [obj.name, obj.id,:class => class_by_status(check_ki_lock_status_by_dep(Department.where(:id => obj.id).pluck(:head_id).first, $kidanhgia)) ]}, $dpmid), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>
@@ -382,7 +382,7 @@
           Hành động:
           <button onclick="submitFinalKI()" data-toggle="modal" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
-            Chốt KI
+            Thống nhất KI
           </button>
           <button onclick="rejectKI()" data-toggle="modal" class="btn btn-danger" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-times-circle"></i>
@@ -692,7 +692,7 @@
                 $('#otRealAPlusCapa').css('background-color', "white");
             }
             $('#otRealACapa').text(Math.round(otNumA / (totalother - otNumK) * 100 * 100) / 100 + "%");
-            if (otNumA > parseInt($('#otNumAByCapa').text())) {
+            if (otNumA + otNumAPlus > parseInt($('#otNumAByCapa').text()) + parseInt($('#otNumAPlusByCapa').text())) {
                 $('#otRealACapa').css('background-color', '#e74c3c');
             } else {
                 $('#otRealACapa').css('background-color', "white");

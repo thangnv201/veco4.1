@@ -2,6 +2,7 @@ class ReportpeopleController < ApplicationController
   include ReportpeopleHelper
   self.main_menu = false
   $kidanhgia = Project.find(1072).versions.first.id
+  $trangthai =[[1,'Tạo KPI'],[2,'Đánh giá KPI'],[3,'Đánh giá KI']]
 
   def index
     if params.key?("kidanhgia")
@@ -9,44 +10,44 @@ class ReportpeopleController < ApplicationController
     else
       $kidanhgia = Project.find(1072).versions.first.id
     end
-
-    @member = Group.find(1839).users
-                  .map { |a| {'id': a.id, 'login': a.login,
-                              'donvi': custom_field_user(a.id, 53),
-                              'phongban': custom_field_user(a.id, 54),
-                              'have_kpi': check_have_kpi(a.id) ? 1 : 0} }
-                  .sort_by { |a| [a[:donvi], a[:phongban], a[:have_kpi]] }
-    @data = {}
-
-    @member.group_by { |a| a[:donvi]}.map{ |k,v| [k,v.group_by{|b| b[:phongban]}]}
-    @member.each do |user|
-      @data[user[:donvi]] = {} unless @data.key?(user[:donvi])
-      @data[user[:donvi]][user[:phongban]] = [] unless @data[user[:donvi]].key?(user[:phongban])
-      @data[user[:donvi]][user[:phongban]] += [{'login': user[:login], 'have_kpi': user[:have_kpi], 'id': user[:id], 'data': ki_danh_gia(user[:id], $kidanhgia)}]
+    if params.key?("trangthai")
+      @trangthai = params["trangthai"].to_i
+    else
+      @trangthai =1
     end
+    @member = Group.find(1839).users.pluck(:id, :login)
+                  .map { |id, login| [id, login] + tong_ty_trong(id, $kidanhgia) }
+                  .group_by { |a| custom_field_user(a.first, 53) }
+                  .map { |k, v| [k, v.group_by { |b| custom_field_user(b.first, 54) }] }
   end
 
-  def ki_danh_gia(user_id, version_id)
-    byebug
-    data = {}
-    project = Project.find(1072)
-    count = 0
-    sum = 0
-    project.issues.where(:assigned_to_id => user_id).where.not(:status_id => 35)
-        .where(:fixed_version_id => version_id).each do |issue|
-      sum += issue_customfield_value(issue, 139).to_i
-      count +=1
-    end
-    data[version_id] = {'count': count, 'sum': sum}
-    return data
+
+  def tong_ty_trong(user_id, version_id)
+    ids = Project.find(1072).issues.where(:assigned_to_id => user_id).where.not(:status_id => 35)
+              .where(:fixed_version_id => version_id).pluck(:id)
+    sum = CustomValue.where(:customized_type => "Issue").where(:custom_field_id => 139).where(:customized_id => ids)
+              .pluck(:value).map { |x| x.to_i }.sum
+    count = ids.length
+    return [sum, count]
+  end
+
+  def diem_danh_gia(user_id,version_id)
+    ids = Project.find(1072).issues.where(:assigned_to_id => user_id).where.(:status_id => 34)
+              .where(:fixed_version_id => version_id).pluck(:id)
+    sum = CustomValue.where(:customized_type => "Issue").where(:custom_field_id => 139).where(:customized_id => ids)
+              .pluck(:value).map { |x| x.to_i }.sum
+    point= PeopleKi.where(:user_id=> user_id).where(:version_id=>version_id)
   end
 
   def custom_field_user(id, custom_field_id)
-    @result = User.find(id).custom_field_values.find { |x| x.custom_field.id == custom_field_id }.value
-    if (@result.nil?)
-      @result = "";
+    result = CustomValue.where(:customized_type => "Principal").where(:custom_field_id => custom_field_id)
+                 .where(:customized_id => id).pluck(:value)
+
+    if (result.count == 0)
+      return "";
+    else
+      return result.first
     end
-    return @result
   end
 
 

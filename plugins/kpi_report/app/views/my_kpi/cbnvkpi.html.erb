@@ -208,6 +208,9 @@
                   <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="reset-row btn btn-secondary">
                     <i class="glyphicon glyphicon-remove"></i>
                   </button>
+                  <button style="width: 100px;margin-top: 10px" type="button" class="huykpi btn btn-danger" data-toggle="modal" data-target="#huyModal"
+                          data-whatever="<%= kpi.id %>">Hủy KPI
+                  </button>
                 </td>
               <% elsif kpi.status.id == 35 %>
                 <td>
@@ -886,7 +889,6 @@
             $($($('#' + id + ' td').first()).find('a').eq(2)).text('1. Thống nhất (Signed!)')
             let btn_save =$(btn).parent().find('.thaydoi');
             let btn_reset = $(btn).parent().find('.reset-row');
-            $(btn).parent().find('.huykpi').hide();
             disable_btn(btn_save,btn_reset)
             savetable(btn);
         }).fail(function (msg) {

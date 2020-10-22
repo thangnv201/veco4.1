@@ -34,6 +34,24 @@ module MyKpiHelper
                             .where(:fixed_version_id => version)
                             .where(:assigned_to => user_id)
                             .where(:status_id => [29, 32, 33]).count
+    count_cho_thong_nhat = Project.find(1072).issues.where(:author_id => User.current.id)
+                           .where(:fixed_version_id => version)
+                           .where(:assigned_to => user_id)
+                           .where(:status_id => [29, 32]).count
+    if total_kpi == count_cho_thong_nhat
+      count_thongnhat = Project.find(1072).issues.where(:author_id => User.current.id)
+                            .where(:fixed_version_id => version)
+                            .where(:assigned_to => user_id)
+                            .where(:status_id => 32).count
+      case
+      when count_thongnhat == 0
+        return "danger"
+      when count_thongnhat > 0 && count_thongnhat < count_cho_thong_nhat
+        return "doing"
+      when count_thongnhat == count_cho_thong_nhat
+        return "complete"
+      end
+    end
     percent = 100 - (count_da_danh_gia * 100.0) / total_kpi
     result = case
              when percent == 0

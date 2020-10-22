@@ -1,6 +1,7 @@
 class MyKpiController < ApplicationController
 
   include MyKpiHelper
+  include CnbvKpiHelper
   self.main_menu = false
 
   accept_api_auth :status
@@ -30,16 +31,22 @@ class MyKpiController < ApplicationController
     end
     @cbnv_ki = PeopleKi.where(:user_id => user_id).where(:version_id => $kidanhgia).first
     qltt_point_total = 0
+    tong_ti_trong = 0
     kpis.each do |kpi|
       if (kpi.status_id != 35)
         tytrong = issue_customfield_value(kpi, 139).to_i
         qltt_point = issue_customfield_value(kpi, 141)
         if qltt_point != ""
+          tong_ti_trong += tytrong
           qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
         end
       end
     end
-    @cbnv_ki.kpi = qltt_point_total
+    if tong_ti_trong > 100
+      @cbnv_ki.kpi = ((qltt_point_total * 100) / tong_ti_trong).round(2)
+    else
+      @cbnv_ki.kpi = qltt_point_total.round(2)
+    end
     @cbnv_ki.save
   end
 
@@ -51,16 +58,22 @@ class MyKpiController < ApplicationController
     end
     cbnv_ki = PeopleKi.where(:user_id => user_id).where(:version_id => version).first
     qltt_point_total = 0
+    tong_ti_trong = 0
     Project.find(1072).issues.where(:assigned_to => user_id)
         .where.not(:status_id => 35)
         .where(:fixed_version_id => version).each do |kpi|
       tytrong = issue_customfield_value(kpi, 139).to_i
+      tong_ti_trong += tytrong
       qltt_point = issue_customfield_value(kpi, 141)
       if qltt_point != ""
         qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
       end
     end
-    cbnv_ki.kpi = qltt_point_total.round(2)
+    if tong_ti_trong > 100
+      cbnv_ki.kpi = ((qltt_point_total * 100) / tong_ti_trong).round(2)
+    else
+      cbnv_ki.kpi = qltt_point_total.round(2)
+    end
     cbnv_ki.save
     render json: cbnv_ki
   end
@@ -92,8 +105,13 @@ class MyKpiController < ApplicationController
   $cbnv
 
   def cbnvkpi
+    change_version = false
+
     if params.key?("kidanhgia")
-      $kidanhgia = params["kidanhgia"].to_i
+      if $kidanhgia != params["kidanhgia"].to_i
+        $kidanhgia = params["kidanhgia"].to_i
+        change_version = true
+      end
     else
       $kidanhgia = Project.find(1072).default_version_id
     end
@@ -102,7 +120,7 @@ class MyKpiController < ApplicationController
                                .where(:fixed_version_id => $kidanhgia)
     return unless @kpi_open_dinh_luong.length > 0
     @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
-    if params.key?("cbnv")
+    if params.key?("cbnv") && !change_version
       $cbnv = params["cbnv"].to_i
     else
       $cbnv = @cbnv.first.assigned_to_id
@@ -264,8 +282,39 @@ group by issues.author_id)   as y"
   end
 
   def kimodule
+    # Group.find(1839).user_ids.each do |id_u|
+    #   temp(id_u,1010)
+    # end
     @kidanhgia = Project.find(1072).versions.map { |obj| [obj.name, obj.id] }
     @kidanhgia_defalt = Project.find(1072).default_version_id
+    @member = find_group_member(User.current.id)
+    @permission_troly = @member.count > 0 ? true : false
+    @permission_tcld = MemberRole.joins(:member).where(:role_id => 18).where("members.project_id = 1072").pluck("members.user_id").include?(User.current.id)
+  end
+
+  def temp(user_id, version)
+    if PeopleKi.where(:user_id => user_id).where(:version_id => version).length == 0
+      PeopleKi.create(:user_id => user_id, :version_id => version, :location_compliance => 1, :labor_rules_compliance => 1)
+    end
+    cbnv_ki = PeopleKi.where(:user_id => user_id).where(:version_id => version).first
+    qltt_point_total = 0
+    tong_ti_trong = 0
+    Project.find(1072).issues.where(:assigned_to => user_id)
+        .where.not(:status_id => 35)
+        .where(:fixed_version_id => version).each do |kpi|
+      tytrong = issue_customfield_value(kpi, 139).to_i
+      tong_ti_trong += tytrong
+      qltt_point = issue_customfield_value(kpi, 141)
+      if qltt_point != ""
+        qltt_point_total += qltt_point[0, 1].to_i * (tytrong / 100.0)
+      end
+    end
+    if tong_ti_trong > 100
+      cbnv_ki.kpi = ((qltt_point_total * 100) / tong_ti_trong).round(2)
+    else
+      cbnv_ki.kpi = qltt_point_total.round(2)
+    end
+    cbnv_ki.save
   end
 
   def kimoduledata
@@ -278,12 +327,33 @@ group by issues.author_id)   as y"
     issues.each do |issue|
       total_ti_trong += issue_customfield_value(issue, 139).to_i
     end
+    ver = Version.find(version)
+    if ver.name.include? "Quý"
+      start_date = (ver.due_date - 4.month).at_beginning_of_month
+      due_date = (ver.due_date - 1.month).at_end_of_month
+    else
+      start_date = (ver.due_date - 12.month).at_beginning_of_month
+      due_date = (ver.due_date - 1.month).at_end_of_month
+    end
+    issues_in_version = Issue.where.not(:tracker_id => [39, 40, 41]).where(:due_date => start_date..due_date).where(:assigned_to_id => user).count +
+        Issue.where.not(:tracker_id => [39, 40, 41]).where(:due_date => nil).where(:created_on => start_date..due_date).where(:assigned_to_id => user).count
+    issues_open_in_version = Issue.open.where.not(:tracker_id => [39, 40, 41]).where(:due_date => start_date..due_date).where(:assigned_to_id => user).count +
+        Issue.open.where.not(:tracker_id => [39, 40, 41]).where(:due_date => nil).where(:created_on => start_date..due_date).where(:assigned_to_id => user).count
     thongnhat = issues.where.not(:status_id => 29).count
     tudanhgia = issues.where.not(:status_id => [29, 32]).count
     qlttdanhgia = issues.where.not(:status_id => [29, 32, 33]).count
-    chamki = PeopleKi.where(:user_id=> user).where(:version_id=>version).first.ki
-    chotki = PeopleKi.where(:user_id=> user).where(:version_id=>version).first.submit_ki
+    chamki = PeopleKi.where(:user_id => user).where(:version_id => version).first.ki
+    chotki = PeopleKi.where(:user_id => user).where(:version_id => version).first.submit_ki
+
+    ql_total = Project.find(1072).issues.where.not(:status_id => 35).where(:author_id => user).where(:fixed_version_id => version).count
+    ql_thongnhat = Project.find(1072).issues.where.not(:status_id => [29, 35]).where(:author_id => user).where(:fixed_version_id => version).count
+    ql_danhgia = Project.find(1072).issues.where.not(:status_id => [29, 32, 33, 35]).where(:author_id => user).where(:fixed_version_id => version).count
+    check = check_ki_lock_status_by_dep(user, version)
     data = {
+        'thuchien': {
+            'count': issues_open_in_version.to_s + '(Task(s) open)/' + issues_in_version.to_s,
+            'status': issues_open_in_version == 0 ? 'done' : issues_in_version == issues_open_in_version ? 'not' : 'process'
+        },
         'duthao':
             {'titrong': total_ti_trong,
              'count': total_kpi,
@@ -291,21 +361,38 @@ group by issues.author_id)   as y"
             },
         'thongnhat':
             {'count': thongnhat,
-             'status': thongnhat == 0 ? 'not' : thongnhat < total_kpi ? 'process': 'done'
+             'status': thongnhat == 0 ? 'not' : thongnhat < total_kpi ? 'process' : 'done'
             },
         'tudanhgia':
             {'count': tudanhgia,
-             'status': tudanhgia == 0 ? 'not' : tudanhgia < total_kpi ? 'process': 'done'
+             'status': tudanhgia == 0 ? 'not' : tudanhgia < total_kpi ? 'process' : 'done'
             },
         'qlttdanhgia':
             {'count': qlttdanhgia,
-             'status': qlttdanhgia == 0 ? 'not' : qlttdanhgia < total_kpi ? 'process': 'done'
+             'status': qlttdanhgia == 0 ? 'not' : qlttdanhgia < total_kpi ? 'process' : 'done'
             },
         'chamki': {
-            'status': chamki.nil? ? 'not':'done'
+            'status': chamki.nil? ? 'not' : 'done'
         },
         'chotki': {
-            'status': chotki ==0 ? 'not':'done'
+            'status': chotki == 0 ? 'not' : 'done'
+        },
+        'ql_thongnhat': {
+            'total': ql_total,
+            'count': ql_thongnhat.to_s + '/' + ql_total.to_s,
+            'status': ql_thongnhat == 0 ? 'not' : ql_thongnhat < ql_total ? 'process' : 'done'
+        },
+        'ql_danhgia': {
+            'count': ql_danhgia.to_s + '/' + ql_total.to_s,
+            'status': ql_danhgia == 0 ? 'not' : ql_danhgia < ql_total ? 'process' : 'done'
+        },
+        'ql_chamki': {
+            'permission': permission_cham_ki(user),
+            'status': check == 0 || check == 2 ? 'process' : 'done'
+        },
+        'ql_chotki': {
+            'permission': permission_chot_ki(user),
+            'status': check == 3 ? 'done' : 'process'
         }
 
     }
