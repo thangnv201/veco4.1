@@ -116,7 +116,6 @@ class MyKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => User.current.id)
-                               .where.not(:status_id => 35)
                                .where(:fixed_version_id => $kidanhgia)
     return unless @kpi_open_dinh_luong.length > 0
     @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
@@ -230,6 +229,7 @@ group by issues.author_id)   as y"
       note = params["nhanxetchung[]"].to_s
       people_ki_note.comment = note
     end
+    people_ki.flag = 0
     if people_ki.save && people_ki_note.save
       render json: people_ki
     else
@@ -300,7 +300,7 @@ group by issues.author_id)   as y"
     qltt_point_total = 0
     tong_ti_trong = 0
     Project.find(1072).issues.where(:assigned_to => user_id)
-        .where.not(:status_id => 35)
+        .where(:status_id => 34)
         .where(:fixed_version_id => version).each do |kpi|
       tytrong = issue_customfield_value(kpi, 139).to_i
       tong_ti_trong += tytrong
@@ -431,6 +431,7 @@ group by issues.author_id)   as y"
     @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => @user_ql.id)
                                .where.not(:status_id => 35)
+                               .where.not(:assigned_to_id => nil)
                                .where(:fixed_version_id => $kidanhgia)
     return unless @kpi_open_dinh_luong.length > 0
     @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct

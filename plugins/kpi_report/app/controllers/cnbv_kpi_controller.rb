@@ -134,6 +134,56 @@ class CnbvKpiController < ApplicationController
     end
   end
 
+  def update_to_tracker(version)
+    Group.find(1839).user_ids.each do |id|
+      issue = Issue.where(:assigned_to_id => id).where(:fixed_version_id => version).where(:tracker_id => 51).first
+      if !issue.nil?
+        people_ki = PeopleKi.where(:user_id => id).where(:version_id => version).first
+        if people_ki.nil?
+          next
+        end
+        if people_ki.flag == 0
+          point = people_ki.kpi
+          location = people_ki.location_compliance == 1 ? 152 : people_ki.location_compliance == 2 ? 153 : 154
+          labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
+          ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+          issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
+          issue.save
+          people_ki.flag = 1
+          people_ki.save
+        end
+      else
+        issue = Issue.new(
+            :tracker_id => 51,
+            :project_id => 1072,
+            :subject => "KI CBNV",
+            :status_id => 37,
+            :assigned_to_id => id,
+            :priority_id => 2,
+            :fixed_version_id => version,
+            :author_id => 1,
+        )
+        if issue.save
+          people_ki = PeopleKi.where(:user_id => id).where(:version_id => version).first
+          if people_ki.nil?
+            next
+          end
+          if people_ki.flag == 0
+            point = people_ki.kpi
+            location = people_ki.location_compliance == 1 ? 152 : people_ki.location_compliance == 2 ? 153 : 154
+            labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
+            ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
+            issue.save
+            people_ki.flag = 1
+            people_ki.save
+          end
+        end
+      end
+
+    end
+  end
+
   def tcld2
     if User.current.allowed_people_to?(:manage_ki, @person)
       $dpmid = Department.where(ki_confirm: 1).first.id
@@ -147,6 +197,7 @@ class CnbvKpiController < ApplicationController
       else
         $kidanhgia = Project.find(1072).default_version_id
       end
+      update_to_tracker($kidanhgia)
       $dids = []
       $dids.push($dpmid)
       lft = Department.find($dpmid).lft
