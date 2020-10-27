@@ -146,7 +146,11 @@ class CnbvKpiController < ApplicationController
           point = people_ki.kpi
           location = people_ki.location_compliance == 1 ? 152 : people_ki.location_compliance == 2 ? 153 : 154
           labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
-          ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+          if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
+            ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+          else
+            ki = nil
+          end
           issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
           issue.save
           people_ki.flag = 1
@@ -172,7 +176,11 @@ class CnbvKpiController < ApplicationController
             point = people_ki.kpi
             location = people_ki.location_compliance == 1 ? 152 : people_ki.location_compliance == 2 ? 153 : 154
             labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
-            ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+            if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
+              ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+            else
+              ki = nil
+            end
             issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
             issue.save
             people_ki.flag = 1
@@ -346,7 +354,26 @@ class CnbvKpiController < ApplicationController
     uid = Department.where(id: params[:pmid]).first.head_id
     users_id = getallusers(uid)
     PeopleKi.where(version_id: params[:version_id], user_id: users_id).update_all(:submit_ki => params[:status])
-    # PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id], :status => params[:status]);
+    PeopleKiLock.where(lead_id: params[:pmid], version_id: params[:version_id]).update_all(:lead_id => params[:pmid], :version_id => params[:version_id], :status => params[:status]);
+    $dids = []
+    @department_id = Department.where(head_id: uid)
+    @department_id.each do |dep|
+      $dids.push(dep.id)
+      lft = Department.find(dep.id).lft
+      rgt = Department.find(dep.id).rgt
+      @ids = Department.where("lft > " + lft.to_s + " and rgt < " + rgt.to_s).where.not(ki_confirm: 1)
+      @ids.each do |obj|
+        $dids.push(obj.id)
+      end
+    end
+    $alluser = User.where(status: 1).where.not(login: uid).select(:id)
+    @kpi_raking = PeopleInformation.where(department_id: $dids, user_id: $alluser).order(:user_id)
+    users_id = []
+    @kpi_raking.each do |kpi|
+      users_id.push(kpi.user_id)
+    end
+    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id:51)
+    render json: @issues
   end
 
   def getallusers(uid)
@@ -388,7 +415,7 @@ class CnbvKpiController < ApplicationController
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
     end
-    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35)
+    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id:51)
     check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
     PeopleKi.where(version_id: params[:version_id], user_id: users_id).update_all(:submit_ki => 1)
     if check_create > 0
@@ -406,7 +433,7 @@ class CnbvKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     flash.delete(:notice)
-    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => params[:uid]).where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
+    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => params[:uid]).where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)").Tracker.where.not(id: 51)
     result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]

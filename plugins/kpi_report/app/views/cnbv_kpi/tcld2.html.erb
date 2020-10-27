@@ -440,7 +440,7 @@
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
           <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
           <td>
-            <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size == 0 %>
+            <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).size == 0 %>
               <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                 <% if @ki_raking[$num][23] == nil %>
                   0.0
@@ -448,7 +448,7 @@
                   <%= @ki_raking[$num][23] %>
                 <% end %>
               </a>
-            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
+            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size == 0 %>
               <a title="CBNV chưa được chấm KPI" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                 <% if @ki_raking[$num][23] == nil %>
                   0.0
@@ -456,7 +456,7 @@
                   <%= @ki_raking[$num][23] %>
                 <% end %>
               </a>
-            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size != 0 && Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).where("status_id in (34,35,36)").size != Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where(:fixed_version_id => $kidanhgia).size %>
+            <% elsif Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).where("status_id in (34,36)").size != 0 && Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).where("status_id in (34,35,36)").size != Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).size %>
               <a title="KPI chưa chấm hết" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                 <% if @ki_raking[$num][23] == nil %>
                   0.0
@@ -816,7 +816,40 @@
             dataType: "json",
             data: empObj,
             success: function (result) {
-                location.reload();
+                let promisesArray = [];
+                let successCounter = 0;
+                let promise;
+
+                $.each(result, function (k, valu) {
+                    let count = result.length;
+                    let checkloop = k + 1;
+                    let url = 'http://' + $(location).attr('host') + '/issues/' + valu.id + '.json?key=<%=User.current.api_key%>';
+                    let data = {
+                        "issue": {'status_id': 34}
+                    }
+
+                    promise =
+                        $.ajax({
+                            type: 'PUT',
+                            url: url,
+                            contentType: 'application/json',
+                            data: JSON.stringify(data)
+                        });
+
+                    promise.done(function (msg) {
+                        console.log("successfully updated");
+                        successCounter++;
+                    });
+
+                    promise.fail(function (jqXHR) { /* error out... */
+                    });
+
+                    promisesArray.push(promise);
+                });
+
+                $.when.apply($, promisesArray).done(function () {
+                     window.location.reload();
+                });
             },
             error: function () {
             }
