@@ -178,12 +178,13 @@ class CnbvKpiController < ApplicationController
             labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
             if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
               ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
+              people_ki.flag = 1
             else
               ki = nil
+              people_ki.flag = 0
             end
             issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
             issue.save
-            people_ki.flag = 1
             people_ki.save
           end
         end
