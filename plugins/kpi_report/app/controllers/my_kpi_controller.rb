@@ -16,7 +16,7 @@ class MyKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     flash.delete(:notice)
-    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => User.current.id)
+    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => User.current.id).where.not(:tracker_id => 51)
                                .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
     result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
@@ -60,7 +60,7 @@ class MyKpiController < ApplicationController
     qltt_point_total = 0
     tong_ti_trong = 0
     Project.find(1072).issues.where(:assigned_to => user_id)
-        .where.not(:status_id => 35)
+        .where.not(:status_id => 35).where.not(:tracker_id => 51)
         .where(:fixed_version_id => version).each do |kpi|
       tytrong = issue_customfield_value(kpi, 139).to_i
       tong_ti_trong += tytrong
@@ -116,7 +116,7 @@ class MyKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => User.current.id)
-                               .where(:fixed_version_id => $kidanhgia)
+                               .where(:fixed_version_id => $kidanhgia).where.not(:tracker_id => 51)
     return unless @kpi_open_dinh_luong.length > 0
     @cbnv = @kpi_open_dinh_luong.select(:assigned_to_id).distinct
     if params.key?("cbnv") && !change_version
@@ -300,7 +300,7 @@ group by issues.author_id)   as y"
     qltt_point_total = 0
     tong_ti_trong = 0
     Project.find(1072).issues.where(:assigned_to => user_id)
-        .where(:status_id => 34)
+        .where(:status_id => 34).where.not(:tracker_id => 51)
         .where(:fixed_version_id => version).each do |kpi|
       tytrong = issue_customfield_value(kpi, 139).to_i
       tong_ti_trong += tytrong
@@ -320,7 +320,7 @@ group by issues.author_id)   as y"
   def kimoduledata
     user = params["user"].to_i
     version = params["vid"].to_i
-    issues = Project.find(1072).issues.where(:assigned_to => user)
+    issues = Project.find(1072).issues.where(:assigned_to => user).where.not(:tracker_id => 51)
                  .where(:fixed_version_id => version).where.not(:status_id => 35)
     total_kpi = issues.count
     total_ti_trong = 0
@@ -345,9 +345,9 @@ group by issues.author_id)   as y"
     chamki = PeopleKi.where(:user_id => user).where(:version_id => version).first.ki
     chotki = PeopleKi.where(:user_id => user).where(:version_id => version).first.submit_ki
 
-    ql_total = Project.find(1072).issues.where.not(:status_id => 35).where(:author_id => user).where(:fixed_version_id => version).count
-    ql_thongnhat = Project.find(1072).issues.where.not(:status_id => [29, 35]).where(:author_id => user).where(:fixed_version_id => version).count
-    ql_danhgia = Project.find(1072).issues.where.not(:status_id => [29, 32, 33, 35]).where(:author_id => user).where(:fixed_version_id => version).count
+    ql_total = Project.find(1072).issues.where.not(:status_id => 35).where.not(:tracker_id => 51).where(:author_id => user).where(:fixed_version_id => version).count
+    ql_thongnhat = Project.find(1072).issues.where.not(:status_id => [29, 35]).where.not(:tracker_id => 51).where(:author_id => user).where(:fixed_version_id => version).count
+    ql_danhgia = Project.find(1072).issues.where.not(:status_id => [29, 32, 33, 35]).where.not(:tracker_id => 51).where(:author_id => user).where(:fixed_version_id => version).count
     check = check_ki_lock_status_by_dep(user, version)
     data = {
         'thuchien': {
@@ -410,7 +410,7 @@ group by issues.author_id)   as y"
     return unless @member.length > 0
     @user_ql = User.find(@member.first)
     @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
-    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => @user_ql.id)
+    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => @user_ql.id).where.not(:tracker_id => 51)
                                .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
     result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
@@ -430,7 +430,7 @@ group by issues.author_id)   as y"
     @user_ql = User.find(@member.first)
     @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
     @kpi_open_dinh_luong = Project.find(1072).issues.where(:author_id => @user_ql.id)
-                               .where.not(:status_id => 35)
+                               .where.not(:status_id => 35).where.not(:tracker_id => 51)
                                .where.not(:assigned_to_id => nil)
                                .where(:fixed_version_id => $kidanhgia)
     return unless @kpi_open_dinh_luong.length > 0

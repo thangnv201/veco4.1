@@ -23,7 +23,7 @@ class CnbvKpiController < ApplicationController
       sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
       @records_array = ActiveRecord::Base.connection.execute(sql)
       @ki_raking = @records_array.as_json
-      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
     end
   end
 
@@ -58,7 +58,7 @@ class CnbvKpiController < ApplicationController
       sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
       @records_array = ActiveRecord::Base.connection.execute(sql)
       @ki_raking = @records_array.as_json
-      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
     end
 
   end
@@ -94,7 +94,7 @@ class CnbvKpiController < ApplicationController
         sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
         @records_array = ActiveRecord::Base.connection.execute(sql)
         @ki_raking = @records_array.as_json
-        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
       end
     else
       render_403 :message => :notice_not_authorized
@@ -127,7 +127,7 @@ class CnbvKpiController < ApplicationController
         sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
         @records_array = ActiveRecord::Base.connection.execute(sql)
         @ki_raking = @records_array.as_json
-        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
       end
     else
       render_403 :message => :notice_not_authorized
@@ -228,7 +228,7 @@ class CnbvKpiController < ApplicationController
         sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
         @records_array = ActiveRecord::Base.connection.execute(sql)
         @ki_raking = @records_array.as_json
-        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+        @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
       end
     else
       render_403 :message => :notice_not_authorized
@@ -271,7 +271,7 @@ class CnbvKpiController < ApplicationController
       sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
       @records_array = ActiveRecord::Base.connection.execute(sql)
       @ki_raking = @records_array.as_json
-      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
     end
   end
 
@@ -312,7 +312,7 @@ class CnbvKpiController < ApplicationController
       sql = "select * from (select * from users   WHERE  users.id in (" + users_id.join(",") + "))a left join people_kis on a.id=people_kis.user_id AND `people_kis`.`version_id` = " + $kidanhgia.to_s + " order by a.id"
       @records_array = ActiveRecord::Base.connection.execute(sql)
       @ki_raking = @records_array.as_json
-      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
+      @kpi_each = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order(:assigned_to_id)
     end
   end
 
@@ -434,7 +434,7 @@ class CnbvKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     flash.delete(:notice)
-    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => params[:uid]).where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)").Tracker.where.not(id: 51)
+    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => params[:uid]).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
     result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]

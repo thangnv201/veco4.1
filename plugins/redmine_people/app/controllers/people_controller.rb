@@ -132,6 +132,7 @@ class PeopleController < ApplicationController
     @person.safe_attributes = params[:person]
     @person.admin = false
     @person.login = params[:person][:login]
+    @person.auth_source_id = params[:person][:auth_source_id]
     @person.password, @person.password_confirmation = params[:person][:password], params[:person][:password_confirmation] unless @person.auth_source_id
     @person.type = 'User'
     if @person.save
