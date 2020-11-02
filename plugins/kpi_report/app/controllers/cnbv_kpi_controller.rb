@@ -146,12 +146,13 @@ class CnbvKpiController < ApplicationController
           point = people_ki.kpi
           location = people_ki.location_compliance == 1 ? 152 : people_ki.location_compliance == 2 ? 153 : 154
           labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
+          note = people_ki.note.nil? ? '' : people_ki.note
           if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
             ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
           else
             ki = nil
           end
-          issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
+          issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note}
           issue.save
           people_ki.flag = 1
           people_ki.save
@@ -176,6 +177,7 @@ class CnbvKpiController < ApplicationController
             point = people_ki.kpi
             location = people_ki.location_compliance == 1 ? 152 : people_ki.location_compliance == 2 ? 153 : 154
             labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
+            note = people_ki.note.nil? ? '' : people_ki.note
             if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
               ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
               people_ki.flag = 1
@@ -183,7 +185,7 @@ class CnbvKpiController < ApplicationController
               ki = nil
               people_ki.flag = 0
             end
-            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki}
+            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note}
             issue.save
             people_ki.save
           end
