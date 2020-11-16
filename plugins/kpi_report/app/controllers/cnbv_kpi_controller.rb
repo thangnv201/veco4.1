@@ -135,7 +135,14 @@ class CnbvKpiController < ApplicationController
   end
 
   def update_to_tracker(version)
-    Group.find(1839).user_ids.each do |id|
+    # Group.find(1839).user_ids.each do |id|
+    $dpmid = Department.where(ki_confirm: 1).first.id
+    if params.key?("dpmid")
+      $dpmid = params["dpmid"].to_i
+    else
+      $dpmid = Department.where(ki_confirm: 1).first.id
+    end
+    PeopleInformation.where(department_id: $dpmid).select(:user_id).each do |id|
       issue = Issue.where(:assigned_to_id => id).where(:fixed_version_id => version).where(:tracker_id => 51).first
       if !issue.nil?
         people_ki = PeopleKi.where(:user_id => id).where(:version_id => version).first
@@ -148,12 +155,13 @@ class CnbvKpiController < ApplicationController
           labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
           note = people_ki.note.nil? ? '' : people_ki.note
           manager_note = people_ki.manager_note.nil? ? '' : people_ki.manager_note
+          department_name = CustomValue.where(customized_id: id, custom_field_id: 53).select(:value).take(1).nil? ? "" : CustomValue.where(customized_id: id, custom_field_id: 53).select(:value).take(1).first.value
           if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
             ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
           else
             ki = nil
           end
-          issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note}
+          issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note, 242 => department_name}
           issue.save
           people_ki.flag = 1
           people_ki.save
@@ -180,6 +188,7 @@ class CnbvKpiController < ApplicationController
             labor = people_ki.labor_rules_compliance == 1 ? 155 : people_ki.labor_rules_compliance == 2 ? 156 : 157
             note = people_ki.note.nil? ? '' : people_ki.note
             manager_note = people_ki.manager_note.nil? ? '' : people_ki.manager_note
+            department_name = CustomValue.where(customized_id: id, custom_field_id: 53).select(:value).take(1).nil? ? "" : CustomValue.where(customized_id: id, custom_field_id: 53).select(:value).take(1).first.value
             if !CustomFieldEnumeration.find_by_name(people_ki.ki).nil?
               ki = CustomFieldEnumeration.find_by_name(people_ki.ki).id unless people_ki.ki.nil?
               people_ki.flag = 1
@@ -187,7 +196,7 @@ class CnbvKpiController < ApplicationController
               ki = nil
               people_ki.flag = 0
             end
-            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note}
+            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note, 242 => department_name}
             issue.save
             people_ki.save
           end
@@ -326,13 +335,18 @@ class CnbvKpiController < ApplicationController
     check_create = PeopleKi.where(user_id: uid, version_id: params[:version_id]).size
     if check_create > 0
       pkid = PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
-      PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
+      old_ki = PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.ki
+      pki = PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
                       :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                       :manager_note => params[:manage_note], :note => params[:note]);
+      unless old_ki == params[:ki]
+        PeopleKiLog.create(:action => "update", :people_ki_id => pki.id, :head_id => User.current.id, :description => "Old_KI: "+old_ki+" - New_KI: "+pki.ki, :timestamp => DateTime.now)
+      end
     else
-      PeopleKi.create(:user_id => uid, :version_id => params[:version_id], :kpi_type => params[:ki_type], :location_compliance => params[:location],
+      pki = PeopleKi.create(:user_id => uid, :version_id => params[:version_id], :kpi_type => params[:ki_type], :location_compliance => params[:location],
                       :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
                       :manager_note => params[:manage_note], :note => params[:note]);
+      PeopleKiLog.create(:action => "create", :people_ki_id => pki.id, :head_id => User.current.id, :description => pki.ki, :timestamp => DateTime.now)
     end
   end
 
@@ -377,7 +391,7 @@ class CnbvKpiController < ApplicationController
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
     end
-    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id:51)
+    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id: 51)
     render json: @issues
   end
 
@@ -420,9 +434,12 @@ class CnbvKpiController < ApplicationController
     @kpi_raking.each do |kpi|
       users_id.push(kpi.user_id)
     end
-    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id:51)
+    @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id: 51)
     check_create = PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).size
     PeopleKi.where(version_id: params[:version_id], user_id: users_id).update_all(:submit_ki => 1)
+    PeopleKi.where(version_id: params[:version_id], user_id: users_id).each do |pki|
+      PeopleKiLog.create(:action => params[:act], :people_ki_id => pki.id, :head_id => User.current.id, :description => pki.ki, :timestamp => DateTime.now)
+    end
     if check_create > 0
       PeopleKiLock.where(lead_id: User.current.id, version_id: params[:version_id]).update_all(:lead_id => User.current.id, :version_id => params[:version_id], :status => params[:status]);
     else

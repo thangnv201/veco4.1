@@ -381,7 +381,7 @@
         </div>
       <% elsif status == 2 %>
         <div class="col col-md-3">
-          Trang thái: <span style="background-color:red; color: white">Chỉ huy đang đánh giá lại KI</span>
+          Trang thái: <span style="background-color:red; color: white">Phòng TCLD từ chối KI yêu cầu rà soát lại</span>
         </div>
       <% elsif status == 3 %>
         <div class="col col-md-3">
@@ -1266,9 +1266,9 @@
         <!--  từ chối      a-->
       <% elsif status == 2 %>
         <div class="row" style="text-align: center">
-          <button id="btn2" data-toggle="modal" onclick="submitKI()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
+          <button id="btn2" data-toggle="modal" onclick="submitKIAgain()" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;">
             <i class="fa fa-check"></i>
-            Phòng TCLD từ chối KI yêu cầu rà soát lại
+            Chốt KI gửi phòng TCLĐ
           </button>
         </div>
       <% end %>
@@ -1429,7 +1429,83 @@
             let version_id = $('#version_id1').val();
             let empObj = {
                 version_id: version_id,
-                status: 1
+                status: 1,
+                act: "create"
+            };
+            let url = 'http://' + $(location).attr('host') + '/ki_ranking/saveAllKI';
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                data: empObj,
+                success: function (result) {
+                    let promisesArray = [];
+                    let successCounter = 0;
+                    let promise;
+
+                    $.each(result, function (k, valu) {
+                        let count = result.length;
+                        let checkloop = k + 1;
+                        let url = 'http://' + $(location).attr('host') + '/issues/' + valu.id + '.json?key=<%=User.current.api_key%>';
+                        let data = {
+                            "issue": {'status_id': 36}
+                        }
+
+                        promise =
+                            $.ajax({
+                                type: 'PUT',
+                                url: url,
+                                contentType: 'application/json',
+                                data: JSON.stringify(data)
+                            });
+
+                        promise.done(function (msg) {
+                            console.log("successfully updated");
+                            successCounter++;
+                        });
+
+                        promise.fail(function (jqXHR) { /* error out... */
+                        });
+
+                        promisesArray.push(promise);
+                    });
+
+                    $.when.apply($, promisesArray).done(function () {
+                        if (alert('đã chốt, đợi phản hồi từ phòng TCLD')) {
+                        } else window.location.reload();
+                    });
+                    $('#btndefault').hide();
+                },
+                error: function () {
+                }
+            })
+        } else {
+            alert(message);
+        }
+
+    }
+
+    function submitKIAgain() {
+        let check = true;
+        let message = "";
+        $('td[name ="validateCapa"]').each(function () {
+            if ($(this)[0].style.backgroundColor == "rgb(231, 76, 60)") {
+                check = false;
+                message = "Vui lòng kiểm tra lại điều kiện về tỷ lệ KI";
+            }
+        });
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            if ($(tr.cells[4]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[4]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
+                check = false;
+                message = "chưa chấm hết KI";
+            }
+        });
+        if (check == true) {
+            let version_id = $('#version_id1').val();
+            let empObj = {
+                version_id: version_id,
+                status: 1,
+                act: "recreate"
             };
             let url = 'http://' + $(location).attr('host') + '/ki_ranking/saveAllKI';
             $.ajax({
