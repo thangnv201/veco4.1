@@ -1,8 +1,3 @@
-
-
-
-
-
 <% content_for :header_tags do %>
   <%= stylesheet_link_tag 'bootstrap.min', 'mykpi', 'all', 'semantic', 'bootstrap-table.min', 'bootstrap-editable', plugin: 'kpi_report' %>
   <%= javascript_include_tag 'popper.min', 'jquery-2.0.3.min', 'bootstrap.min.js', 'bootstrap-editable.min',
@@ -20,7 +15,8 @@
   a {
     color: inherit !important;
   }
-  #kpi_table a{
+
+  #kpi_table a {
     text-decoration: underline !important;
   }
 
@@ -602,7 +598,7 @@
                 <textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea>
               </td>
               <td>
-                <button id="<%= "button" + $num.to_s %>"   data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
+                <button id="<%= "button" + $num.to_s %>" data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
                   <i class="fa fa-check"></i>
                 </button>
               </td>
@@ -1032,7 +1028,7 @@
                 <textarea id="<%= "note" + $num.to_s %>" style="width:100%;" onchange="changeNote(<%= $num %>)"><%= @ki_raking[$num][31] %></textarea>
               </td>
               <td>
-                <button id="<%= "button" + $num.to_s %>"   data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
+                <button id="<%= "button" + $num.to_s %>" data-toggle="modal" onclick="saveChangeKI(this,<%=$num.to_s%>)" class="btn btn-primary" style="padding:7px 10px!important; font-weight:bold;" disabled>
                   <i class="fa fa-check"></i>
                 </button>
               </td>
@@ -1276,7 +1272,6 @@
     <% end %>
 
 
-
   </div>
 </div>
 </body>
@@ -1413,6 +1408,7 @@
     function submitKI() {
         let check = true;
         let message = "";
+
         $('td[name ="validateCapa"]').each(function () {
             if ($(this)[0].style.backgroundColor == "rgb(231, 76, 60)") {
                 check = false;
@@ -1423,6 +1419,12 @@
             if ($(tr.cells[4]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[4]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 check = false;
                 message = "chưa chấm hết KI";
+            }
+        });
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            if ($(tr.cells[14]).find("button").prop("disabled")==false) {
+                check = false;
+                message = "Bạn chưa lưu hết thay đổi";
             }
         });
         if (check == true) {
@@ -1488,6 +1490,7 @@
     function submitKIAgain() {
         let check = true;
         let message = "";
+
         $('td[name ="validateCapa"]').each(function () {
             if ($(this)[0].style.backgroundColor == "rgb(231, 76, 60)") {
                 check = false;
@@ -1498,6 +1501,12 @@
             if ($(tr.cells[4]).find("a").attr("data-original-title") == "CBNV chưa được chấm KPI" || $(tr.cells[4]).find("a").attr("data-original-title") == "KPI chưa chấm hết") {
                 check = false;
                 message = "chưa chấm hết KI";
+            }
+        });
+        $('#kpi_table >tbody >tr').each(function (index, tr) {
+            if ($(tr.cells[14]).find("button").prop("disabled")==false) {
+                check = false;
+                message = "Bạn chưa lưu hết thay đổi";
             }
         });
         if (check == true) {
@@ -1820,7 +1829,6 @@
     }
 
 
-
     function detailKPI(uid, vid) {
         let url = 'http://' + $(location).attr('host') + '/ki_ranking/get_user_kpi?uid=' + uid + '&&vid=' + vid;
         window.open(url, "_blank");
@@ -1846,23 +1854,23 @@
         $('#kpi_table >tbody >tr').each(function (index, tr) {
             let a = $(tr.cells[4]).text().trim();
             if ($(tr.cells[4]).find("a").attr("data-original-title") == "KPI đã chấm hết") {
-                if(parseFloat(a)<2){
+                if (parseFloat(a) < 2) {
                     $(tr.cells[9]).find("select").val("D");
                     $(tr.cells[10]).text("Không hoàn thành NV/CV");
                     $(tr.cells[14]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=2 && parseFloat(a)<2.5){
+                } else if (parseFloat(a) >= 2 && parseFloat(a) < 2.5) {
                     $(tr.cells[9]).find("select").val("C");
                     $(tr.cells[10]).text("Hoàn thành NV/CV");
                     $(tr.cells[14]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=2.5 && parseFloat(a)<3.5){
+                } else if (parseFloat(a) >= 2.5 && parseFloat(a) < 3.5) {
                     $(tr.cells[9]).find("select").val("B");
                     $(tr.cells[10]).text("Hoàn thành NV/CV");
                     $(tr.cells[14]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=3.5 && parseFloat(a)<4.5){
+                } else if (parseFloat(a) >= 3.5 && parseFloat(a) < 4.5) {
                     $(tr.cells[9]).find("select").val("A");
                     $(tr.cells[10]).text("Hoàn thành NV/CV");
                     $(tr.cells[14]).find("button").prop("disabled", false);
-                }else if(parseFloat(a)>=4.5 && parseFloat(a)<=5){
+                } else if (parseFloat(a) >= 4.5 && parseFloat(a) <= 5) {
                     $(tr.cells[9]).find("select").val("A+");
                     $(tr.cells[10]).text("Hoàn thành NV/CV");
                     $(tr.cells[14]).find("button").prop("disabled", false);
@@ -1883,7 +1891,7 @@
     function saveRendKI() {
         let objs = [];
         $('#kpi_table >tbody >tr').each(function (index, tr) {
-            let ki_type =1;
+            let ki_type = 1;
             if ($(tr.cells[8]).find("input").is(':checked') == true) {
                 ki_type = 2;
             } else {

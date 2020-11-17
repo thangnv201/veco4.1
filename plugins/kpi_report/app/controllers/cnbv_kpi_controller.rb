@@ -142,6 +142,7 @@ class CnbvKpiController < ApplicationController
     else
       $dpmid = Department.where(ki_confirm: 1).first.id
     end
+    h_id = Department.find($dpmid).head_id
     PeopleInformation.where(department_id: $dpmid).select(:user_id).each do |id|
       issue = Issue.where(:assigned_to_id => id).where(:fixed_version_id => version).where(:tracker_id => 51).first
       if !issue.nil?
@@ -337,16 +338,74 @@ class CnbvKpiController < ApplicationController
       pkid = PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.id
       old_ki = PeopleKi.where(user_id: uid, version_id: params[:version_id]).first.ki
       pki = PeopleKi.update(pkid, :location_compliance => params[:location], :kpi_type => params[:ki_type],
-                      :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
-                      :manager_note => params[:manage_note], :note => params[:note]);
+                            :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
+                            :manager_note => params[:manage_note], :note => params[:note], :flag => 0);
       unless old_ki == params[:ki]
-        PeopleKiLog.create(:action => "update", :people_ki_id => pki.id, :head_id => User.current.id, :description => "Old_KI: "+old_ki+" - New_KI: "+pki.ki, :timestamp => DateTime.now)
+        PeopleKiLog.create(:action => "update", :people_ki_id => pki.id, :head_id => User.current.id, :description => "Old_KI: " + old_ki + " - New_KI: " + pki.ki, :timestamp => DateTime.now)
+        issue = Issue.where(:assigned_to_id => uid).where(:fixed_version_id => params[:version_id]).where(:tracker_id => 51).first
+        if !issue.nil?
+          note = Journal.new(
+              :journalized_id => issue.id,
+              :journalized_type => 'Issue',
+              :user_id => User.current.id,
+              :notes => "KI cũ: " + old_ki + " - KI mới: " + params[:ki]
+          )
+          note.save
+        end
       end
     else
+
       pki = PeopleKi.create(:user_id => uid, :version_id => params[:version_id], :kpi_type => params[:ki_type], :location_compliance => params[:location],
-                      :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
-                      :manager_note => params[:manage_note], :note => params[:note]);
+                            :labor_rules_compliance => params[:labor_rules], :ki => params[:ki],
+                            :manager_note => params[:manage_note], :note => params[:note]);
       PeopleKiLog.create(:action => "create", :people_ki_id => pki.id, :head_id => User.current.id, :description => pki.ki, :timestamp => DateTime.now)
+      issue = Issue.where(:assigned_to_id => uid).where(:fixed_version_id => params[:version_id]).where(:tracker_id => 51).first
+      if !issue.nil?
+        note = Journal.new(
+            :journalized_id => issue.id,
+            :journalized_type => 'Issue',
+            :user_id => User.current.id,
+            :notes => "Xếp loại KI: " + pki.ki
+        )
+        note.save
+      else
+        issue = Issue.new(
+            :tracker_id => 51,
+            :project_id => 1072,
+            :subject => "KI CBNV",
+            :status_id => 37,
+            :assigned_to_id => uid,
+            :priority_id => 2,
+            :fixed_version_id => params[:version_id],
+            :author_id => 1,
+            )
+        if issue.save
+            point = pki.kpi
+            location = pki.location_compliance == 1 ? 152 : pki.location_compliance == 2 ? 153 : 154
+            labor = pki.labor_rules_compliance == 1 ? 155 : pki.labor_rules_compliance == 2 ? 156 : 157
+            note = pki.note.nil? ? '' : pki.note
+            manager_note = pki.manager_note.nil? ? '' : pki.manager_note
+            department_name = CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).nil? ? "" : CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).first.value
+            if !CustomFieldEnumeration.find_by_name(pki.ki).nil?
+              ki = CustomFieldEnumeration.find_by_name(pki.ki).id unless pki.ki.nil?
+              pki.flag = 1
+            else
+              ki = nil
+              pki.flag = 0
+            end
+            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note, 242 => department_name}
+            issue.save
+            note = Journal.new(
+                :journalized_id => issue.id,
+                :journalized_type => 'Issue',
+                :user_id => User.current.id,
+                :notes => "Xếp loại KI: " + CustomFieldEnumeration.find(ki).name
+            )
+            note.save
+            pki.save
+        end
+      end
+
     end
   end
 
@@ -358,13 +417,74 @@ class CnbvKpiController < ApplicationController
       check_create = PeopleKi.where(user_id: uid, version_id: value["version_id"]).size
       if check_create > 0
         pkid = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.id
-        PeopleKi.update(pkid, :location_compliance => value["location"], :kpi_type => value["ki_type"],
+        old_ki = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.ki
+        pki = PeopleKi.update(pkid, :location_compliance => value["location"], :kpi_type => value["ki_type"],
                         :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
                         :manager_note => value["manage_note"], :note => value["note"]);
+        unless old_ki == value["ki"]
+          PeopleKiLog.create(:action => "update", :people_ki_id => pki.id, :head_id => User.current.id, :description => "Old_KI: " + old_ki + " - New_KI: " + pki.ki, :timestamp => DateTime.now)
+          issue = Issue.where(:assigned_to_id => uid).where(:fixed_version_id => value["version_id"]).where(:tracker_id => 51).first
+          if !issue.nil?
+            note = Journal.new(
+                :journalized_id => issue.id,
+                :journalized_type => 'Issue',
+                :user_id => User.current.id,
+                :notes => "KI cũ: " + old_ki + " - KI mới: " + value["ki"]
+            )
+            note.save
+          end
+        end
       else
-        PeopleKi.create(:user_id => uid, :version_id => value["version_id"], :kpi_type => value["ki_type"], :location_compliance => value["location"],
+        pki = PeopleKi.create(:user_id => uid, :version_id => value["version_id"], :kpi_type => value["ki_type"], :location_compliance => value["location"],
                         :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
                         :manager_note => value["manage_note"], :note => value["note"]);
+        PeopleKiLog.create(:action => "create", :people_ki_id => pki.id, :head_id => User.current.id, :description => pki.ki, :timestamp => DateTime.now)
+        issue = Issue.where(:assigned_to_id => uid).where(:fixed_version_id => value["version_id"]).where(:tracker_id => 51).first
+        if !issue.nil?
+          note = Journal.new(
+              :journalized_id => issue.id,
+              :journalized_type => 'Issue',
+              :user_id => User.current.id,
+              :notes => "Xếp loại KI: " + pki.ki
+          )
+          note.save
+        else
+          issue = Issue.new(
+              :tracker_id => 51,
+              :project_id => 1072,
+              :subject => "KI CBNV",
+              :status_id => 37,
+              :assigned_to_id => uid,
+              :priority_id => 2,
+              :fixed_version_id => value["version_id"],
+              :author_id => 1,
+              )
+          if issue.save
+            point = pki.kpi
+            location = pki.location_compliance == 1 ? 152 : pki.location_compliance == 2 ? 153 : 154
+            labor = pki.labor_rules_compliance == 1 ? 155 : pki.labor_rules_compliance == 2 ? 156 : 157
+            note = pki.note.nil? ? '' : pki.note
+            manager_note = pki.manager_note.nil? ? '' : pki.manager_note
+            department_name = CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).nil? ? "" : CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).first.value
+            if !CustomFieldEnumeration.find_by_name(pki.ki).nil?
+              ki = CustomFieldEnumeration.find_by_name(pki.ki).id unless pki.ki.nil?
+              pki.flag = 1
+            else
+              ki = nil
+              pki.flag = 0
+            end
+            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note, 242 => department_name}
+            issue.save
+            note = Journal.new(
+                :journalized_id => issue.id,
+                :journalized_type => 'Issue',
+                :user_id => User.current.id,
+                :notes => "Xếp loại KI: " + CustomFieldEnumeration.find(ki).name
+            )
+            note.save
+            pki.save
+          end
+        end
       end
     end
   end
