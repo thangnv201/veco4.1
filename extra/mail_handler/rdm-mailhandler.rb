@@ -102,7 +102,6 @@ class RedmineMailHandler
                                               "ATTRS is a comma separated list of attributes",
                                               "or 'all' to allow all attributes to be",
                                               "overridable (see below for details)") {|v| self.allow_override = v}
-
       opts.separator <<-END_DESC
 
 Overrides:

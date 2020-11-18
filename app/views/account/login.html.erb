@@ -21,7 +21,7 @@
   <% if Setting.autologin? %>
     <label for="autologin"><%= check_box_tag 'autologin', 1, false, :tabindex => 4 %> <%= l(:label_stay_logged_in) %></label>
   <% end %>
-  
+  <a style="color: white;font-size: 15px;font-family: inherit" target="_blank" href="http://password.vht.vn/public/ForgottenPassword">Forgot password?</a>
   <input type="submit" name="login" value="<%=l(:button_login)%>" tabindex="5" id="login-submit" />
   <% end %>
 </div>

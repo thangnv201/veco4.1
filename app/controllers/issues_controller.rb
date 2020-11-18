@@ -752,7 +752,7 @@ class IssuesController < ApplicationController
       #Trang thai: Yêu cầu cập nhật (issue status 20)
       (User.where(id: issue.assigned_to_id)).each do |getUser|
         @userSMS = VecoPhone.where(name: getUser.login)
-       handle_sendSMS(@userSMS, noticeArr)
+        handle_sendSMS(@userSMS, noticeArr)
       end
     end
     if status == 4

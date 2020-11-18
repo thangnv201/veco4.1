@@ -50,7 +50,6 @@ class ReportpeopleController < ApplicationController
     end
   end
 
-
   def issue_customfield_value(issue, custom_field_id)
     value = issue.custom_field_values.find { |x| x.custom_field.id == custom_field_id }.value
     if CustomField.find(custom_field_id).field_format == "enumeration"
