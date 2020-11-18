@@ -407,26 +407,26 @@
       <% end %>
 
     </div>
-
+    <button onclick="fnExcelReport()">Xuất Excel</button>
     <table id="kpi_table" class="table table-bordered striped table-responsive tablesorter" style="width: 100%">
       <thead style="background-color:#eee;">
       <tr>
-        <th rowspan="4">TT</th>
-        <th rowspan="4">Mã nhân viên</th>
-        <th rowspan="4">Họ và tên</th>
-        <th rowspan="4">Đơn vị</th>
-        <th rowspan="4">Điểm đánh giá</th>
-        <th rowspan="4">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
-        <th rowspan="4">Tuân thủ địa điểm làm việc</th>
-        <th rowspan="4">Tuân thủ Nội quy lao động</th>
-        <th rowspan="4" data-sorter="false">CBNV đánh giá theo tiêu
+        <th rowspan="1">TT</th>
+        <th rowspan="1">Mã nhân viên</th>
+        <th rowspan="1">Họ và tên</th>
+        <th rowspan="1">Đơn vị</th>
+        <th rowspan="1">Điểm đánh giá</th>
+        <th rowspan="1">Xếp loại kết quả thực hiện mục tiêu nhiệm vụ/công việc</th>
+        <th rowspan="1">Tuân thủ địa điểm làm việc</th>
+        <th rowspan="1">Tuân thủ Nội quy lao động</th>
+        <th rowspan="1" data-sorter="false">CBNV đánh giá theo tiêu
           chuẩn
         </th>
-        <th rowspan="4">Xếp loại Ki</th>
-        <th rowspan="4">Xếp loại mức độ hoàn thành nhiệm vụ/công việc</th>
-        <th rowspan="4">Ghi chú, đề xuất của người QLTT với CBNV</th>
-        <th rowspan="4" style="width: 200px">Ghi chú, đề xuất của người Chỉ huy với CBNV</th>
-        <th rowspan="4" style="width: 200px">Chú ý</th>
+        <th rowspan="1">Xếp loại Ki</th>
+        <th rowspan="1">Xếp loại mức độ hoàn thành nhiệm vụ/công việc</th>
+        <th rowspan="1">Ghi chú, đề xuất của người QLTT với CBNV</th>
+        <th rowspan="1" style="width: 200px">Ghi chú, đề xuất của người Chỉ huy với CBNV</th>
+        <th rowspan="1" style="width: 200px">Chú ý</th>
       </tr>
 
 
@@ -578,6 +578,41 @@
         rentCapacity();
         $("#kpi_table").tablesorter();
     });
+
+    function fnExcelReport()
+    {
+        let tab_text="<table border='2px'><tr bgcolor='#87AFC6'>";
+        let textRange;
+        let j=0;
+        tab = document.getElementById('kpi_table'); // id of table
+
+        for(j = 0 ; j < tab.rows.length ; j++)
+        {
+            tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
+            tab_text=tab_text+"</tr>";
+        }
+
+        tab_text=tab_text+"</table>";
+         tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+         tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
+         tab_text= tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+
+        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+        {
+            txtArea1.document.open("txt/html","replace");
+            txtArea1.document.write(tab_text);
+            txtArea1.document.close();
+            txtArea1.focus();
+            sa=txtArea1.document.execCommand("SaveAs",true,"Download.xlsx");
+        }
+        else                 //other browser not tested on IE 11
+            sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
+
+        return (sa);
+    }
 
     function mySelectKI(num) {
         let ki = $('#select_ki' + num).val();
