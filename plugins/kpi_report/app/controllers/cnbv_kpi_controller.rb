@@ -378,31 +378,31 @@ class CnbvKpiController < ApplicationController
             :priority_id => 2,
             :fixed_version_id => params[:version_id],
             :author_id => 1,
-            )
+        )
         if issue.save
-            point = pki.kpi
-            location = pki.location_compliance == 1 ? 152 : pki.location_compliance == 2 ? 153 : 154
-            labor = pki.labor_rules_compliance == 1 ? 155 : pki.labor_rules_compliance == 2 ? 156 : 157
-            note = pki.note.nil? ? '' : pki.note
-            manager_note = pki.manager_note.nil? ? '' : pki.manager_note
-            department_name = CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).nil? ? "" : CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).first.value
-            if !CustomFieldEnumeration.find_by_name(pki.ki).nil?
-              ki = CustomFieldEnumeration.find_by_name(pki.ki).id unless pki.ki.nil?
-              pki.flag = 1
-            else
-              ki = nil
-              pki.flag = 0
-            end
-            issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note, 242 => department_name}
-            issue.save
-            note = Journal.new(
-                :journalized_id => issue.id,
-                :journalized_type => 'Issue',
-                :user_id => User.current.id,
-                :notes => "Xếp loại KI: " + CustomFieldEnumeration.find(ki).name
-            )
-            note.save
-            pki.save
+          point = pki.kpi
+          location = pki.location_compliance == 1 ? 152 : pki.location_compliance == 2 ? 153 : 154
+          labor = pki.labor_rules_compliance == 1 ? 155 : pki.labor_rules_compliance == 2 ? 156 : 157
+          note = pki.note.nil? ? '' : pki.note
+          manager_note = pki.manager_note.nil? ? '' : pki.manager_note
+          department_name = CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).nil? ? "" : CustomValue.where(customized_id: uid, custom_field_id: 53).select(:value).take(1).first.value
+          if !CustomFieldEnumeration.find_by_name(pki.ki).nil?
+            ki = CustomFieldEnumeration.find_by_name(pki.ki).id unless pki.ki.nil?
+            pki.flag = 1
+          else
+            ki = nil
+            pki.flag = 0
+          end
+          issue.custom_field_values = {223 => point, 224 => location, 225 => labor, 227 => ki, 240 => note, 241 => manager_note, 242 => department_name}
+          issue.save
+          note = Journal.new(
+              :journalized_id => issue.id,
+              :journalized_type => 'Issue',
+              :user_id => User.current.id,
+              :notes => "Xếp loại KI: " + CustomFieldEnumeration.find(ki).name
+          )
+          note.save
+          pki.save
         end
       end
 
@@ -419,8 +419,8 @@ class CnbvKpiController < ApplicationController
         pkid = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.id
         old_ki = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.ki
         pki = PeopleKi.update(pkid, :location_compliance => value["location"], :kpi_type => value["ki_type"],
-                        :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
-                        :manager_note => value["manage_note"], :note => value["note"]);
+                              :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
+                              :manager_note => value["manage_note"], :note => value["note"]);
         unless old_ki == value["ki"]
           PeopleKiLog.create(:action => "update", :people_ki_id => pki.id, :head_id => User.current.id, :description => "Old_KI: " + old_ki + " - New_KI: " + pki.ki, :timestamp => DateTime.now)
           issue = Issue.where(:assigned_to_id => uid).where(:fixed_version_id => value["version_id"]).where(:tracker_id => 51).first
@@ -436,8 +436,8 @@ class CnbvKpiController < ApplicationController
         end
       else
         pki = PeopleKi.create(:user_id => uid, :version_id => value["version_id"], :kpi_type => value["ki_type"], :location_compliance => value["location"],
-                        :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
-                        :manager_note => value["manage_note"], :note => value["note"]);
+                              :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
+                              :manager_note => value["manage_note"], :note => value["note"]);
         PeopleKiLog.create(:action => "create", :people_ki_id => pki.id, :head_id => User.current.id, :description => pki.ki, :timestamp => DateTime.now)
         issue = Issue.where(:assigned_to_id => uid).where(:fixed_version_id => value["version_id"]).where(:tracker_id => 51).first
         if !issue.nil?
@@ -458,7 +458,7 @@ class CnbvKpiController < ApplicationController
               :priority_id => 2,
               :fixed_version_id => value["version_id"],
               :author_id => 1,
-              )
+          )
           if issue.save
             point = pki.kpi
             location = pki.location_compliance == 1 ? 152 : pki.location_compliance == 2 ? 153 : 154
@@ -512,7 +512,31 @@ class CnbvKpiController < ApplicationController
       users_id.push(kpi.user_id)
     end
     @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id: 51)
+    users_id.each do |id|
+      # @userSMS = VecoPhone.where(name: User.find(id).login)
+      @userSMS = VecoPhone.where(name: 'thangnv74')
+      ki = PeopleKi.where(version_id: params[:version_id], user_id: id).first
+      content = 'Thông báo KI trong kì '+Version.find(params[:version_id].to_i).name+': '+ki.ki+'. Nếu thông tin chưa chính xác, đồng chí vui lòng liên hệ quản lý trực tiếp.'
+      handle_sendSMS(@userSMS,content)
+    end
     render json: @issues
+  end
+
+  DB_HOST = "10.60.19.18"
+  DB_USER = "hrmuser"
+  DB_PASSWORD = "123456a@"
+  DB = "smssupport"
+
+  def handle_sendSMS(phone_array, content)
+    client = Mysql2::Client.new(:host => DB_HOST, :username => DB_USER,
+                                :password => DB_PASSWORD, :database => DB)
+
+    phone_array.each_with_index do |user, index|
+      phone = '84'.dup << user.phone[1..-1].dup
+      insert = client.query("INSERT INTO sms (phone, content, sent)
+                         VALUES ('#{phone}', '#{content}','#{0}')")
+      client.close
+    end
   end
 
   def getallusers(uid)
