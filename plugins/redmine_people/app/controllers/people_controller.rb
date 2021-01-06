@@ -110,6 +110,11 @@ class PeopleController < ApplicationController
   def update
     (render_403; return false) unless @person.editable_by?(User.current)
     @person.safe_attributes = params[:person]
+    @person.admin = false
+    @person.login = params[:person][:login]
+    @person.auth_source_id = params[:person][:auth_source_id]
+    @person.password, @person.password_confirmation = params[:person][:password], params[:person][:password_confirmation] unless @person.auth_source_id
+    @person.type = 'User'
     if @person.save
       attachments = Attachment.attach_files(@person, params[:attachments])
       render_attachment_warning_if_needed(@person)
