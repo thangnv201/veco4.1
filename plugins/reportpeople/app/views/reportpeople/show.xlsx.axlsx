@@ -1,0 +1,11 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(:name => Version.find($kidanhgia).name) do |sheet|
+  sheet.add_row ["Đơn vị", "Phòng ban", "Mã nhân viên", "Email", "Số lượng KPI", "Tỉ trọng"]
+  $member.each do |k,v|
+   v.each do |k1,v1|
+    v1.each do |user|
+      sheet.add_row [k, k1, user[4], user[1]+"@viettel.com.vn", user[3], user[2]]
+      end
+   end
+  end
+end

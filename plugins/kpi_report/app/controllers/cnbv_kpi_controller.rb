@@ -417,7 +417,7 @@ class CnbvKpiController < ApplicationController
       check_create = PeopleKi.where(user_id: uid, version_id: value["version_id"]).size
       if check_create > 0
         pkid = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.id
-        old_ki = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.ki
+        old_ki = PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.ki.nil? ? "" : PeopleKi.where(user_id: uid, version_id: value["version_id"]).first.ki
         pki = PeopleKi.update(pkid, :location_compliance => value["location"], :kpi_type => value["ki_type"],
                               :labor_rules_compliance => value["labor_rules"], :ki => value["ki"],
                               :manager_note => value["manage_note"], :note => value["note"]);
@@ -512,12 +512,13 @@ class CnbvKpiController < ApplicationController
       users_id.push(kpi.user_id)
     end
     @issues = Issue.where(assigned_to_id: users_id, fixed_version_id: params[:version_id]).where.not(status_id: 35).where.not(tracker_id: 51)
-    users_id.each do |id|
-      # @userSMS = VecoPhone.where(name: User.find(id).login)
-      @userSMS = VecoPhone.where(name: 'thangnv74')
-      ki = PeopleKi.where(version_id: params[:version_id], user_id: id).first
-      content = 'Thông báo KI trong kì '+Version.find(params[:version_id].to_i).name+': '+ki.ki+'. Nếu thông tin chưa chính xác, đồng chí vui lòng liên hệ quản lý trực tiếp.'
-      handle_sendSMS(@userSMS,content)
+    if params[:status] == "3"
+      users_id.each do |id|
+        @userSMS = VecoPhone.where(name: User.find(id).login)
+        ki = PeopleKi.where(version_id: params[:version_id], user_id: id).first
+        content = 'Thông báo KI trong kì ' + Version.find(params[:version_id].to_i).name + ': ' + ki.ki + '. Nếu thông tin chưa chính xác, đồng chí vui lòng liên hệ quản lý trực tiếp.'
+        handle_sendSMS(@userSMS, content)
+      end
     end
     render json: @issues
   end

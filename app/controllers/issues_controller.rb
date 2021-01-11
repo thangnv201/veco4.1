@@ -41,6 +41,8 @@ class IssuesController < ApplicationController
   helper :repositories
   helper :timelog
 
+  $base_url ="http://localhost:9001"
+  $customfield_id=74
   def index
     use_session = !request.format.csv?
     retrieve_query(IssueQuery, use_session)
@@ -132,6 +134,11 @@ class IssuesController < ApplicationController
     @issue.save_attachments(params[:attachments] || (params[:issue] && params[:issue][:uploads]))
     if @issue.save
       call_hook(:controller_issues_new_after_save, {:params => params, :issue => @issue})
+      if @issue.author_id != @issue.assigned_to_id
+        noticeArr=[]
+        noticeArr.push("[VECO##{@issue.id}] #{@issue.status.name} | #{@issue.tracker.name}: #{@issue.subject}. Đ/c truy cập địa chỉ http://plm.vht.vn/issues/#{@issue.id} để xử lý!")
+        handle_send_sms(@issue, noticeArr, 2)
+      end
       respond_to do |format|
         format.html {
           render_attachment_warning_if_needed(@issue)
@@ -169,6 +176,30 @@ class IssuesController < ApplicationController
     if @issue.status_id.to_i != params[:issue][:status_id].to_i
       changeStatus = true
     end
+    #check status
+    #
+    begin
+      if params[:issue][:status_id].to_i == 11
+        url = $base_url + '/redmine-jbpm-intergration/api/v1/jbpm/task/status?issueid=' + @issue.id.to_s
+        result = Net::HTTP.get(URI.parse(url))
+        result_json = JSON.parse(result)
+        if result_json["code"] == 1 && result_json["data"] != "SUCCESS" && result_json["data"] != "COMPLETED" && result_json["data"] != "COMPLETE"
+          error = 'Yêu cầu đóng các task ' + result_json["data"].to_s + ' trước khi thực hiện submit task ' + @issue.id.to_s
+          if request.format.json?
+            render_api_errors([error])
+          else
+            flash[:error] = error
+            redirect_to({:controller => 'issues', :action => 'edit', :id => @issue.id})
+          end
+          return
+        end
+      end
+    rescue => err
+      logger.info("QLQT Loi check trang thai quy trinh")
+      logger.fatal(err)
+      return
+    end
+    #
     return unless update_issue_from_params
     @issue.save_attachments(params[:attachments] || (params[:issue] && params[:issue][:uploads]))
     saved = false
@@ -185,6 +216,7 @@ class IssuesController < ApplicationController
     if saved
       render_attachment_warning_if_needed(@issue)
       flash[:notice] = l(:notice_successful_update) unless @issue.current_journal.new_record? || params[:no_flash]
+      completeIssue(@issue)
       #sms
       begin
         @issueName = IssueStatuse.where(id: params[:issue][:status_id].to_i)
@@ -402,6 +434,7 @@ class IssuesController < ApplicationController
       issue.safe_attributes = attributes
       call_hook(:controller_issues_bulk_edit_before_save, {:params => params, :issue => issue})
       if issue.save
+        completeIssue(issue)
         saved_issues << issue
       else
         unsaved_issues << orig_issue
@@ -777,4 +810,30 @@ class IssuesController < ApplicationController
       end
     end
   end
+
+  def completeIssue(issue)
+    byebug
+    if issue.status_id.to_int == 11
+      begin
+        checkWorkFollow = issue.custom_field_value($customfield_id);
+
+        if (checkWorkFollow == "1. Đạt")
+          checkWorkFollow = "-Y";
+        elsif (checkWorkFollow == "2. Không đạt")
+          checkWorkFollow = "-N";
+        end
+        uri = URI.parse($base_url + "/redmine-jbpm-intergration/api/v1/jbpm/task/complete?issueid=" + issue.id.to_s + "&key=25304089a591cf457f3a6d1073e405d980133d94")
+        header = {'Content-Type': 'application/json; charset=utf-8'}
+        data = {"taskContent": "", "branch": issue.status_id.to_s + checkWorkFollow, "projectCode": issue.project_id}
+        http = Net::HTTP.new(uri.host, uri.port)
+        request = Net::HTTP::Post.new(uri.request_uri, header)
+        request.body = data.to_json
+        response = http.request(request)
+        logger.info(response)
+      rescue => err
+        logger.fatal(err)
+      end
+    end
+  end
+
 end

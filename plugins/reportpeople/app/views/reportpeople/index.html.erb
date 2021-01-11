@@ -20,21 +20,23 @@
   <div class="title">
     <i class="dropdown icon"></i>
     Tổng công ty công nghiệp công nghệ cao Viettel
+    (<%= $member.sum { |k, v| v.sum { |k1, v1| v1.count { |x| x[2] > 99 } } } %> /
+    <%= $member.sum { |k, v| v.sum { |k1, v1| v1.count } } %> )
   </div>
   <div class="content">
     <div class="accordion">
-      <% @member.each do |k, v| %>
+      <% $member.each do |k, v| %>
         <div class="title">
           <i class="dropdown icon"></i>
 
-          <%= k %> (<%=v.sum{|k1,v1| v1.count{|x| x[2] ==100}} %>/<%=v.sum{|k1,v1| v1.count} %>)
+          <%= k %> (<%= v.sum { |k1, v1| v1.count { |x| x[2] > 99 } } %>/<%= v.sum { |k1, v1| v1.count } %>)
         </div>
         <div class="content">
           <div class="accordion">
             <% v.each do |k1, v1| %>
               <div class="title">
                 <i class="dropdown icon"></i>
-                <%= k1 %> (<%=v1.count{|x| x[2] ==100} %>/<%=v1.count %>)
+                <%= k1 %> (<%= v1.count { |x| x[2] > 99 } %>/<%= v1.count %>)
               </div>
               <div class="content">
                 <% v1.each do |item| %>
@@ -44,7 +46,7 @@
                         <div style="padding: 0" class="content">
                           <div style="background: #FFF6F6 !important;color: #9F3A38 !important;" class="header">
                             <%= item[1] %> ( <%= User.find(item.first).firstname %> )
-                            : <%=item[3] %> KPI(s) / (<%=item[2] %>%)
+                            : <%= item[3] %> KPI(s) / (<%= item[2] %>%)
                           </div>
                         </div>
                       </div>
@@ -53,7 +55,7 @@
                         <div style="padding: 0" class="content">
                           <div style="background: #FCFFF5 !important;color: #2C662D !important;" class="header">
                             <%= item[1] %> ( <%= User.find(item.first).firstname %> )
-                            : <%=item[3] %> KPI(s) / (<%=item[2] %>%)
+                            : <%= item[3] %> KPI(s) / (<%= item[2] %>%)
                           </div>
                         </div>
                       </div>
@@ -72,7 +74,7 @@
     </div>
   </div>
 </div>
-
+<button onclick="window.open('/kpi_people_report/exports')">Export Excel</button>
 <script>
     $('.ui.accordion')
         .accordion()

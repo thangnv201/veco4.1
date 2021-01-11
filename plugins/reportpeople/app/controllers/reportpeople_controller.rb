@@ -2,8 +2,8 @@ class ReportpeopleController < ApplicationController
   include ReportpeopleHelper
   self.main_menu = false
   $kidanhgia = Project.find(1072).versions.first.id
-  $trangthai =[[1,'Tạo KPI'],[2,'Đánh giá KPI'],[3,'Đánh giá KI']]
-
+  $trangthai = [[1, 'Tạo KPI'], [2, 'Đánh giá KPI'], [3, 'Đánh giá KI']]
+  $member
   def index
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
@@ -13,9 +13,9 @@ class ReportpeopleController < ApplicationController
     if params.key?("trangthai")
       @trangthai = params["trangthai"].to_i
     else
-      @trangthai =1
+      @trangthai = 1
     end
-    @member = Group.find(1839).users.pluck(:id, :login)
+    $member = Group.find(1839).users.where(:status => 1).pluck(:id, :login)
                   .map { |id, login| [id, login] + tong_ty_trong(id, $kidanhgia) }
                   .group_by { |a| custom_field_user(a.first, 53) }
                   .map { |k, v| [k, v.group_by { |b| custom_field_user(b.first, 54) }] }
@@ -28,15 +28,15 @@ class ReportpeopleController < ApplicationController
     sum = CustomValue.where(:customized_type => "Issue").where(:custom_field_id => 139).where(:customized_id => ids)
               .pluck(:value).map { |x| x.to_i }.sum
     count = ids.length
-    return [sum, count]
+    return [sum, count,issue_customfield_value(User.find(user_id),55)]
   end
 
-  def diem_danh_gia(user_id,version_id)
+  def diem_danh_gia(user_id, version_id)
     ids = Project.find(1072).issues.where(:assigned_to_id => user_id).where.(:status_id => 34)
               .where(:fixed_version_id => version_id).pluck(:id)
     sum = CustomValue.where(:customized_type => "Issue").where(:custom_field_id => 139).where(:customized_id => ids)
               .pluck(:value).map { |x| x.to_i }.sum
-    point= PeopleKi.where(:user_id=> user_id).where(:version_id=>version_id)
+    point = PeopleKi.where(:user_id => user_id).where(:version_id => version_id)
   end
 
   def custom_field_user(id, custom_field_id)
@@ -56,6 +56,13 @@ class ReportpeopleController < ApplicationController
       return CustomField.find(custom_field_id).enumerations.where(:id => value).first.name
     end
     return value
+  end
+
+  def show
+    $member
+    respond_to do |format|
+      format.xlsx { headers["Content-Disposition"] = "attachment; filename=\"KPI report.xlsx\"" }
+    end
   end
 
 end

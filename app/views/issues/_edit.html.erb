@@ -1,54 +1,59 @@
 <%= labelled_form_for @issue, :html => {:id => 'issue-form', :multipart => true} do |f| %>
-    <%= error_messages_for 'issue', 'time_entry' %>
-    <%= render :partial => 'conflict' if @conflict %>
-    <div class="box">
+  <%= error_messages_for 'issue', 'time_entry' %>
+  <%= render :partial => 'conflict' if @conflict %>
+  <div class="box">
     <% if @issue.attributes_editable? %>
-        <fieldset class="tabular"><legend><%= l(:label_change_properties) %></legend>
+      <fieldset class="tabular">
+        <legend><%= l(:label_change_properties) %></legend>
         <div id="all_attributes">
-        <%= render :partial => 'form', :locals => {:f => f} %>
+          <%= render :partial => 'form', :locals => {:f => f} %>
         </div>
-        </fieldset>
+      </fieldset>
     <% end %>
     <% if User.current.allowed_to?(:log_time, @project) %>
-        <fieldset class="tabular"><legend><%= l(:button_log_time) %></legend>
+      <fieldset class="tabular">
+        <legend><%= l(:button_log_time) %></legend>
         <%= labelled_fields_for :time_entry, @time_entry do |time_entry| %>
-        <div class="splitcontent">
-        <div class="splitcontentleft">
-        <p><%= time_entry.hours_field :hours, :size => 6, :label => :label_spent_time %> <%= l(:field_hours) %></p>
-        </div>
-        <div class="splitcontentright">
-        <p><%= time_entry.select :activity_id, activity_collection_for_select_options %></p>
-        </div>
-        </div>
-        <p><%= time_entry.text_field :comments, :size => 60 %></p>
-        <% @time_entry.custom_field_values.each do |value| %>
-          <p><%= custom_field_tag_with_label :time_entry, value %></p>
+          <div class="splitcontent">
+            <div class="splitcontentleft">
+              <p><%= time_entry.hours_field :hours, :size => 6, :label => :label_spent_time %> <%= l(:field_hours) %></p>
+            </div>
+            <div class="splitcontentright">
+              <p><%= time_entry.select :activity_id, activity_collection_for_select_options %></p>
+            </div>
+          </div>
+          <p><%= time_entry.text_field :comments, :size => 60 %></p>
+          <% @time_entry.custom_field_values.each do |value| %>
+            <p><%= custom_field_tag_with_label :time_entry, value %></p>
+          <% end %>
         <% end %>
-        <% end %>
-    </fieldset>
+      </fieldset>
     <% end %>
     <% if @issue.notes_addable? %>
-      <fieldset><legend><%= l(:field_notes) %></legend>
-      <%= f.text_area :notes, :cols => 60, :rows => 10, :class => 'wiki-edit',
-            :data => {
-                :auto_complete => true,
-                :issues_url => auto_complete_issues_path(:project_id => @issue.project, :q => '')
-            },
-            :no_label => true %>
-      <%= wikitoolbar_for 'issue_notes', preview_issue_path(:project_id => @project, :issue_id => @issue) %>
+      <fieldset>
+        <legend><%= l(:field_notes) %></legend>
+        <%= f.text_area :notes, :cols => 60, :rows => 10, :class => 'wiki-edit',
+                        :data => {
+                            :auto_complete => true,
+                            :issues_url => auto_complete_issues_path(:project_id => @issue.project, :q => '')
+                        },
+                        :no_label => true %>
+        <%= wikitoolbar_for 'issue_notes', preview_issue_path(:project_id => @project, :issue_id => @issue) %>
 
-      <% if @issue.safe_attribute? 'private_notes' %>
-      <%= f.check_box :private_notes, :no_label => true %> <label for="issue_private_notes"><%= l(:field_private_notes) %></label>
-      <% end %>
+        <% if @issue.safe_attribute? 'private_notes' %>
+          <%= f.check_box :private_notes, :no_label => true %>
+          <label for="issue_private_notes"><%= l(:field_private_notes) %></label>
+        <% end %>
 
-      <%= call_hook(:view_issues_edit_notes_bottom, { :issue => @issue, :notes => @notes, :form => f }) %>
+        <%= call_hook(:view_issues_edit_notes_bottom, {:issue => @issue, :notes => @notes, :form => f}) %>
       </fieldset>
 
-      <fieldset><legend><%= l(:label_attachment_plural) %></legend>
+      <fieldset>
+        <legend><%= l(:label_attachment_plural) %></legend>
         <% if @issue.attachments.any? && @issue.safe_attribute?('deleted_attachment_ids') %>
-        <div class="contextual"><%= link_to l(:label_edit_attachments), '#', :onclick => "$('#existing-attachments').toggle(); return false;" %></div>
-        <div id="existing-attachments" style="<%= @issue.deleted_attachment_ids.blank? ? 'display:none;' : '' %>">
-          <% @issue.attachments.each do |attachment| %>
+          <div class="contextual"><%= link_to l(:label_edit_attachments), '#', :onclick => "$('#existing-attachments').toggle(); return false;" %></div>
+          <div id="existing-attachments" style="<%= @issue.deleted_attachment_ids.blank? ? 'display:none;' : '' %>">
+            <% @issue.attachments.each do |attachment| %>
           <span class="existing-attachment">
             <%= text_field_tag '', attachment.filename, :class => "icon icon-attachment filename", :disabled => true %>
             <label>
@@ -58,9 +63,9 @@
                                 :id => nil, :class => "deleted_attachment" %> <%= l(:button_delete) %>
             </label>
           </span>
-          <% end %>
-          <hr />
-        </div>
+            <% end %>
+            <hr/>
+          </div>
         <% end %>
 
         <div id="new-attachments" style="display:inline-block;">
@@ -68,15 +73,183 @@
         </div>
       </fieldset>
     <% end %>
+  </div>
+
+  <%# if User.current.allowed_to?(:project_process, @project) %>
+  <p class="issue_process"></p>
+  <div class="issues box" id="projectprocessType" style="display: none;padding-bottom: 40px;padding-top: 20px">
+    <h3 class="icon icon-projects">Project process</h3>
+    <!--      Process type -->
+    <div class="ui dropdown selection processtype">
+      <div class="default text"></div>
+      <i class="dropdown icon"></i>
     </div>
+    <!--      Department list -->
+    <div class="ui dropdown selection department">
+      <div class="default text">Select Department</div>
+      <i class="dropdown icon"></i>
+    </div>
+    <!--      Process list -->
+    <div class="ui dropdown top search selection processlist">
+      <div class="default text">Select Process</div>
+      <i class="dropdown icon"></i>
+    </div>
+    <button id="start-process" type="button" class="ui button">Start Process</button>
+  </div>
+  <%# end %>
 
-    <%= f.hidden_field :lock_version %>
-    <%= hidden_field_tag 'last_journal_id', params[:last_journal_id] || @issue.last_journal_id %>
-    <%= submit_tag l(:button_submit) %>
-    <%= link_to l(:button_cancel), issue_path(id: @issue.id), :onclick => params[:action] == 'show' ? "$('#update').hide(); return false;" : '' %>
+  <%= f.hidden_field :lock_version %>
+  <%= hidden_field_tag 'last_journal_id', params[:last_journal_id] || @issue.last_journal_id %>
+  <%= submit_tag l(:button_submit) %>
+  <%= link_to l(:button_cancel), issue_path(id: @issue.id), :onclick => params[:action] == 'show' ? "$('#update').hide(); return false;" : '' %>
 
-    <%= hidden_field_tag 'prev_issue_id', @prev_issue_id if @prev_issue_id %>
-    <%= hidden_field_tag 'next_issue_id', @next_issue_id if @next_issue_id %>
-    <%= hidden_field_tag 'issue_position', @issue_position if @issue_position %>
-    <%= hidden_field_tag 'issue_count', @issue_count if @issue_count %>
+  <%= hidden_field_tag 'prev_issue_id', @prev_issue_id if @prev_issue_id %>
+  <%= hidden_field_tag 'next_issue_id', @next_issue_id if @next_issue_id %>
+  <%= hidden_field_tag 'issue_position', @issue_position if @issue_position %>
+  <%= hidden_field_tag 'issue_count', @issue_count if @issue_count %>
+<% end %>
+
+
+<%= javascript_tag do %>
+  let base_url = 'http://localhost:9001';
+  $(document).ready(function() {
+  var issueId = $('#content h2').text();
+  issueId = issueId.substring(issueId.lastIndexOf("#") + 1);
+  $.ajax({
+  url: base_url+'/redmine-jbpm-intergration/api/v1/process-container/status?key=25304089a591cf457f3a6d1073e405d980133d94&issueId=' + issueId,
+  type: 'GET',
+  success: function(data) {
+  if(data.data == 2){
+  var projectId = $('#issue_project_id').val();
+  $("#projectprocessType").show();
+  getProcessType();
+  }
+  },
+  error: function(error) {
+  console.log(error);
+  }
+  });
+
+  //My function
+  function getProcessType(successCallback){
+  $.ajax({
+  url: base_url+`/redmine-jbpm-intergration/api/v1/process-type/list`,
+  type: 'GET',
+  success: function(data) {
+  var obj = JSON.parse(JSON.stringify(data.data));
+  var listProcesstype=[]
+  obj.forEach(function(element) {
+  listProcesstype.push({name:element.name,value:element.id})
+  });
+  $('.ui.dropdown.processtype').dropdown({
+  values: listProcesstype,
+  direction:'upward',
+  placeholder: 'Process type',
+  onChange(value, text, $choice){
+  if(value!=undefined) getDepartmentByProcessType(value);
+  $('.ui.dropdown.processlist').dropdown('clear')
+  $('.ui.dropdown.processlist').dropdown('setup menu',[])
+  }
+  })
+  },
+  error: function(error) {
+  console.log(error);
+  }
+
+  });
+  }
+  function getDepartmentByProcessType(typeID){
+  if(typeID=== undefined || typeID===null || typeID==='') return;
+  $.ajax({
+  url: base_url+`/redmine-jbpm-intergration/api/v1/process-container/listByLoaiQuyTrinhId/${typeID}`,
+  type: 'GET',
+  success: function(data) {
+  var obj = JSON.parse(JSON.stringify(data.data));
+  var listDepartment=[]
+  obj.forEach(function(element) {
+  listDepartment.push({name:element.name,value:element.id})
+  });
+  $('.ui.dropdown.department').dropdown({
+  values: listDepartment,
+  direction:'upward',
+  placeholder: 'Select department',
+  onChange(value, text, $choice){
+  getProcessByDepartment(value)
+  }
+  })
+  },
+  error: function(error) {
+  console.log(error);
+  }
+  });
+  }
+
+
+  function getProcessByDepartment(departmentID){
+  if(departmentID=== undefined || departmentID===null || departmentID==='') return;
+  let type = $('.ui.dropdown.processtype').dropdown('get value');
+  $.ajax({
+  url: base_url+`/redmine-jbpm-intergration/api/v1/process-container/listByDepartment`,
+  type: 'GET',
+  data: {type: type,departmentid:departmentID},
+  success: function(data) {
+  var obj = JSON.parse(JSON.stringify(data.data));
+  var listProcess=[]
+  console.log(obj)
+  obj.forEach(function(element) {
+  listProcess.push({name:element.quyTrinh.name,value:element.processDefinition})
+  });
+  $('.ui.dropdown.processlist').dropdown({
+  values: listProcess,
+  placeholder: 'Select Process',
+  direction:'upward',
+  fullTextSearch:'exact',
+  onChange(value, text, $choice){
+  console.log(value)
+  console.log(text)
+  }
+  })
+  },
+  error: function(error) {
+  console.log(error);
+  }
+  });
+  }
+  });
+
+  $('#start-process').click(function(){
+  let processdefintionID= $('.ui.dropdown.processlist').dropdown('get value')
+  if(processdefintionID=='' || processdefintionID == null){
+  alert('Please select process');
+  return;
+  }
+
+  var data = {
+  projectCode: "<%= @project.identifier %>",
+  processDefinitionId: processdefintionID,
+  issueId: $('#content h2').text().substring($('#content h2').text().lastIndexOf("#") + 1),
+  type: 1,
+  username: $("#loggedas").children().text()
+  };
+  console.log(data)
+
+  $.ajax({
+  url: base_url+'/redmine-jbpm-intergration/api/v1/jbpm/process/start?key=25304089a591cf457f3a6d1073e405d980133d94',
+  type: 'POST',
+  data: JSON.stringify(data),
+  contentType: "application/json; charset=utf-8",
+  success: function(data) {
+  if(data.code==1){
+  console.log('Start process successfully.');
+  alert("Start quy trình thành công")
+  location.reload();
+  }
+  },
+  error: function(error) {
+  console.log(error);
+  }
+  });
+  });
+
+
 <% end %>
