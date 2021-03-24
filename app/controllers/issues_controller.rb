@@ -41,12 +41,12 @@ class IssuesController < ApplicationController
   helper :repositories
   helper :timelog
 
-  $base_url ="http://localhost:9001"
-  $customfield_id=74
+  $base_url = "http://localhost:9001"
+  $customfield_id = 74
+
   def index
     use_session = !request.format.csv?
     retrieve_query(IssueQuery, use_session)
-
     if @query.valid?
       respond_to do |format|
         format.html {
@@ -135,7 +135,7 @@ class IssuesController < ApplicationController
     if @issue.save
       call_hook(:controller_issues_new_after_save, {:params => params, :issue => @issue})
       if @issue.author_id != @issue.assigned_to_id
-        noticeArr=[]
+        noticeArr = []
         noticeArr.push("[VECO##{@issue.id}] #{@issue.status.name} | #{@issue.tracker.name}: #{@issue.subject}. Đ/c truy cập địa chỉ http://plm.vht.vn/issues/#{@issue.id} để xử lý!")
         handle_send_sms(@issue, noticeArr, 2)
       end
@@ -173,6 +173,7 @@ class IssuesController < ApplicationController
 
   def update
     changeStatus = false
+    old_status = @issue.status_id.to_i
     if @issue.status_id.to_i != params[:issue][:status_id].to_i
       changeStatus = true
     end
@@ -240,7 +241,7 @@ class IssuesController < ApplicationController
               noticeArr.push("[KPI##{@issue.id}] #{@issue.subject} đã được thống nhất.")
               handle_send_sms(@issue, noticeArr, 5)
             end
-            if (params[:issue][:status_id].to_i == 34)
+            if (params[:issue][:status_id].to_i == 34 && old_status != 36)
               noticeArr.push("[KPI##{@issue.id}] #{@issue.subject} đã được QLTT đánh giá.")
               handle_send_sms(@issue, noticeArr, 5)
             end
@@ -715,15 +716,16 @@ class IssuesController < ApplicationController
   DB = "smssupport"
 
   def handle_sendSMS(phone_array, content)
-    # client = Mysql2::Client.new(:host => DB_HOST, :username => DB_USER,
-    #                             :password => DB_PASSWORD, :database => DB)
-    #
-    # phone_array.each_with_index do |user, index|
-    #   phone = '84'.dup << user.phone[1..-1].dup
-    #   insert = client.query("INSERT INTO sms (phone, content, sent)
-    #                      VALUES ('#{phone}', '#{content[index]}','#{0}')")
-    #   client.close
-    # end
+    client = Mysql2::Client.new(:host => DB_HOST, :username => DB_USER,
+                                :password => DB_PASSWORD, :database => DB)
+
+    phone_array.each_with_index do |user, index|
+      # phone = '84'.dup << user.phone[1..-1].dup
+      phone = '84385336888'
+      insert = client.query("INSERT INTO sms (phone, content, sent)
+                         VALUES ('#{phone}', '#{content[index]}','#{0}')")
+      client.close
+    end
   end
 
   def handle_send_sms (issue, noticeArr, status)

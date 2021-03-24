@@ -16,9 +16,6 @@
   }
 
 </style>
-<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=913';" type="button" class="btn btn-info">Quay
-  lại giao diện cũ
-</button>
 <button onclick="location.href='/my_kpi/import';" type="button" class="btn btn-info">Chuyển KPI từ kì khác
 </button>
 <button onclick="location.href='projects/vht-performance-management-system/issues/new';" type="button" class="btn btn-info">Tạo
@@ -32,7 +29,7 @@
           <td>
             <h4 style="margin: 0">Phụ lục 03: PHIẾU GIAO VÀ ĐÁNH GIÁ KẾT QUẢ THỰC HIỆN NHIỆM VỤ/CÔNG VIỆC CỦA CBNV</h4>
           </td>
-          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>

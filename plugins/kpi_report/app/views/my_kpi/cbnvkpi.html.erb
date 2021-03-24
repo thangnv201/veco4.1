@@ -32,9 +32,7 @@
   }
 
 </style>
-<button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
-  lại giao diện cũ
-</button>
+
 <div>
   <div>
     <%= form_tag({:controller => 'my_kpi', :action => 'cbnvkpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
@@ -43,7 +41,7 @@
           <td>
             <h4 style="margin: 0">PHIẾU GIAO</h4>
           </td>
-          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
           <% if !@cbnv.nil? %>
             <td><%= select_tag "cbnv", options_for_select(@cbnv.map {
                 |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id, {:class => percent_cbnv(obj.assigned_to_id, $kidanhgia)}] },
@@ -121,7 +119,7 @@
                 <div style="margin-bottom: 10px"><a href="#"> <%= kpi.status.name %></a><br>
                 </div>
                 <div style="margin-bottom: 10px"><strong>Người giao: </strong>
-                  <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.assigned_to.login %></a><br>
+                  <a href="#" id=<%= kpi.id.to_s + "_author" %>><%= kpi.author.login %></a><br>
                 </div>
 
               </td>
@@ -185,59 +183,64 @@
               <td>
                 <a href="#" id=<%= kpi.id.to_s + "_qltt_point" %>> <%= issue_customfield_value(kpi, 141) %></a>
               </td>
-              <% if kpi.status.id == 29 %>
-                <td>
-                  <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" onclick="reset_row(this)" disabled type="button" class="reset-row btn btn-secondary">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="thongnhatKPI(this)" data-tracker="<%= kpi.tracker_id %>">
-                    Thống Nhất
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="huykpi btn btn-danger" data-toggle="modal" data-target="#huyModal"
-                          data-whatever="<%= kpi.id %>">Hủy KPI
-                  </button>
-                </td>
-              <% elsif kpi.status.id == 32 %>
-                <td>
-                  <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-secondary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="reset-row btn btn-secondary">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="huykpi btn btn-danger" data-toggle="modal" data-target="#huyModal"
-                          data-whatever="<%= kpi.id %>">Hủy KPI
-                  </button>
-                </td>
-              <% elsif kpi.status.id == 35 %>
-                <td>
-                  <button style="width: 100px" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự thảo
-                  </button>
-                </td>
-              <% elsif kpi.status.id == 33 %>
-                <td>
-                  <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button onclick="reset_row(this)" disabled style="width: 100px;margin-top: 10px" type="button" class="reset-row btn btn-secondary">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                  <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
-                    Đánh giá
-                  </button>
-                </td>
-              <% else %>
-                <td>
-                  <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </button>
-                  <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="reset-row btn btn-secondary">
-                    <i class="glyphicon glyphicon-remove"></i>
-                  </button>
-                </td>
+              <% unless kpi.author.id != User.current.id %>
+
+                <% if kpi.status.id == 29 %>
+                  <td>
+                    <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
+                      <i class="glyphicon glyphicon-ok"></i>
+                    </button>
+                    <button style="width: 100px;margin-top: 10px" onclick="reset_row(this)" disabled type="button" class="reset-row btn btn-secondary">
+                      <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                    <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="thongnhatKPI(this)" data-tracker="<%= kpi.tracker_id %>">
+                      Thống Nhất
+                    </button>
+                    <button style="width: 100px;margin-top: 10px" type="button" class="huykpi btn btn-danger" data-toggle="modal" data-target="#huyModal"
+                            data-whatever="<%= kpi.id %>">Hủy KPI
+                    </button>
+                  </td>
+                <% elsif kpi.status.id == 32 %>
+                  <td>
+                    <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn btn-secondary">
+                      <i class="glyphicon glyphicon-ok"></i>
+                    </button>
+                    <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="reset-row btn btn-secondary">
+                      <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                    <button style="width: 100px;margin-top: 10px" type="button" class="huykpi btn btn-danger" data-toggle="modal" data-target="#huyModal"
+                            data-whatever="<%= kpi.id %>">Hủy KPI
+                    </button>
+                  </td>
+                <% elsif kpi.status.id == 35 %>
+                  <td>
+                    <button style="width: 100px" type="button" onclick="duthao(<%=kpi.id %>)" class="btn btn-info">Dự
+                      thảo
+                    </button>
+                  </td>
+                <% elsif kpi.status.id == 33 %>
+                  <td>
+                    <button style="width: 100px" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
+                      <i class="glyphicon glyphicon-ok"></i>
+                    </button>
+                    <button onclick="reset_row(this)" disabled style="width: 100px;margin-top: 10px" type="button" class="reset-row btn btn-secondary">
+                      <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                    <button style="width: 100px;margin-top: 10px" type="button" class="btn btn-primary" onclick="tudanhgiaClick(this)" data-tracker="<%= kpi.tracker_id %>">
+                      Đánh giá
+                    </button>
+                  </td>
+                <% else %>
+                  <td>
+                    <button style="width: 100px;" onclick="saveChangeKPI(this)" disabled type="button" class="thaydoi btn btn-secondary">
+                      <i class="glyphicon glyphicon-ok"></i>
+                    </button>
+                    <button onclick="reset_row(this)" style="width: 100px;margin-top: 10px" disabled type="button" class="reset-row btn btn-secondary">
+                      <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                  </td>
+                <% end %>
+
               <% end %>
             </tr>
           <% end %>
@@ -887,9 +890,9 @@
         }).done(function () {
             $(btn).hide()
             $($($('#' + id + ' td').first()).find('a').eq(2)).text('1. Thống nhất (Signed!)')
-            let btn_save =$(btn).parent().find('.thaydoi');
+            let btn_save = $(btn).parent().find('.thaydoi');
             let btn_reset = $(btn).parent().find('.reset-row');
-            disable_btn(btn_save,btn_reset)
+            disable_btn(btn_save, btn_reset)
             savetable(btn);
         }).fail(function (msg) {
         }).always(function (msg) {
@@ -992,7 +995,7 @@
                                                 type: 'select',
                                                 title: 'Đơn vị đo',
                                                 placement: 'right',
-                                                showbuttons:false,
+                                                showbuttons: false,
                                                 value: donvido_selected,
                                                 source: donvido_source,
                                                 success: function (response, newValue) {
@@ -1183,7 +1186,7 @@
                                 type: 'select',
                                 title: 'Đơn vị đo',
                                 placement: 'right',
-                                showbuttons:false,
+                                showbuttons: false,
                                 value: donvido_selected,
                                 source: donvido_source,
                                 success: function (response, newValue) {
@@ -1421,7 +1424,7 @@
                         placement: 'left',
                         value: qltt_point_selected,
                         source: qltt_point_source,
-                        showbuttons:false,
+                        showbuttons: false,
                         unsavedclass: null,
                         success: function (response, newValue) {
                             buildData(id)
@@ -1500,7 +1503,7 @@
                     $($($('#' + id + ' td').first()).find('a').eq(0)).css("background-color", "#b22222");
                     $($('#' + id + ' td').last()).empty();
                     $($('#' + id + ' td').last()).append('<button style="width: 100px" type="button" onclick="duthao(' + id + ')" class="btn btn-info">Dự thảo</button>')
-                    savetable($('#'+id).find('button'))
+                    savetable($('#' + id).find('button'))
                 }).fail(function (msg) {
                     let a = JSON.parse(msg.responseText)
                     console.log(a)

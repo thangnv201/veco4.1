@@ -33,9 +33,7 @@
 
 </style>
 <% if @member.length > 0 %>
-  <button onclick="location.href='/projects/vht-performance-management-system/issues?query_id=921';" type="button" class="btn btn-info">Quay
-    lại giao diện cũ
-  </button>
+
   <div>
     <div>
       <%= form_tag({:controller => 'my_kpi', :action => 'pa_cbnv_kpi'}, :method => :get, :id => "query_form", style: "display:flex;padding:10px") do %>
@@ -47,7 +45,7 @@
             <td>
               <strong> <%= select_tag "user", options_for_select(@member.map { |obj| [issue_customfield_value(User.find(obj), 56), obj] }, @user_ql.id), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %>
               </strong></td>
-            <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
+            <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;' %></td>
             <% if !@cbnv.nil? %>
               <td><%= select_tag "cbnv", options_for_select(@cbnv.map {
                   |obj| [User.find(obj.assigned_to_id).login, obj.assigned_to_id, {:class => percent_cbnv(obj.assigned_to_id, $kidanhgia)}] },

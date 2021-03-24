@@ -171,7 +171,7 @@
             <h4 style="margin: 0">Phụ lục 04A: Tổng hợp kết quả đánh giá mức độ hoàn thành nhiệm vụ/công việc của CBNV
               tại Cơ quan/ Đơn vị </h4>
           </td>
-          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
+          <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}, $kidanhgia), :onchange => 'this.form.submit()', :style => 'font-weight: bold;border: 1px #2980b9 solid' %></td>
         </tr>
       </table>
     <% end %>

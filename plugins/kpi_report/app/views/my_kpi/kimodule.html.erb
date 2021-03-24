@@ -80,13 +80,33 @@
 <% if @permission_troly %>
   <h4>Vai trò: Trợ lý</h4>
   <div style="display: flex">
-    <div id="duthao" class="box">Dự thảo</div>
-    <div id="thongnhat" class="box"> Thống nhất</div>
-    <div class="box">Thực hiện</div>
-    <div id="tudanhgia" class="box">Tự đánh giá</div>
-    <div id="qlttdanhgia" class="box">QLTT đánh giá</div>
-    <div id="chamki" class="box">Chấm KI</div>
-    <div id="chotki" class="box">Chốt KI</div>
+    <a href="/pa_kpi" target="_blank">
+      <div id="pa_duthao" class="box">Dự thảo</div>
+    </a>
+    <div id="pa_thongnhat" class="box-deactive"> Thống nhất</div>
+    <div style="visibility: hidden" class="box">Thực hiện</div>
+    <a href="/pa_kpi" target="_blank">
+      <div id="pa_tudanhgia" class="box">Tự đánh giá</div>
+    </a>
+    <div id="pa_qlttdanhgia" class="box-deactive">QLTT đánh giá</div>
+    <div style="visibility: hidden" id="chamki" class="box">Chấm KI</div>
+    <div style="visibility: hidden" id="chotki" class="box">Chốt KI</div>
+  </div>
+  <h4>Vai trò: Trợ lý đánh giá KPI</h4>
+  <div style="display: flex">
+    <div style="visibility: hidden" id="pa_duthao" class="box">Dự thảo</div>
+    <a href="/pa_cbnv" target="_blank">
+      <div id="pa_cbnv_thongnhat" class="box"> Thống nhất</div>
+    </a>
+
+    <div style="visibility: hidden" class="box">Thực hiện</div>
+
+    <div style="visibility: hidden" id="pa_tudanhgia" class="box">Tự đánh giá</div>
+    <a href="/pa_cbnv" target="_blank">
+      <div id="pa_cbnv_qlttdanhgia" class="box">QLTT đánh giá</div>
+    </a>
+    <div style="visibility: hidden" id="chamki" class="box">Chấm KI</div>
+    <div style="visibility: hidden" id="chotki" class="box">Chốt KI</div>
   </div>
 <% end %>
 <% if @permission_tcld %>
@@ -94,6 +114,9 @@
   <div style="display: flex">
     <a href="/ki_ranking/tcld2" target="_blank">
       <div class="box"> Duyệt KI</div>
+    </a>
+    <a href="/kpi_people_report" target="_blank">
+      <div class="box"> Thống kê KPI(s)</div>
     </a>
   </div>
 <% end %>
@@ -187,5 +210,27 @@
         }).always(function (msg) {
             console.log('ALWAYS');
         });
+
+        $.ajax({
+            type: 'GET',
+            url: 'http://' + $(location).attr('host') + '/pa_ki_module_data.json?key=<%=User.current.api_key%>&user=<%=User.current.id %>&vid=' + $('#kidanhgia_to').val(),
+            contentType: 'application/json',
+        }).done(function (response) {
+            console.log(response)
+            $('#pa_duthao').text("Dự thảo: " + response.duthao.count + " KPI(s)")
+            $('#pa_thongnhat').text("Thống nhất: " + response.thongnhat.count + "/" + response.duthao.count + " KPI(s)")
+            $('#pa_thongnhat').removeClass('not done process waiting').addClass(response.thongnhat.status)
+            $('#pa_tudanhgia').text("Tự đánh giá: " + response.tudanhgia.count + "/" + response.duthao.count + " KPI(s)")
+            $('#pa_tudanhgia').removeClass('not done process waiting').addClass(response.tudanhgia.status)
+            $('#pa_qlttdanhgia').text("QLTT đánh giá: " + response.qlttdanhgia.count + "/" + response.duthao.count + " KPI(s)")
+            $('#pa_qlttdanhgia').removeClass('not done process waiting').addClass(response.qlttdanhgia.status)
+            $('#pa_cbnv_thongnhat').text('Thống nhất: ' + response.ql_thongnhat.count + ' KPI(s)')
+            $('#pa_cbnv_thongnhat').removeClass('not done process waiting').addClass(response.ql_thongnhat.status)
+            $('#pa_cbnv_qlttdanhgia').text('Đánh giá: ' + response.ql_danhgia.count + ' KPI(s)')
+            $('#pa_cbnv_qlttdanhgia').removeClass('not done process waiting').addClass(response.ql_danhgia.status)
+
+        }).fail(function (msg) {
+        })
+
     }
 </script>

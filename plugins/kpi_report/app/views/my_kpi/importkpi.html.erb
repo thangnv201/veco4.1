@@ -107,18 +107,20 @@
         let kidanhgia_from = $('#kidanhgia_from').find(":selected").val();
         let kidanhgia_to = $('#kidanhgia_to').find(":selected").val();
         let url = 'http://' + $(location).attr('host') + '/issues.json?key=25304089a591cf457f3a6d1073e405d980133d94'
-            + '&project_id=1072' + '&assigned_to_id=' + user + '&fixed_version_id=' + kidanhgia_from + '&status_id=*&tracker_id=39,40,41';
+            + '&project_id=1072' + '&assigned_to_id=' + user + '&fixed_version_id=' + kidanhgia_from + '&status_id=*&tracker_id=39|40|41';
         $.ajax({
             type: 'GET',
             url: url,
             contentType: 'application/json',
         }).done(function (response) {
-            console.log(response)
             buidldTable(response.issues)
         }).fail(function (msg) {
         }).always(function (msg) {
             console.log('ALWAYS');
         });
+    }
+    function getissue(tracker){
+
     }
 
     function buidldTable(issues) {

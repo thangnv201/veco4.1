@@ -517,7 +517,7 @@ class CnbvKpiController < ApplicationController
         @userSMS = VecoPhone.where(name: User.find(id).login)
         ki = PeopleKi.where(version_id: params[:version_id], user_id: id).first
         content = 'Thông báo KI trong kì ' + Version.find(params[:version_id].to_i).name + ': ' + ki.ki + '. Nếu thông tin chưa chính xác, đồng chí vui lòng liên hệ quản lý trực tiếp.'
-        handle_sendSMS(@userSMS, content)
+        # handle_sendSMS(@userSMS, content)
       end
     end
     render json: @issues

@@ -7,9 +7,7 @@
     <table>
       <tr>
         <td>Kì KI</td>
-        <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.map { |obj| [obj.name, obj.id] }, $kidanhgia) %></td>
-        <td>Trạng thái</td>
-        <td><%= select_tag "trangthai", options_for_select($trangthai.map { |obj| [obj[1], obj[0]] }, @trangthai) %></td>
+        <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}, $kidanhgia) %></td>
       </tr>
     </table>
     <%= submit_tag "Search", :style => "margin: 10px", :name => nil %>

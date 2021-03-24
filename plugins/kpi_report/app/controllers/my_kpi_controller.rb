@@ -106,7 +106,6 @@ class MyKpiController < ApplicationController
 
   def cbnvkpi
     change_version = false
-
     if params.key?("kidanhgia")
       if $kidanhgia != params["kidanhgia"].to_i
         $kidanhgia = params["kidanhgia"].to_i
@@ -124,7 +123,8 @@ class MyKpiController < ApplicationController
     else
       $cbnv = @cbnv.first.assigned_to_id
     end
-    @kpi = @kpi_open_dinh_luong.where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
+    @kpi = Project.find(1072).issues.where(:fixed_version_id => $kidanhgia).where.not(:tracker_id => 51)
+               .where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
 
     @permission_danhgia = get_main_qltt($cbnv, $kidanhgia) == User.current.id ? true : false
     if PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).length == 0
@@ -285,7 +285,7 @@ group by issues.author_id)   as y"
     # Group.find(1839).user_ids.each do |id_u|
     #   temp(id_u,1010)
     # end
-    @kidanhgia = Project.find(1072).versions.map { |obj| [obj.name, obj.id] }
+    @kidanhgia = Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}
     @kidanhgia_defalt = Project.find(1072).default_version_id
     @member = find_group_member(User.current.id)
     @permission_troly = @member.count > 0 ? true : false
@@ -399,6 +399,61 @@ group by issues.author_id)   as y"
     render json: data
   end
 
+  def kimodule_pa_data
+    user = params["user"].to_i
+    users_id = find_group_member(user)
+    version = params["vid"].to_i
+    issues = Project.find(1072).issues.where(:assigned_to_id => users_id).where.not(:tracker_id => 51)
+                 .where(:fixed_version_id => version).where.not(:status_id => 35)
+    total_kpi = issues.count
+    # ver = Version.find(version)
+    # if ver.name.include? "Quý"
+    #   start_date = (ver.due_date - 4.month).at_beginning_of_month
+    #   due_date = (ver.due_date - 1.month).at_end_of_month
+    # else
+    #   start_date = (ver.due_date - 12.month).at_beginning_of_month
+    #   due_date = (ver.due_date - 1.month).at_end_of_month
+    # end
+    # issues_in_version = Issue.where.not(:tracker_id => [39, 40, 41]).where(:due_date => start_date..due_date).where(:assigned_to_id => users_id).count +
+    #     Issue.where.not(:tracker_id => [39, 40, 41]).where(:due_date => nil).where(:created_on => start_date..due_date).where(:assigned_to_id => users_id).count
+    # issues_open_in_version = Issue.open.where.not(:tracker_id => [39, 40, 41]).where(:due_date => start_date..due_date).where(:assigned_to_id => users_id).count +
+    #     Issue.open.where.not(:tracker_id => [39, 40, 41]).where(:due_date => nil).where(:created_on => start_date..due_date).where(:assigned_to_id => users_id).count
+    thongnhat = issues.where.not(:status_id => 29).count
+    tudanhgia = issues.where.not(:status_id => [29, 32]).count
+    qlttdanhgia = issues.where.not(:status_id => [29, 32, 33]).count
+
+    ql_total = Project.find(1072).issues.where.not(:status_id => 35).where.not(:tracker_id => 51).where(:author_id => users_id).where(:fixed_version_id => version).count
+    ql_thongnhat = Project.find(1072).issues.where.not(:status_id => [29, 35]).where.not(:tracker_id => 51).where(:author_id => users_id).where(:fixed_version_id => version).count
+    ql_danhgia = Project.find(1072).issues.where.not(:status_id => [29, 32, 33, 35]).where.not(:tracker_id => 51).where(:author_id => users_id).where(:fixed_version_id => version).count
+    data = {
+        'duthao': {
+            'count': total_kpi
+        },
+        'thongnhat': {
+            'count': thongnhat,
+            'status': thongnhat == 0 ? 'not' : thongnhat < total_kpi ? 'process' : 'done'
+        },
+        'tudanhgia': {
+            'count': tudanhgia,
+            'status': tudanhgia == 0 ? 'not' : tudanhgia < total_kpi ? 'process' : 'done'
+        },
+        'qlttdanhgia': {
+            'count': qlttdanhgia,
+            'status': qlttdanhgia == 0 ? 'not' : qlttdanhgia < total_kpi ? 'process' : 'done'
+        },
+        'ql_thongnhat': {
+            'total': ql_total,
+            'count': ql_thongnhat.to_s + '/' + ql_total.to_s,
+            'status': ql_thongnhat == 0 ? 'not' : ql_thongnhat < ql_total ? 'process' : 'done'
+        },
+        'ql_danhgia': {
+            'count': ql_danhgia.to_s + '/' + ql_total.to_s,
+            'status': ql_danhgia == 0 ? 'not' : ql_danhgia < ql_total ? 'process' : 'done'
+        }
+    }
+    render json: data
+  end
+
   def pa_kpi
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
@@ -469,7 +524,7 @@ group by issues.author_id)   as y"
 
   def find_group_member(user_id)
     member = []
-    Gmanager.where(:id_owner => User.current.id).each do |group|
+    Gmanager.where(:id_owner => user_id).each do |group|
       begin
         tmp = Group.find(group.id_group)
       rescue ActiveRecord::RecordNotFound => e
