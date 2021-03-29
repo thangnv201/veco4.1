@@ -7,74 +7,97 @@
     <table>
       <tr>
         <td>Kì KI</td>
-        <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status =>"open").map { |obj| [obj.name, obj.id]}, $kidanhgia) %></td>
+        <td><%= select_tag "kidanhgia", options_for_select(Project.find(1072).versions.where(:status => "open").map { |obj| [obj.name, obj.id] }, $kidanhgia) %></td>
       </tr>
     </table>
     <%= submit_tag "Search", :style => "margin: 10px", :name => nil %>
     </p>
   <% end %>
 </div>
-<div style="margin-left: 10%" class="ui styled accordion">
-  <div class="title">
-    <i class="dropdown icon"></i>
-    Tổng công ty công nghiệp công nghệ cao Viettel
-    (<%= $member.sum { |k, v| v.sum { |k1, v1| v1.count { |x| x[2] > 99 } } } %> /
-    <%= $member.sum { |k, v| v.sum { |k1, v1| v1.count } } %> )
+
+<div style="display: flex">
+  <div class="ui styled accordion">
+    <% @department.each do |dep| %>
+      <div class="title" onclick="getmember(<%=dep.id %>)">
+        <i class="dropdown icon"></i>
+        <%= dep.name %> ( <%= kpi_department(dep.id, $kidanhgia) %>)
+      </div>
+      <div id="<%= dep.id %>" class="content">
+      </div>
+    <% end %>
   </div>
-  <div class="content">
-    <div class="accordion">
-      <% $member.each do |k, v| %>
-        <div class="title">
-          <i class="dropdown icon"></i>
+  <table style="width: 30%;border: 1px solid;text-align: left;margin-left: 10%" class="table" id="member">
+    <thead>
+    <tr>
+      <th scope="col">Họ và tên</th>
+      <th scope="col">Số lượng KPI</th>
+      <th scope="col">Tỉ trọng</th>
+    </tr>
+    </thead>
+    <tbody>
 
-          <%= k %> (<%= v.sum { |k1, v1| v1.count { |x| x[2] > 99 } } %>/<%= v.sum { |k1, v1| v1.count } %>)
-        </div>
-        <div class="content">
-          <div class="accordion">
-            <% v.each do |k1, v1| %>
-              <div class="title">
-                <i class="dropdown icon"></i>
-                <%= k1 %> (<%= v1.count { |x| x[2] > 99 } %>/<%= v1.count %>)
-              </div>
-              <div class="content">
-                <% v1.each do |item| %>
-                  <div class="ui middle aligned selection list">
-                    <% if item[2] != 100 %>
-                      <div class="item negative">
-                        <div style="padding: 0" class="content">
-                          <div style="background: #FFF6F6 !important;color: #9F3A38 !important;" class="header">
-                            <%= item[1] %> ( <%= User.find(item.first).firstname %> )
-                            : <%= item[3] %> KPI(s) / (<%= item[2] %>%)
-                          </div>
-                        </div>
-                      </div>
-                    <% else %>
-                      <div class="item positive">
-                        <div style="padding: 0" class="content">
-                          <div style="background: #FCFFF5 !important;color: #2C662D !important;" class="header">
-                            <%= item[1] %> ( <%= User.find(item.first).firstname %> )
-                            : <%= item[3] %> KPI(s) / (<%= item[2] %>%)
-                          </div>
-                        </div>
-                      </div>
-                    <% end %>
+    </tbody>
 
-                  </div>
-
-                <% end %>
-              </div>
-            <% end %>
-
-
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
+  </table>
 </div>
+
+
 <button onclick="window.open('/kpi_people_report/exports')">Export Excel</button>
 <script>
     $('.ui.accordion')
         .accordion()
     ;
+
+</script>
+<script>
+    <% @department.each do |dep| %>
+    getchild($('#' +<%=dep.id %>), <%=dep.id %>)
+    <% end %>
+
+    function getchild(div, id) {
+        let url = 'http://' + $(location).attr('host') + '/child_dep?dep_id=' + id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                if (response.length == 0) return;
+                let accordion = $('<div/>').addClass('accordion')
+                response.forEach(element => {
+                    let title = $('<div/>').addClass('title').attr('onclick', 'getmember(' + element[0] + ')')
+                    let dropdown = $('<i/>').addClass('dropdown icon')
+                    title.text(element[1] + ' (' + element[2] + ') ')
+                    title.append(dropdown)
+                    let content = $('<div/>').addClass('content').attr('id', element[0])
+                    getchild(content, element[0])
+                    accordion.append(title)
+                    accordion.append(content)
+                })
+                div.append(accordion)
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+    function getmember(id) {
+        let url = 'http://' + $(location).attr('host') + '/get_member?dep_id=' + id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                $("#member > tbody").empty();
+                response.forEach(element => {
+                    let tr = $('<tr/>')
+                    if(element[3]!=100) tr.css('color','red')
+                    let name = $('<td/>').text(element[1])
+                    let kpi = $('<td/>').text(element[2])
+                    let titrong = $('<td/>').text(element[3] +'%')
+                    tr.append(name, kpi, titrong)
+                    $('#member tbody').append(tr)
+                })
+            },
+            error: function (error) {
+            }
+        });
+    }
 </script>

@@ -1,24 +1,42 @@
 class ReportpeopleController < ApplicationController
   include ReportpeopleHelper
   self.main_menu = false
-  $kidanhgia = Project.find(1072).versions.first.id
+  $kidanhgia = Project.find(1072).default_version.id
   $trangthai = [[1, 'Tạo KPI'], [2, 'Đánh giá KPI'], [3, 'Đánh giá KI']]
   $member
+
   def index
     if params.key?("kidanhgia")
       $kidanhgia = params["kidanhgia"].to_i
     else
-      $kidanhgia = Project.find(1072).versions.first.id
+      $kidanhgia = Project.find(1072).default_version.id
     end
-    if params.key?("trangthai")
-      @trangthai = params["trangthai"].to_i
-    else
-      @trangthai = 1
-    end
-    $member = Group.find(1839).users.where(:status => 1).pluck(:id, :login)
-                  .map { |id, login| [id, login] + tong_ty_trong(id, $kidanhgia) }
-                  .group_by { |a| custom_field_user(a.first, 53) }
-                  .map { |k, v| [k, v.group_by { |b| custom_field_user(b.first, 54) }] }
+    @department = Department.where(:parent_id => nil)
+    # if params.key?("trangthai")
+    #   @trangthai = params["trangthai"].to_i
+    # else
+    #   @trangthai = 1
+    # end
+    # $member = Group.find(1839).users.where(:status => 1).pluck(:id, :login)
+    #               .map { |id, login| [id, login] + tong_ty_trong(id, $kidanhgia) }
+    #               .group_by { |a| custom_field_user(a.first, 53) }
+    #               .map { |k, v| [k, v.group_by { |b| custom_field_user(b.first, 54) }] }
+    # $member1 = User.where(:status => 1).pluck(:id, :login).map { |id, login| [id, login]}.group_by { |a| Person.find(:user_id => a.first).department}
+  end
+
+  def get_child_depart
+    dep_id = params["dep_id"].to_i
+    data = Department.where(:parent_id => dep_id).pluck(:id,:name)
+        .map{|a| a<< kpi_department(a[0],$kidanhgia)}
+
+    render json: data
+  end
+
+  def get_member
+    dep_id = params["dep_id"].to_i
+    data = PeopleInformation.joins(:person).where(:department_id => dep_id).where(users:{:status=>1})
+                   .map {|a| [a.person.id,a.person.login,count_kpi(a.person.id,$kidanhgia),check_done_kpi(a.person.id,$kidanhgia)]}
+    render json: data
   end
 
 
@@ -28,7 +46,7 @@ class ReportpeopleController < ApplicationController
     sum = CustomValue.where(:customized_type => "Issue").where(:custom_field_id => 139).where(:customized_id => ids)
               .pluck(:value).map { |x| x.to_i }.sum
     count = ids.length
-    return [sum, count,issue_customfield_value(User.find(user_id),55)]
+    return [sum, count, issue_customfield_value(User.find(user_id), 55)]
   end
 
   def diem_danh_gia(user_id, version_id)
