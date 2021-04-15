@@ -45,14 +45,16 @@
 <%= select_tag "kidanhgia_to", options_for_select(@kidanhgia, $kidanhgia), :style => 'font-weight: bold;border: 1px #2980b9 solid', :onchange => 'onchageKidanhgia()' %>
 <h4>Vai trò: CBNV</h4>
 <div style="display: flex">
-  <a href="my_kpi" target="_blank">
+  <a href="/my_kpi" target="_blank">
     <div id="duthao" class="box waiting">Dự thảo</div>
   </a>
   <div id="thongnhat" class="box-deactive waiting"> Thống nhất</div>
   <a href="/users/<%= User.current.id %>" target="_blank">
     <div id="thuchien" class="box waiting">Thực hiện</div>
   </a>
-  <div id="tudanhgia" class="box waiting">Tự đánh giá</div>
+  <a href="/my_kpi" target="_blank">
+    <div id="tudanhgia" class="box waiting">Tự đánh giá</div>
+  </a>
   <div id="qlttdanhgia" class="box-deactive waiting">QLTT đánh giá</div>
   <div id="chamki" class="box-deactive waiting">Chấm KI</div>
   <div id="chotki" class="box-deactive waiting">Chốt KI</div>
@@ -140,6 +142,7 @@
     }
 
     function onchageKidanhgia() {
+        changeParams()
         let url = 'http://' + $(location).attr('host') + '/ki_module_data.json?key=<%=User.current.api_key%>&user=<%=User.current.id %>&vid=' + $('#kidanhgia_to').val();
         $.ajax({
             type: 'GET',
@@ -232,5 +235,27 @@
         }).fail(function (msg) {
         })
 
+    }
+
+    function changeParams() {
+        $("a").each(function () {
+            let href = $(this).attr('href')
+            console.log(href)
+            if (href===undefined) return true
+            $(this).attr('href',replaceUrlParam(href,'kidanhgia',$('#kidanhgia_to').val()))
+        })
+    }
+
+    function replaceUrlParam(url, paramName, paramValue) {
+        if (paramValue == null || paramValue == "")
+            return url
+                .replace(new RegExp('[?&]' + paramValue + '=[^&#]*(#.*)?$'), '$1')
+                .replace(new RegExp('([?&])' + paramValue + '=[^&]*&'), '$1');
+        url = url.replace(/\?$/, '');
+        var pattern = new RegExp('\\b(' + paramName + '=).*?(&|$)')
+        if (url.search(pattern) >= 0) {
+            return url.replace(pattern, '$1' + paramValue + '$2');
+        }
+        return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue
     }
 </script>

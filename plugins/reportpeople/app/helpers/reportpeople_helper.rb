@@ -43,6 +43,18 @@ module ReportpeopleHelper
     return titrong
 
   end
+  $list_member_dont_have_kpi =[]
+  def count_user_dont_have_kpi(version_id)
+    temp=0
+    $list_member_dont_have_kpi.clear
+    Group.find(1839).users.each do |u|
+      if check_done_kpi(u.id,version_id) <100
+        temp = temp+1
+        $list_member_dont_have_kpi << u.id
+      end
+    end
+    return temp
+  end
 
   def issue_customfield_value(issue, custom_field_id)
     value = issue.custom_field_values.find { |x| x.custom_field.id == custom_field_id }.value

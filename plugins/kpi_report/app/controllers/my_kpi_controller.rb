@@ -16,8 +16,18 @@ class MyKpiController < ApplicationController
       $kidanhgia = Project.find(1072).default_version_id
     end
     flash.delete(:notice)
-    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => User.current.id).where.not(:tracker_id => 51)
-                               .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
+    @kpi_open_dinh_luong = Project.find(1072).issues
+                               .joins("inner join custom_values a on issues.id = a.customized_id")
+                               .joins("inner join custom_values b on issues.id = b.customized_id")
+                               .where(:assigned_to => User.current.id)
+                               .where.not(:tracker_id => 51)
+                               .where(:fixed_version_id => $kidanhgia)
+                               .where("a.custom_field_id=139")
+                               .where("b.custom_field_id=1")
+                               .order("FIELD(status_id,36,34,33,32,29,35)")
+                               .order("case when category_id is null then 1 else 0 end, category_id")
+                               .order("cast(a.value as unsigned)desc")
+                               .order("b.value")
     result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]
@@ -123,8 +133,18 @@ class MyKpiController < ApplicationController
     else
       $cbnv = @cbnv.first.assigned_to_id
     end
-    @kpi = Project.find(1072).issues.where(:fixed_version_id => $kidanhgia).where.not(:tracker_id => 51)
-               .where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
+    @kpi = Project.find(1072).issues
+               .joins("inner join custom_values a on issues.id = a.customized_id")
+               .joins("inner join custom_values b on issues.id = b.customized_id")
+               .where(:assigned_to => $cbnv)
+               .where.not(:tracker_id => 51)
+               .where(:fixed_version_id => $kidanhgia)
+               .where("a.custom_field_id=139")
+               .where("b.custom_field_id=1")
+               .order("FIELD(status_id,36,34,33,32,29,35)")
+               .order("case when category_id is null then 1 else 0 end, category_id")
+               .order("cast(a.value as unsigned)desc")
+               .order("b.value")
 
     @permission_danhgia = get_main_qltt($cbnv, $kidanhgia) == User.current.id ? true : false
     if PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).length == 0
@@ -465,8 +485,18 @@ group by issues.author_id)   as y"
     return unless @member.length > 0
     @user_ql = User.find(@member.first)
     @user_ql = User.find(params["user"].to_i) unless !params.key?("user")
-    @kpi_open_dinh_luong = Project.find(1072).issues.where(:assigned_to => @user_ql.id).where.not(:tracker_id => 51)
-                               .where(:fixed_version_id => $kidanhgia).order("FIELD(status_id,36,34,33,32,29,35)")
+    @kpi_open_dinh_luong = Project.find(1072).issues
+                               .joins("inner join custom_values a on issues.id = a.customized_id")
+                               .joins("inner join custom_values b on issues.id = b.customized_id")
+                               .where(:assigned_to => @user_ql.id)
+                               .where.not(:tracker_id => 51)
+                               .where(:fixed_version_id => $kidanhgia)
+                               .where("a.custom_field_id=139")
+                               .where("b.custom_field_id=1")
+                               .order("FIELD(status_id,36,34,33,32,29,35)")
+                               .order("case when category_id is null then 1 else 0 end, category_id")
+                               .order("cast(a.value as unsigned)desc")
+                               .order("b.value")
     result = total_ti_trong(@kpi_open_dinh_luong, nil)
     @total_ti_trong = result[0]
     @total_cbnv_point = result[1]
@@ -501,7 +531,18 @@ group by issues.author_id)   as y"
     else
       $cbnv = @cbnv.first.assigned_to_id
     end
-    @kpi = @kpi_open_dinh_luong.where(:assigned_to_id => $cbnv).order("FIELD(status_id,36,34,33,32,29,35)")
+    @kpi = @kpi_open_dinh_luong
+               .joins("inner join custom_values a on issues.id = a.customized_id")
+               .joins("inner join custom_values b on issues.id = b.customized_id")
+               .where(:assigned_to => $cbnv)
+               .where.not(:tracker_id => 51)
+               .where(:fixed_version_id => $kidanhgia)
+               .where("a.custom_field_id=139")
+               .where("b.custom_field_id=1")
+               .order("FIELD(status_id,36,34,33,32,29,35)")
+               .order("case when category_id is null then 1 else 0 end, category_id")
+               .order("cast(a.value as unsigned)desc")
+               .order("b.value")
 
     @permission_danhgia = get_main_qltt($cbnv, $kidanhgia) == User.current.id ? true : false
     if PeopleKi.where(:user_id => $cbnv).where(:version_id => $kidanhgia).length == 0
@@ -521,6 +562,8 @@ group by issues.author_id)   as y"
       format.html # show.html.erb
     end
   end
+
+
 
   def find_group_member(user_id)
     member = []

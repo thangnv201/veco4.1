@@ -419,7 +419,7 @@
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 56).select(:value).take(1).first.value %></td>
             <td><%= CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).nil? ? "N/A" : CustomValue.where(customized_id: @kpi_raking[$num].user_id, custom_field_id: 53).select(:value).take(1).first.value %></td>
             <td>
-              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).size == 0 %>
+              <% if Project.find(1072).issues.where(:assigned_to_id => @kpi_raking[$num].user_id).where.not(:tracker_id => 51).where(:fixed_version_id => $kidanhgia).where.not(:status_id => 35).size == 0 %>
                 <a title="không có KPI nào" onclick="detailKPI(<%=@kpi_raking[$num].user_id %>,<%=$kidanhgia %>)">
                   <% if @ki_raking[$num][23] == nil %>
                     0.0

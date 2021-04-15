@@ -2,6 +2,9 @@
   <%= stylesheet_link_tag 'semantic', 'font-awesome.min', plugin: 'kpi_report' %>
   <%= javascript_include_tag 'semantic.min.js', 'semantic.js', plugin: 'kpi_report' %>
 <% end %>
+<head>
+  <title>KPI REPORT</title>
+</head>
 <div>
   <%= form_tag({:controller => 'reportpeople', :action => 'index'}, :method => :get, :id => "query_form") do %>
     <table>
@@ -14,19 +17,25 @@
     </p>
   <% end %>
 </div>
-
+<div>
+  Số lượng người dùng <b>Active</b> chưa có role CBNV:<b> <%= User.active.count - Group.find(1839).users.active.count %>
+  / <%= User.active.count %></b>
+</div>
+<div style="margin-bottom: 50px;margin-top: 50px">
+  Số lượng người chưa đủ điều kiện KPI: <b> <%= count_user_dont_have_kpi($kidanhgia) %>/Số người có roles CBNV</b>
+</div>
 <div style="display: flex">
-  <div class="ui styled accordion">
-    <% @department.each do |dep| %>
-      <div class="title" onclick="getmember(<%=dep.id %>)">
-        <i class="dropdown icon"></i>
-        <%= dep.name %> ( <%= kpi_department(dep.id, $kidanhgia) %>)
-      </div>
-      <div id="<%= dep.id %>" class="content">
-      </div>
-    <% end %>
-  </div>
-  <table style="width: 30%;border: 1px solid;text-align: left;margin-left: 10%" class="table" id="member">
+    <div class="ui styled accordion">
+  <% @department.each do |dep| %>
+        <div class="title" onclick="getmember(<%=dep.id %>)">
+          <i class="dropdown icon"></i>
+          <%= dep.name %> ( <%= kpi_department(dep.id, $kidanhgia) %>)
+        </div>
+        <div id="<%= dep.id %>" class="content">
+        </div>
+  <% end %>
+    </div>
+  <table style="width: 30%;border: 1px solid;text-align: left;margin-left: 2%;margin-right: 2%" class="table" id="member">
     <thead>
     <tr>
       <th scope="col">Họ và tên</th>
@@ -39,6 +48,49 @@
     </tbody>
 
   </table>
+  <div style="width: 25%;">
+    Danh sách người dùng chưa đủ điều kiện KPI
+  <table style="width:90%;border: 1px solid;text-align: left;" class="table" >
+      <thead>
+      <tr>
+        <th scope="col">Họ và tên</th>
+        <th scope="col">Số lượng KPI</th>
+        <th scope="col">Tỉ trọng</th>
+      </tr>
+      </thead>
+      <tbody>
+  <%$list_member_dont_have_kpi.each do |uid| %>
+        <tr>
+          <td><%=User.find(uid).login %></td>
+          <td><%=Project.find(1072).issues.where.not(:status_id => 35).where(:tracker_id => [39, 40, 41])
+               .where(:assigned_to_id => uid).where(:fixed_version_id => $kidanhgia).count %></td>
+          <td><%=check_done_kpi(uid,$kidanhgia)%> %</td>
+
+        </tr>
+  <% end %>
+      </tbody>
+
+    </table>
+  </div>
+  <div style="width: 25%">
+    Danh sách người dùng Active chưa có role CBNV
+  <table style="width:90%;border: 1px solid;text-align: left;" class="table" >
+    <thead>
+    <tr>
+      <th scope="col">Họ và tên</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% user_nonrole = User.active.pluck(:login) - Group.find(1839).users.pluck(:login) %>
+    <% user_nonrole.each do |ulogin| %>
+      <tr>
+       <td> <%= ulogin %></td>
+      </tr>
+    <% end %>
+    </tbody>
+
+  </table>
+  </div>
 </div>
 
 
@@ -50,9 +102,9 @@
 
 </script>
 <script>
-    <% @department.each do |dep| %>
+<% @department.each do |dep| %>
     getchild($('#' +<%=dep.id %>), <%=dep.id %>)
-    <% end %>
+<% end %>
 
     function getchild(div, id) {
         let url = 'http://' + $(location).attr('host') + '/child_dep?dep_id=' + id;
